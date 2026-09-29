@@ -2,6 +2,7 @@
 import { X } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
 import { Layer } from "@/src/components/design-system/Layer/Layer";
+import { useTranslation } from "react-i18next";
 
 export function OverviewSelectionBar({
   selectedCount,
@@ -12,6 +13,7 @@ export function OverviewSelectionBar({
   onClear: () => void;
   children: React.ReactNode;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   if (selectedCount === 0) return null;
 
   return (
@@ -24,7 +26,7 @@ export function OverviewSelectionBar({
             variant="ghost"
             size="icon"
             className="h-8 w-8"
-            aria-label="Clear selection"
+            aria-label={tFeatures("ui.clearSelection")}
             onClick={onClear}
           >
             <X className="h-4 w-4" />

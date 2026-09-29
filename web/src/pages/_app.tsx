@@ -4,6 +4,7 @@
 import "@/src/polyfills/crypto-random-uuid";
 
 import { type AppType } from "next/app";
+import { UiLanguageProvider } from "@/src/features/i18n";
 import Head from "next/head";
 import { type Session } from "next-auth";
 import { SessionProvider, useSession } from "next-auth/react";
@@ -143,7 +144,7 @@ if (typeof window !== "undefined" && postHogClientConfig) {
   });
 }
 
-const MyApp: AppType<{ session: Session | null }> = ({
+const AppContent: AppType<{ session: Session | null }> = ({
   Component,
   pageProps: { session, ...pageProps },
 }) => {
@@ -240,6 +241,12 @@ const MyApp: AppType<{ session: Session | null }> = ({
     </div>
   );
 };
+
+const MyApp: AppType<{ session: Session | null }> = (props) => (
+  <UiLanguageProvider>
+    <AppContent {...props} />
+  </UiLanguageProvider>
+);
 
 export default api.withTRPC(MyApp);
 

@@ -1,5 +1,6 @@
 /* eslint-disable @repo/no-margin-on-root-elements */
 "use client";
+import { useTranslation } from "react-i18next";
 import { type LucideIcon } from "lucide-react";
 import {
   SidebarGroup,
@@ -15,6 +16,7 @@ import { type RouteGroup } from "@/src/components/layouts/routes";
 
 export type NavMainItem = {
   title: string;
+  titleKey?: string;
   menuNode?: ReactNode;
   url: string;
   icon?: LucideIcon;
@@ -55,13 +57,14 @@ export function NavMain({
     ungrouped: NavMainItem[];
   };
 }) {
+  const { t } = useTranslation("navigation");
   return (
     <>
       <SidebarGroup>
         <SidebarGroupContent>
           <SidebarMenu>
             {items.ungrouped.map((item) => (
-              <SidebarMenuItem key={item.title}>
+              <SidebarMenuItem key={item.url || item.titleKey || item.title}>
                 {item.menuNode || (
                   <SidebarMenuButton
                     asChild
@@ -84,11 +87,23 @@ export function NavMain({
       {items.grouped &&
         Object.entries(items.grouped).map(([group, items]) => (
           <SidebarGroup key={group}>
-            <SidebarGroupLabel>{group}</SidebarGroupLabel>
+            <SidebarGroupLabel>
+              {t(
+                (
+                  {
+                    Observability: "observability",
+                    "Prompt Management": "promptManagement",
+                    Evaluation: "evaluation",
+                  } as Record<string, string>
+                )[group] ?? group,
+              )}
+            </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
                 {items.map((item) => (
-                  <SidebarMenuItem key={item.title}>
+                  <SidebarMenuItem
+                    key={item.url || item.titleKey || item.title}
+                  >
                     {item.menuNode || (
                       <SidebarMenuButton
                         asChild

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useMemo } from "react";
 
 import { ConfirmationDialogController } from "@/src/components/design-system/ConfirmationDialogController/ConfirmationDialogController";
@@ -17,6 +18,7 @@ export function ConnectedLLMApiKeySettingsTable({
 }: {
   projectId: string;
 }) {
+  const { t } = useTranslation("settings");
   const capture = usePostHogClientCapture();
   const utils = api.useUtils();
 
@@ -40,14 +42,14 @@ export function ConnectedLLMApiKeySettingsTable({
   const tableData = useMemo<AsyncTableData<LLMApiKeySettingsTableRow[]>>(() => {
     if (apiKeys.isLoading) return { status: "loading" };
     if (apiKeys.isError) {
-      return { status: "error", error: "Failed to load LLM connections" };
+      return { status: "error", error: t("llmConnectionsLoadFailed") };
     }
 
     return {
       status: "success",
       data: apiKeys.data?.data ?? [],
     };
-  }, [apiKeys.data?.data, apiKeys.isError, apiKeys.isLoading]);
+  }, [apiKeys.data?.data, apiKeys.isError, apiKeys.isLoading, t]);
 
   return (
     <CreateLLMApiKeyDialogController projectId={projectId}>
@@ -55,9 +57,9 @@ export function ConnectedLLMApiKeySettingsTable({
         <UpdateLLMApiKeyDialog projectId={projectId}>
           {({ openDialog: openUpdateDialog }) => (
             <ConfirmationDialogController<{ id: string }>
-              title="Delete LLM Connection"
-              text="Are you sure you want to delete this connection? This action cannot be undone."
-              confirmLabel="Permanently delete"
+              title={t("deleteLlmConnection")}
+              text={t("deleteLlmConnectionDescription")}
+              confirmLabel={t("permanentlyDelete")}
               variant="destructive"
               loading={deleteApiKey.isPending}
               error={deleteApiKey.error?.message}
@@ -87,7 +89,7 @@ export function ConnectedLLMApiKeySettingsTable({
                     onClick: openUpdateDialog,
                   }}
                   data={tableData}
-                  noResultsMessage="None"
+                  noResultsMessage={t("none")}
                 />
               )}
             </ConfirmationDialogController>

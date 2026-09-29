@@ -9,6 +9,7 @@ import {
   DEFAULT_REASONING_DESCRIPTION,
   DEFAULT_SCORE_DESCRIPTION,
 } from "@/src/features/evals/v2/scoreOutputDefaults";
+import { useTranslation } from "react-i18next";
 
 function DescriptionLabel({
   children,
@@ -19,10 +20,13 @@ function DescriptionLabel({
   tooltip: string;
   disabled: boolean;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   return (
     <Label className="flex items-center gap-1.5">
       {children}
-      <span className="text-muted-foreground font-regular">(optional)</span>
+      <span className="text-muted-foreground font-regular">
+        {tFeatures("ui.optional")}
+      </span>
       {!disabled ? (
         <InfoTooltip label={`About ${children.toLowerCase()}`}>
           {tooltip}
@@ -47,6 +51,7 @@ export function ScoreOutputDescriptionFields({
   disabled: boolean;
   defaultAdvancedOpen?: boolean;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const [advancedOpen, setAdvancedOpen] = useState(defaultAdvancedOpen);
 
   return (
@@ -63,17 +68,19 @@ export function ScoreOutputDescriptionFields({
             !advancedOpen && "-rotate-90",
           )}
         />
-        Advanced
+        {tFeatures("ui.advanced")}
       </button>
 
       {advancedOpen ? (
         <div className="col-start-2 mt-4 flex flex-col gap-4">
           <div className="flex flex-col gap-2">
             <DescriptionLabel
-              tooltip="Gives the judge context on what the score field should capture."
+              tooltip={tFeatures(
+                "ui.givesTheJudgeContextOnWhatTheScoreFieldShouldCapture",
+              )}
               disabled={disabled}
             >
-              Score description
+              {tFeatures("ui.scoreDescription")}
             </DescriptionLabel>
             <Textarea
               className="min-h-16"
@@ -86,10 +93,12 @@ export function ScoreOutputDescriptionFields({
 
           <div className="flex flex-col gap-2">
             <DescriptionLabel
-              tooltip="Tells the judge what its written reasoning should cover."
+              tooltip={tFeatures(
+                "ui.tellsTheJudgeWhatItsWrittenReasoningShouldCover",
+              )}
               disabled={disabled}
             >
-              Reasoning description
+              {tFeatures("ui.reasoningDescription")}
             </DescriptionLabel>
             <Textarea
               className="min-h-16"

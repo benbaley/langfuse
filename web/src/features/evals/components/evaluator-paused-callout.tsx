@@ -13,6 +13,7 @@ import {
 import { AlertTriangle, ExternalLinkIcon, RefreshCcw } from "lucide-react";
 import Link from "next/link";
 import { Fragment } from "react";
+import { useTranslation } from "react-i18next";
 
 type EvaluatorPausedCalloutProps = {
   projectId: string;
@@ -52,6 +53,7 @@ export function EvaluatorPausedCallout({
   blockedAt,
   evalConfig,
 }: EvaluatorPausedCalloutProps) {
+  const { t: tFeatures } = useTranslation("features");
   const utils = api.useUtils();
   const calloutId = `eval-config-paused-${evalConfig.id}`;
 
@@ -98,7 +100,7 @@ export function EvaluatorPausedCallout({
 
         <div className="min-w-0 flex-1">
           <h3 className="text-foreground text-base leading-5 font-bold">
-            Evaluator paused
+            {tFeatures("evalsMore:evaluator.pausedTitle")}
           </h3>
 
           <div className="text-muted-foreground mt-1 flex flex-wrap items-center gap-2 text-sm leading-5">
@@ -109,7 +111,7 @@ export function EvaluatorPausedCallout({
               <Fragment>
                 <span className="bg-border h-1 w-1 rounded-full" />
                 <span title={blockedAtDate.toLocaleString()}>
-                  Paused {blockedAtLabel}
+                  {tFeatures("ui.paused")} {blockedAtLabel}
                 </span>
               </Fragment>
             ) : null}
@@ -148,7 +150,7 @@ export function EvaluatorPausedCallout({
                 className="h-8 px-3"
               >
                 <RefreshCcw className="mr-1.5 h-3.5 w-3.5" />
-                Reactivate
+                {tFeatures("evalsMore:evaluator.reactivate")}
               </Button>
             ) : null}
           </div>

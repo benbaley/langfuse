@@ -60,6 +60,7 @@ import { useCopyToClipboard } from "@/src/hooks/useCopyToClipboard";
 import type { EvaluatorSetupStore } from "@/src/features/evals/v2/store/evaluatorSetupStore/evaluatorSetupStore";
 import { cn } from "@/src/utils/tailwind";
 import type { EvaluatorPromptMessage } from "@langfuse/shared";
+import { useTranslation } from "react-i18next";
 
 const ROLES: Array<{ value: EvaluatorPromptMessage["role"]; label: string }> = [
   { value: "system", label: "System" },
@@ -88,6 +89,7 @@ export function PromptEditorContent({
   store: EvaluatorSetupStore;
   sampleObject: Record<string, unknown> | null;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const state = useStore(
     store,
     useShallow((state) => ({
@@ -178,7 +180,7 @@ export function PromptEditorContent({
           }}
         >
           <Plus className="h-3.5 w-3.5 shrink-0" />
-          Add message
+          {tFeatures("ui.addMessage")}
         </Button>
       </div>
       <DragOverlay dropAnimation={null}>
@@ -193,9 +195,9 @@ export function PromptEditorContent({
             </Badge>
             <span
               className="min-w-0 truncate text-xs"
-              title={activeMessage.content || "Empty message"}
+              title={activeMessage.content || tFeatures("ui.emptyMessage")}
             >
-              {activeMessage.content || "Empty message"}
+              {activeMessage.content || tFeatures("ui.emptyMessage")}
             </span>
           </div>
         ) : null}
@@ -227,6 +229,7 @@ function SortablePromptMessage({
   onChange: (message: EvaluatorPromptMessage) => void;
   onRemove: () => void;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const [expanded, setExpanded] = useState(true);
   const { copy } = useCopyToClipboard();
   const hasEmptyContent = message.content.trim().length === 0;
@@ -248,8 +251,8 @@ function SortablePromptMessage({
           className="text-dark-yellow h-3.5 w-3.5"
           aria-label={
             hasEmptyContent
-              ? "Empty prompt message"
-              : "Invalid system message position"
+              ? tFeatures("ui.emptyPromptMessage")
+              : tFeatures("ui.invalidSystemMessagePosition")
           }
         />
       ) : null}
@@ -283,7 +286,7 @@ function SortablePromptMessage({
           type="button"
           className="text-muted-foreground hover:text-foreground absolute inset-y-0 right-full flex w-7 cursor-grab touch-none items-start justify-center pt-2 opacity-0 transition-opacity group-hover/prompt-message:opacity-100 focus-visible:opacity-100 active:cursor-grabbing"
           aria-label={`Reorder ${message.role} prompt message`}
-          title="Drag to reorder message"
+          title={tFeatures("ui.dragToReorderMessage")}
           {...attributes}
           {...listeners}
         >
@@ -338,9 +341,9 @@ function SortablePromptMessage({
             {!expanded ? (
               <span
                 className="text-muted-foreground min-w-0 flex-1 truncate px-1 text-xs leading-none"
-                title={message.content || "Empty message"}
+                title={message.content || tFeatures("ui.emptyMessage")}
               >
-                {message.content || "Empty message"}
+                {message.content || tFeatures("ui.emptyMessage")}
               </span>
             ) : null}
           </>
@@ -361,7 +364,7 @@ function SortablePromptMessage({
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-44">
               <DropdownMenuLabel className="text-muted-foreground px-2 py-1 text-[10px] font-bold tracking-wider uppercase">
-                Role
+                {tFeatures("ui.role")}
               </DropdownMenuLabel>
               {ROLES.map((role) => {
                 const disabledReason =
@@ -390,7 +393,7 @@ function SortablePromptMessage({
                 }}
               >
                 <Copy className="mr-2 h-3.5 w-3.5" />
-                Copy prompt
+                {tFeatures("ui.copyPrompt")}
               </DropdownMenuItem>
               {messageCount > 1 ? (
                 <DropdownMenuItem
@@ -398,7 +401,7 @@ function SortablePromptMessage({
                   onSelect={onRemove}
                 >
                   <Trash2 className="mr-2 h-3.5 w-3.5" />
-                  Delete message
+                  {tFeatures("ui.deleteMessage")}
                 </DropdownMenuItem>
               ) : null}
             </DropdownMenuContent>

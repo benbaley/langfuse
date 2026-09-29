@@ -9,11 +9,12 @@ import { InfoTooltip } from "@/src/components/ui/InfoTooltip/InfoTooltip";
 import { Label } from "@/src/components/ui/label";
 import { SortableList } from "@/src/features/evals/v2/components/SortableList/SortableList";
 import { DecisionModelQuestionCard } from "@/src/features/evals/v2/components/Evaluators/DecisionModel/DecisionModelQuestionCard/DecisionModelQuestionCard";
-import { QUESTION_TYPE_COPY } from "@/src/features/evals/v2/components/Evaluators/DecisionModel/QuestionTypeSelector/QuestionTypeSelector";
+import { getQuestionTypeCopy } from "@/src/features/evals/v2/components/Evaluators/DecisionModel/QuestionTypeSelector/QuestionTypeSelector";
 import type {
   DecisionModelQuestionDraft,
   DecisionModelQuestionDraftErrors,
 } from "@/src/features/evals/v2/types/decisionModel";
+import { useTranslation } from "react-i18next";
 
 export const QUESTION_EXAMPLES: Record<
   DecisionModelQuestionType,
@@ -90,29 +91,28 @@ export function DecisionModelQuestionList({
   onRemove: (id: string) => void;
   onReorder: (fromIndex: number, toIndex: number) => void;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   return (
     <div className="flex flex-col gap-3">
       <Label className="flex items-center gap-1.5">
-        Questions
-        <InfoTooltip label="About questions">
-          Each question is one snap judgment about the state and writes one
-          score. All questions are answered in a single model call, so a second
-          or tenth question costs only its own tokens.
+        {tFeatures("evalsMore:decision.questions")}
+        <InfoTooltip label={tFeatures("evalsMore:decision.aboutQuestions")}>
+          {tFeatures("evalsMore:decision.questionsHelp")}
         </InfoTooltip>
         <span className="text-muted-foreground text-xs font-normal">
-          {questions.length} of {DECISION_MODEL_LIMITS.maxQuestions}
+          {tFeatures("evalsMore:decision.countLimit", {
+            total: questions.length,
+            maximum: DECISION_MODEL_LIMITS.maxQuestions,
+          })}
         </span>
       </Label>
 
       {questions.length === 0 ? (
         <div className="text-muted-foreground flex flex-col items-start gap-3 rounded-md border border-dashed p-4 text-sm">
-          <p>
-            No questions yet. Start from an example to see the shape of each
-            type, or add a blank question.
-          </p>
+          <p>{tFeatures("evalsMore:decision.noQuestions")}</p>
           <div className="flex flex-wrap gap-2">
             {Object.values(DecisionModelQuestionType).map((type) => {
-              const copy = QUESTION_TYPE_COPY[type];
+              const copy = getQuestionTypeCopy(tFeatures)[type];
               return (
                 <Button
                   key={type}
@@ -134,7 +134,10 @@ export function DecisionModelQuestionList({
           items={questions}
           getId={(question) => question.id}
           getLabel={(question, index) =>
-            question.scoreName || `question ${index + 1}`
+            question.scoreName ||
+            tFeatures("evalsMore:decision.questionNumber", {
+              number: index + 1,
+            })
           }
           onReorder={onReorder}
           gap="md"
@@ -160,11 +163,12 @@ export function DecisionModelQuestionList({
       <div className="flex flex-wrap items-center gap-3">
         <Button type="button" variant="outline" size="sm" onClick={onAdd}>
           <Plus className="mr-1 h-3.5 w-3.5" />
-          Add question
+          {tFeatures("ui.addQuestion")}
         </Button>
         <span className="text-muted-foreground text-xs">
-          Answered together in one call; extra questions add only their own
-          tokens.
+          {tFeatures(
+            "ui.answeredTogetherInOneCallExtraQuestionsAddOnlyTheirOwnTokens",
+          )}
         </span>
       </div>
     </div>

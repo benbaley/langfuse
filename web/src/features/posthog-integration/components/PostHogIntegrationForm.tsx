@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   validateExportSource,
@@ -18,7 +19,6 @@ import { SelectInput } from "@/src/components/design-system/SelectInput/SelectIn
 import { SwitchInput } from "@/src/components/design-system/SwitchInput/SwitchInput";
 import {
   getExportSourceFieldState,
-  getExportSourceUnavailableMessage,
   isExportSourceSelectable,
 } from "@/src/features/analytics-integrations";
 import { posthogIntegrationFormSchema } from "@/src/features/posthog-integration/types";
@@ -57,6 +57,7 @@ export function PostHogIntegrationForm({
   projectApiKeyDisplay,
   resetError,
 }: PostHogIntegrationFormProps) {
+  const { t } = useTranslation("settingsMore");
   const { options: exportSourceOptions, showField: showExportSourceField } =
     getExportSourceFieldState(defaultValues.exportSource, exportSourceContext);
   const formSchema = useMemo(
@@ -66,19 +67,18 @@ export function PostHogIntegrationForm({
           ctx.addIssue({
             code: "custom",
             path: ["posthogProjectApiKey"],
-            message: "PostHog Project API Key is required",
+            message: t("validation.posthogKeyRequired"),
           });
         }
         if (!isExportSourceSelectable(data.exportSource, exportSourceContext)) {
           ctx.addIssue({
             code: "custom",
             path: ["exportSource"],
-            message:
-              "This export source is not available on this deployment. Select an available export source to save.",
+            message: t("integrations.unavailableSource"),
           });
         }
       }),
-    [configurationState, exportSourceContext],
+    [configurationState, exportSourceContext, t],
   );
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -94,9 +94,9 @@ export function PostHogIntegrationForm({
 
   return (
     <ConfirmationDialogController
-      title="Reset PostHog integration?"
-      text="This resets the PostHog integration for this project."
-      confirmLabel="Reset integration"
+      title={t("integrations.resetPosthog")}
+      text={t("integrations.resetPosthogHint")}
+      confirmLabel={t("integrations.reset")}
       variant="destructive"
       disabled={configurationState === "new"}
       loading={actionState === "resetting"}
@@ -111,13 +111,13 @@ export function PostHogIntegrationForm({
             {
               id: "save",
               type: "submit",
-              text: "Save",
+              text: t("common.save"),
               loading: actionState === "saving",
             },
             {
               id: "reset",
               type: "button",
-              text: "Reset",
+              text: t("common.reset"),
               variant: "ghost",
               disabled: configurationState === "new",
               onClick: openDialog,
@@ -126,8 +126,8 @@ export function PostHogIntegrationForm({
         >
           <PostHogForm.Field
             name="posthogHostname"
-            label="Posthog Hostname"
-            description="US region: https://us.posthog.com; EU region: https://eu.posthog.com"
+            label={t("integrations.posthogHost")}
+            description={t("integrations.posthogHostHint")}
           >
             {(field) => (
               <Input
@@ -145,10 +145,10 @@ export function PostHogIntegrationForm({
           </PostHogForm.Field>
           <PostHogForm.Field
             name="posthogProjectApiKey"
-            label="Posthog Project API Key"
+            label={t("integrations.posthogKey")}
             description={
               configurationState === "configured"
-                ? "Leave blank to keep the current API key."
+                ? t("integrations.keepApiKey")
                 : undefined
             }
           >
@@ -178,9 +178,11 @@ export function PostHogIntegrationForm({
                 <div className="space-y-2 py-1.5">
                   {exportSourceOptions.map((option) => (
                     <div key={option.value} className="space-y-0.5">
-                      <div className="font-bold">{option.label}</div>
+                      <div className="font-bold">
+                        {t(`integrations.source.${option.value}.label`)}
+                      </div>
                       <div className="text-muted-foreground text-xs">
-                        {option.description}
+                        {t(`integrations.source.${option.value}.description`)}
                       </div>
                     </div>
                   ))}
@@ -191,7 +193,7 @@ export function PostHogIntegrationForm({
                       rel="noopener noreferrer"
                       className="text-muted-foreground hover:text-primary inline-flex items-center gap-1 text-xs hover:underline"
                     >
-                      For further information see
+                      {t("common.moreInfo")}
                       <ExternalLink className="size-3" />
                     </a>
                   </div>
@@ -201,8 +203,8 @@ export function PostHogIntegrationForm({
               {({ getTriggerProps }) => (
                 <PostHogForm.Field
                   name="exportSource"
-                  label="Export Source"
-                  description="Choose which data sources to export to PostHog. Scores are always included."
+                  label={t("integrations.exportSource")}
+                  description={t("integrations.posthogSourceHint")}
                   registerLabelTooltip={getTriggerProps}
                 >
                   {(field) => (
@@ -213,18 +215,27 @@ export function PostHogIntegrationForm({
                       aria-describedby={field.inputDescribedById}
                       aria-invalid={Boolean(field.error)}
                       error={Boolean(field.error)}
-                      placeholder="Select data to export"
+                      placeholder={t("integrations.selectSource")}
                       options={exportSourceOptions.map((option) => {
                         if (option.unavailable) {
                           return {
                             value: option.value,
-                            label: `${option.label} (not available on this deployment)`,
+                            label: t("integrations.sourceUnavailableLabel", {
+                              source: t(
+                                `integrations.source.${option.value}.label`,
+                              ),
+                            }),
                             disabled: true as const,
-                            disabledReason: "Not available on this deployment.",
+                            disabledReason: t(
+                              "integrations.sourceUnavailableReason",
+                            ),
                           };
                         }
 
-                        return { value: option.value, label: option.label };
+                        return {
+                          value: option.value,
+                          label: t(`integrations.source.${option.value}.label`),
+                        };
                       })}
                     />
                   )}
@@ -235,20 +246,18 @@ export function PostHogIntegrationForm({
           {!exportSourceValidation.ok ? (
             <Alert variant="destructive">
               <Alert.Title>
-                Saved export source is no longer available
+                {t("integrations.savedSourceUnavailable")}
               </Alert.Title>
               <Alert.Description>
-                {getExportSourceUnavailableMessage(
-                  exportSourceValidation.reason,
-                )}
+                {t(`integrations.blocked.${exportSourceValidation.reason}`)}
               </Alert.Description>
             </Alert>
           ) : null}
-          <PostHogForm.Field name="enabled" label="Enabled">
+          <PostHogForm.Field name="enabled" label={t("common.enabled")}>
             {(field) => (
               <SwitchInput
                 id={field.id}
-                description="Send data to PostHog while this integration is active."
+                description={t("integrations.posthogEnabledHint")}
                 name={field.name}
                 checked={field.value}
                 onBlur={field.onBlur}

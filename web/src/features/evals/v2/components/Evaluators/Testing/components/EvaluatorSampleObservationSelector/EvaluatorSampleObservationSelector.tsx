@@ -11,6 +11,7 @@ import {
   type SampleObservation,
 } from "@/src/features/evals/v2/components/Evaluators/Testing/components/SampleObservationSelectorBase/SampleObservationSelectorBase";
 import { EVALUATOR_FIELD_REGISTRY } from "@/src/features/evals/v2/constants/evaluatorSearchRegistry";
+import { useTranslation } from "react-i18next";
 
 const preserveObservedOptions: Parameters<
   typeof SampleObservationSelectorBase
@@ -45,6 +46,7 @@ export function EvaluatorSampleObservationSelector({
   onSelect: (observation: SampleObservation | null) => void;
   onOpenTrace: (observation: SampleObservation) => void;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const selectionGroupName = useId();
   const leadingColumns = useMemo<LangfuseColumnDef<SampleObservation>[]>(
     () => [
@@ -54,11 +56,11 @@ export function EvaluatorSampleObservationSelector({
         header: () => (
           <div className="flex w-full justify-center">
             <Star aria-hidden="true" className="h-4 w-4" />
-            <span className="sr-only">Sample</span>
+            <span className="sr-only">{tFeatures("ui.sample")}</span>
           </div>
         ),
         headerBlock: true,
-        headerLabel: "Sample",
+        headerLabel: tFeatures("ui.sample"),
         size: 72,
         enableHiding: false,
         isFixedPosition: true,
@@ -74,14 +76,16 @@ export function EvaluatorSampleObservationSelector({
               id={`sample-selection-${selectionGroupName}-${row.original.id}`}
               name={selectionGroupName}
               checked={selectedObservationId === row.original.id}
-              aria-label={`Use ${row.original.name ?? row.original.id} as sample`}
+              aria-label={tFeatures("evalsMore:sample.use", {
+                name: row.original.name ?? row.original.id,
+              })}
               onChange={() => onSelect(row.original)}
             />
           </label>
         ),
       },
     ],
-    [onSelect, selectedObservationId, selectionGroupName],
+    [tFeatures, onSelect, selectedObservationId, selectionGroupName],
   );
 
   return (
@@ -101,12 +105,15 @@ export function EvaluatorSampleObservationSelector({
       getRowClassName={(observation) =>
         observation.id === selectedObservationId ? "bg-muted/50" : ""
       }
-      filterDescription="Filter the observations to a representative sample for testing this evaluator."
-      filterTooltip="These filters control which observations you can pick to test with."
-      matchingDescription="Select an observation to test the evaluator and verify the variable mapping."
-      matchingTooltip="Observations matching the current filters and global time range."
+      filterDescription={tFeatures("evalsMore:sample.evalDescription")}
+      filterTooltip={tFeatures("evalsMore:sample.evalTooltip")}
+      matchingDescription={tFeatures("evalsMore:sample.evalMatches")}
+      matchingTooltip={tFeatures("evalsMore:sample.evalMatchTooltip")}
       formatCount={(count) =>
-        `(${compactNumberFormatter(count)} ${count === 1 ? "match" : "matches"})`
+        tFeatures("evalsMore:sample.matchCount", {
+          count,
+          total: compactNumberFormatter(count),
+        })
       }
       mapObservedOptions={preserveObservedOptions}
     />

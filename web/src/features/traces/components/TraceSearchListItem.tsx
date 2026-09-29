@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 /**
  * SearchListItem - Individual search result row
  *
@@ -26,6 +27,7 @@ export function TraceSearchListItem({
   onSelect,
   onHover,
 }: TraceSearchListItemProps) {
+  const { t: tMore } = useTranslation("coreMore");
   const { node, parentTotalCost, parentTotalDuration } = item;
   const { comments } = useTraceData();
 
@@ -59,9 +61,12 @@ export function TraceSearchListItem({
         {/* Temporal and depth context - only show for observations (not TRACE root) */}
         {node.type !== "TRACE" && (
           <div className="text-muted-foreground/70 text-xs">
-            depth {node.depth} • +{traceRelativeTime}
+            {tMore("traces.depthTime", {
+              depth: node.depth,
+              time: traceRelativeTime,
+            })}
             {parentRelativeTime !== null &&
-              ` • +${parentRelativeTime} from parent`}
+              tMore("traces.parentTime", { time: parentRelativeTime })}
           </div>
         )}
       </div>

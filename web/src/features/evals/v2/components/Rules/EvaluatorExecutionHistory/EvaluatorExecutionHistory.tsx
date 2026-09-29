@@ -1,15 +1,19 @@
 /* eslint-disable no-nested-ternary */
 import { Tooltip } from "@/src/components/design-system/Tooltip/Tooltip";
 import { cn } from "@/src/utils/tailwind";
+import { useTranslation } from "react-i18next";
 
 export function EvaluatorExecutionHistory({
   traces,
 }: {
   traces: Array<{ id: string; level: string; timestamp: Date }>;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   if (traces.length === 0) {
     return (
-      <span className="text-muted-foreground text-xs">No recent runs</span>
+      <span className="text-muted-foreground text-xs">
+        {tFeatures("ui.noRecentRuns")}
+      </span>
     );
   }
 

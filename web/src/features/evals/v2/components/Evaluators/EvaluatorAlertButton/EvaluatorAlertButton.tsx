@@ -30,6 +30,7 @@ import { usePostHogClientCapture } from "@/src/features/posthog-analytics";
 import { renderEvaluatorAlertLastFired } from "@/src/features/evals/v2/fns/evaluators/renderEvaluatorAlertLastFired";
 import { renderEvaluatorAlertTriggerCondition } from "@/src/features/evals/v2/fns/evaluators/renderEvaluatorAlertTriggerCondition";
 import type { RouterOutputs } from "@/src/utils/api";
+import { useTranslation } from "react-i18next";
 
 type ConnectedAlert =
   RouterOutputs["monitors"]["linkedEvaluatorAlerts"]["data"][number];
@@ -54,6 +55,7 @@ type EvaluatorAlertButtonProps = {
 
 /** Alert picker for one evaluator or aggregate evaluator cost. */
 export function EvaluatorAlertButton(props: EvaluatorAlertButtonProps) {
+  const { t: tFeatures } = useTranslation("features");
   const {
     projectId,
     connectedAlerts,
@@ -172,7 +174,7 @@ export function EvaluatorAlertButton(props: EvaluatorAlertButtonProps) {
                       )
                     }
                   >
-                    <span>See all alerts</span>
+                    <span>{tFeatures("ui.seeAllAlerts")}</span>
                     <ArrowUpRight className="text-muted-foreground ml-auto h-4 w-4 shrink-0" />
                   </CommandItem>
                 ) : null}
@@ -181,15 +183,21 @@ export function EvaluatorAlertButton(props: EvaluatorAlertButtonProps) {
               <div className="px-4 py-3">
                 <p className="text-sm font-bold">
                   {isAggregateCost
-                    ? "No alerts on evaluator cost"
-                    : "No alerts on this evaluator"}
+                    ? tFeatures("ui.noAlertsOnEvaluatorCost")
+                    : tFeatures("ui.noAlertsOnThisEvaluator")}
                 </p>
                 <p className="text-muted-foreground mt-0.5 text-xs">
                   {isAggregateCost
-                    ? "Get notified when evaluator cost crosses a threshold."
+                    ? tFeatures(
+                        "ui.getNotifiedWhenEvaluatorCostCrossesAThreshold",
+                      )
                     : supportsCostAlert
-                      ? "Get notified when this evaluator's scores or cost cross a threshold."
-                      : "Get notified when this evaluator's score crosses a threshold."}
+                      ? tFeatures(
+                          "ui.getNotifiedWhenThisEvaluatorSScoresOrCostCrossAThreshold",
+                        )
+                      : tFeatures(
+                          "ui.getNotifiedWhenThisEvaluatorSScoreCrossesAThreshold",
+                        )}
                 </p>
               </div>
             )}
@@ -217,7 +225,7 @@ export function EvaluatorAlertButton(props: EvaluatorAlertButtonProps) {
                       }
                     >
                       <Gauge className="text-muted-foreground h-4 w-4" />
-                      Score
+                      {tFeatures("ui.score")}
                     </Button>
                   ) : null}
                   {supportsCostAlert ? (
@@ -236,7 +244,7 @@ export function EvaluatorAlertButton(props: EvaluatorAlertButtonProps) {
                       }
                     >
                       <DollarSign className="text-muted-foreground h-4 w-4" />
-                      Cost
+                      {tFeatures("ui.cost")}
                     </Button>
                   ) : null}
                 </div>
@@ -257,7 +265,7 @@ export function EvaluatorAlertButton(props: EvaluatorAlertButtonProps) {
                   >
                     <Gauge className="text-muted-foreground" />
                     <div>
-                      <p>Score threshold</p>
+                      <p>{tFeatures("ui.scoreThreshold")}</p>
                       <p className="text-muted-foreground text-xs">
                         Alert when this evaluator&apos;s score crosses a
                         threshold
@@ -279,11 +287,15 @@ export function EvaluatorAlertButton(props: EvaluatorAlertButtonProps) {
                   >
                     <DollarSign className="text-muted-foreground" />
                     <div>
-                      <p>Cost threshold</p>
+                      <p>{tFeatures("ui.costThreshold")}</p>
                       <p className="text-muted-foreground text-xs">
                         {isAggregateCost
-                          ? "Alert when evaluator cost crosses a threshold"
-                          : "Alert on spend from running this evaluator"}
+                          ? tFeatures(
+                              "ui.alertWhenEvaluatorCostCrossesAThreshold",
+                            )
+                          : tFeatures(
+                              "ui.alertOnSpendFromRunningThisEvaluator",
+                            )}
                       </p>
                     </div>
                     <ArrowUpRight className="text-muted-foreground ml-auto h-4 w-4 shrink-0" />
@@ -307,10 +319,10 @@ export function EvaluatorAlertButton(props: EvaluatorAlertButtonProps) {
             variant="outline"
             aria-label={
               isLoading
-                ? "Loading evaluator alerts"
+                ? tFeatures("ui.loadingEvaluatorAlerts")
                 : alertCount > 0
                   ? `${alertCount} connected evaluator alert${alertCount === 1 ? "" : "s"}`
-                  : "Add evaluator alert"
+                  : tFeatures("ui.addEvaluatorAlert")
             }
             className="w-auto max-w-full justify-start"
           >
@@ -325,7 +337,7 @@ export function EvaluatorAlertButton(props: EvaluatorAlertButtonProps) {
               <Plus className="mr-1 h-4 w-4 shrink-0" aria-hidden="true" />
             )}
             <span className="flex-1 text-left">
-              {alertCount > 0 ? "Alerts" : "Add alert"}
+              {alertCount > 0 ? tFeatures("ui.alerts") : "Add alert"}
             </span>
             {!isLoading && alertCount > 0 ? (
               <Badge variant="secondary" size="sm" className="ml-1 shrink-0">

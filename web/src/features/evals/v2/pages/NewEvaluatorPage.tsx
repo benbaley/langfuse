@@ -5,6 +5,7 @@ import { EvalTemplateTypeEnum } from "@langfuse/shared";
 import { Skeleton } from "@/src/components/ui/skeleton";
 import { useEvalTemplate } from "@/src/features/evals/v2/hooks/useEvalTemplate";
 import { EvaluatorSetupPage } from "./EvaluatorSetupPage";
+import { useTranslation } from "react-i18next";
 
 function requestedEvaluatorType(value: string | string[] | undefined) {
   return value === EvalTemplateTypeEnum.CODE
@@ -15,6 +16,7 @@ function requestedEvaluatorType(value: string | string[] | undefined) {
 }
 
 export default function NewEvaluatorPage() {
+  const { t: tFeatures } = useTranslation("features");
   const router = useRouter();
   const projectId = router.query.projectId as string;
   const templateKey =
@@ -35,7 +37,9 @@ export default function NewEvaluatorPage() {
   }
 
   if (template.isNotFound) {
-    return <div className="p-6">Evaluator template not found</div>;
+    return (
+      <div className="p-6">{tFeatures("ui.evaluatorTemplateNotFound")}</div>
+    );
   }
 
   const initialType = requestedEvaluatorType(router.query.type);

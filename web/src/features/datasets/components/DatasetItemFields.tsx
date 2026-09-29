@@ -11,6 +11,7 @@ import type { DatasetSchema } from "../utils/datasetItemUtils";
 import { type Control, type FieldPath, useWatch } from "react-hook-form";
 import { FormField } from "@/src/components/ui/form";
 import { type DatasetItemMediaField } from "@langfuse/shared";
+import { useTranslation } from "react-i18next";
 
 export type DatasetItemFormValues = {
   input: string;
@@ -70,6 +71,7 @@ export const DatasetItemFields = ({
   onUploadMedia,
   pendingUploads,
 }: DatasetItemFieldsProps) => {
+  const { t: tFeatures } = useTranslation("features");
   const inputValue = values?.input ?? "";
   const expectedOutputValue = values?.expectedOutput ?? "";
   const metadataValue = values?.metadata ?? "";
@@ -107,7 +109,7 @@ export const DatasetItemFields = ({
             name={"input" as FieldPath<DatasetItemFormValues>}
             render={({ field }) => (
               <DatasetItemField
-                label="Input"
+                label={tFeatures("ui.input")}
                 value={field.value}
                 schema={dataset?.inputSchema}
                 schemaType="input"
@@ -130,7 +132,7 @@ export const DatasetItemFields = ({
           />
         ) : (
           <DatasetItemField
-            label="Input"
+            label={tFeatures("ui.input")}
             value={inputValue}
             schema={dataset?.inputSchema}
             schemaType="input"
@@ -147,7 +149,7 @@ export const DatasetItemFields = ({
             name={"expectedOutput" as FieldPath<DatasetItemFormValues>}
             render={({ field }) => (
               <DatasetItemField
-                label="Expected output"
+                label={tFeatures("ui.expectedOutputTitle")}
                 value={field.value}
                 schema={dataset?.expectedOutputSchema}
                 schemaType="expectedOutput"
@@ -170,7 +172,7 @@ export const DatasetItemFields = ({
           />
         ) : (
           <DatasetItemField
-            label="Expected output"
+            label={tFeatures("ui.expectedOutputTitle")}
             value={expectedOutputValue}
             schema={dataset?.expectedOutputSchema}
             schemaType="expectedOutput"
@@ -188,7 +190,7 @@ export const DatasetItemFields = ({
           name={"metadata" as FieldPath<DatasetItemFormValues>}
           render={({ field }) => (
             <DatasetItemField
-              label="Metadata"
+              label={tFeatures("ui.metadata")}
               value={field.value}
               editable={editable}
               onChange={(v) => {
@@ -206,7 +208,7 @@ export const DatasetItemFields = ({
         />
       ) : (
         <DatasetItemField
-          label="Metadata"
+          label={tFeatures("ui.metadata")}
           value={metadataValue}
           editable={false}
         />

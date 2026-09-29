@@ -2,6 +2,7 @@ import { ArrowRight } from "lucide-react";
 
 import { ConfirmDialog } from "@/src/components/ui/confirm-dialog";
 import type { JudgeModel } from "@/src/features/evals/v2/judgeModel";
+import { useTranslation } from "react-i18next";
 
 export function DefaultModelChangeConfirmationDialog({
   open,
@@ -18,13 +19,18 @@ export function DefaultModelChangeConfirmationDialog({
   onOpenChange: (open: boolean) => void;
   onConfirm: () => void;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   return (
     <ConfirmDialog
       open={open}
       onOpenChange={onOpenChange}
-      title="Set project default model"
-      description="Evaluators that follow the project default will use the new model on their next run. Evaluators with their own model are untouched. New evaluators start on the default."
-      confirmLabel={currentModel ? "Update default" : "Set default"}
+      title={tFeatures("ui.setProjectDefaultModel")}
+      description={tFeatures("evalsMore:model.defaultDescription")}
+      confirmLabel={
+        currentModel
+          ? tFeatures("evalsMore:model.updateDefault")
+          : tFeatures("evalsMore:model.setDefault")
+      }
       confirmVariant="default"
       loading={loading}
       onConfirm={onConfirm}

@@ -19,6 +19,10 @@ import {
   useReadyRouteParams,
 } from "@/src/hooks/useReadyRouteParams";
 import { DatasetActionMenu } from "@/src/features/datasets/components/DatasetActionMenu";
+import {
+  useTranslation,
+  useTranslation as useNavigationTranslation,
+} from "react-i18next";
 
 export default function DatasetItemsPage() {
   const route = useReadyRouteParams(["projectId", "datasetId"]);
@@ -38,6 +42,8 @@ function DatasetItemsView({
   projectId: string;
   datasetId: string;
 }) {
+  const { t: tNavigation } = useNavigationTranslation("navigation");
+  const { t: tFeatures } = useTranslation("features");
   const { selectedVersion, resetToLatest } = useDatasetVersion();
   const isViewingOldVersion = selectedVersion !== null;
 
@@ -91,7 +97,7 @@ function DatasetItemsView({
         itemType: "DATASET",
         breadcrumb,
         tabsProps: {
-          tabs: getDatasetTabs(projectId, datasetId),
+          tabs: getDatasetTabs(projectId, datasetId, tNavigation),
           activeTab: DATASET_TABS.ITEMS,
         },
         actionButtonsRight: (
@@ -130,7 +136,7 @@ function DatasetItemsView({
                 <Button
                   variant="outline"
                   size="icon"
-                  aria-label="Dataset actions"
+                  aria-label={tFeatures("ui.datasetActions")}
                   {...getTriggerProps()}
                 >
                   <MoreVertical className="h-4 w-4" />
@@ -141,7 +147,7 @@ function DatasetItemsView({
               variant="outline"
               size="icon"
               onClick={() => setIsVersionPanelOpen(!isVersionPanelOpen)}
-              title="Version History"
+              title={tFeatures("ui.versionHistory")}
             >
               <History className="h-4 w-4" />
             </Button>

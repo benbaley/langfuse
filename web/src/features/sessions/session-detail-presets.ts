@@ -1,3 +1,4 @@
+import { type TFunction } from "i18next";
 import { type FilterState } from "@langfuse/shared";
 import isEqual from "lodash/isEqual";
 
@@ -158,3 +159,16 @@ export const findSessionDetailViewByFilters = (
       normalizeFilterState(filterState),
     ),
   ) ?? null;
+
+export function translateSessionDetailPreset(
+  preset: SessionDetailSystemPreset,
+  t: TFunction<"coreMore">,
+): SessionDetailSystemPreset {
+  return {
+    ...preset,
+    name: t(`sessions.preset.${preset.id}.name`, { defaultValue: preset.name }),
+    description: t(`sessions.preset.${preset.id}.description`, {
+      defaultValue: preset.description,
+    }),
+  };
+}

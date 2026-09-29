@@ -45,6 +45,7 @@ describe("getScoreFilterConfig", () => {
       type: "stringKeyValue",
       column: "metadata",
       label: "Metadata",
+      labelKey: "field.metadata",
     });
   });
 

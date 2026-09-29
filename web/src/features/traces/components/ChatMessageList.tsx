@@ -18,6 +18,7 @@ import {
 } from "@/src/features/traces/fns/chatMessageUtils";
 import { type MediaReturnType } from "@/src/features/media";
 import { type IOPreviewContentMode } from "@/src/features/traces/components/IOPreview/IOPreview";
+import { useTranslation } from "react-i18next";
 
 const COLLAPSE_THRESHOLD = 3;
 
@@ -56,6 +57,7 @@ export function ChatMessageList({
   contentMode = "all",
   showSystemPrompt,
 }: ChatMessageListProps) {
+  const { t: tFeatures } = useTranslation("features");
   // Filter messages to only those with renderable content
   const messagesToRender = useMemo(
     () =>
@@ -140,7 +142,7 @@ export function ChatMessageList({
                   >
                     {isCollapsed
                       ? `Show ${messagesToRender.length - COLLAPSE_THRESHOLD} more`
-                      : "Hide history"}
+                      : tFeatures("ui.hideHistory")}
                   </Button>
                 )}
             </div>
@@ -150,7 +152,7 @@ export function ChatMessageList({
         {/* Additional input section */}
         {contentMode !== "conversation" && additionalInput && (
           <PrettyJsonView
-            title="Additional Input"
+            title={tFeatures("ui.additionalInput")}
             json={additionalInput}
             currentView={shouldRenderMarkdown ? "pretty" : "json"}
           />

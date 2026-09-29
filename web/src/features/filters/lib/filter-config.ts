@@ -4,9 +4,13 @@ import type { ColumnDefinition, FilterState } from "@langfuse/shared";
 interface BaseFacet {
   column: string;
   label: string;
+  /** Stable translation key for this application-owned display label. */
+  labelKey?: string;
+  tooltipKey?: string;
   tooltip?: string;
   help?: {
     description: React.ReactNode;
+    descriptionKey?: string;
     href?: string;
   };
   isDisabled?: boolean;

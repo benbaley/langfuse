@@ -18,6 +18,7 @@ import { extractVariableMappingValue } from "@/src/features/evals/v2/fns/variabl
 import { useVariableMappingController } from "@/src/features/evals/v2/hooks/useVariableMappingController";
 import type { VariableFieldState } from "@/src/features/evals/v2/types/variableMapping";
 import type { RuleSetupStore } from "@/src/features/evals/v2/types/rules";
+import { useTranslation } from "react-i18next";
 
 export const EvaluatorMappingRow = memo(function EvaluatorMappingRow({
   evaluatorId,
@@ -27,7 +28,7 @@ export const EvaluatorMappingRow = memo(function EvaluatorMappingRow({
   store,
   sampleObject,
   unvalidatedSourceColumnIds = [],
-  sourceUnavailableMessage = "No matching observation is available to validate JSON paths.",
+  sourceUnavailableMessage,
   disabled = false,
   costEstimate,
 }: {
@@ -42,6 +43,7 @@ export const EvaluatorMappingRow = memo(function EvaluatorMappingRow({
   disabled?: boolean;
   costEstimate: ReactNode;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const [open, setOpen] = useState(false);
   const variableMappingOverride = useStore(
     store,
@@ -122,16 +124,19 @@ export const EvaluatorMappingRow = memo(function EvaluatorMappingRow({
                   </span>
                   {!isCodeEvaluator ? (
                     <span className="text-muted-foreground inline-flex shrink-0 items-center gap-1 text-xs">
-                      {mappedVariableCount}/{mapping.length} variables mapped
+                      {tFeatures("evalsMore:mapping.progress", {
+                        mapped: mappedVariableCount,
+                        total: mapping.length,
+                      })}
                       {allVariablesMapped ? (
                         <Check
-                          aria-label="All variables mapped"
+                          aria-label={tFeatures("ui.allVariablesMapped")}
                           className="text-dark-green h-3.5 w-3.5"
                         />
                       ) : hasInvalidMappings ? (
                         <span
-                          aria-label="Some variables are not mapped correctly"
-                          title="Some variables are not mapped correctly"
+                          aria-label={tFeatures("evalsMore:mapping.invalid")}
+                          title={tFeatures("evalsMore:mapping.invalid")}
                           className="text-dark-yellow h-3.5 w-3.5"
                         >
                           <TriangleAlert className="h-3.5 w-3.5" aria-hidden />
@@ -153,19 +158,21 @@ export const EvaluatorMappingRow = memo(function EvaluatorMappingRow({
             onClick={() => detachEvaluator(evaluatorId)}
           >
             <Unlink className="h-3.5 w-3.5" />
-            Disconnect
+            {tFeatures("evalsMore:mapping.disconnect")}
           </Button>
         </div>
         <CollapsibleContent className="border-t p-3">
           {isCodeEvaluator ? (
             <p className="text-muted-foreground text-sm">
-              Observation data is available directly in code evaluators, so no
-              variable mapping is required.
+              {tFeatures(
+                "ui.observationDataIsAvailableDirectlyInCodeEvaluatorsSoNoVariableMappingIsRequired",
+              )}
             </p>
           ) : mapping.length === 0 ? (
             <p className="text-muted-foreground text-sm">
-              No variable mapping is required because this evaluator does not
-              define prompt variables.
+              {tFeatures(
+                "ui.noVariableMappingIsRequiredBecauseThisEvaluatorDoesNotDefinePromptVariables",
+              )}
             </p>
           ) : (
             <VariableMapping
@@ -176,7 +183,10 @@ export const EvaluatorMappingRow = memo(function EvaluatorMappingRow({
               sourceObject={sampleObject}
               hasMatchingObservations={Boolean(sampleObject)}
               unvalidatedSourceColumnIds={unvalidatedSourceColumnIds}
-              sourceUnavailableMessage={sourceUnavailableMessage}
+              sourceUnavailableMessage={
+                sourceUnavailableMessage ??
+                tFeatures("evalsMore:mapping.noSample")
+              }
             />
           )}
         </CollapsibleContent>

@@ -9,6 +9,7 @@ import {
   CommandItem,
   CommandList,
 } from "@/src/components/ui/command";
+import { useTranslation } from "react-i18next";
 
 // Long suggestion lists are unusable in a menu; the input filters the rest.
 const MAX_VISIBLE_SUGGESTIONS = 50;
@@ -25,6 +26,7 @@ export function JsonPathEditor({
   onApply: (jsonSelector: string | null) => void;
   onCancel: () => void;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const [query, setQuery] = useState(initialPath);
   const trimmed = query.trim();
   const filtered = useMemo(() => {
@@ -58,7 +60,7 @@ export function JsonPathEditor({
           type="button"
           variant="ghost"
           size="icon-xs"
-          title="Apply JSONPath"
+          title={tFeatures("ui.applyJsonpath")}
           onClick={() => apply(query)}
         >
           <Check className="h-3.5 w-3.5" />
@@ -67,7 +69,7 @@ export function JsonPathEditor({
           type="button"
           variant="ghost"
           size="icon-xs"
-          title="Cancel"
+          title={tFeatures("ui.cancel")}
           onClick={onCancel}
         >
           <X className="h-3.5 w-3.5" />
@@ -75,7 +77,7 @@ export function JsonPathEditor({
       </div>
       <CommandList>
         <CommandItem value="__full__" onSelect={() => apply("$")}>
-          Full value (no path)
+          {tFeatures("ui.fullValueNoPath")}
         </CommandItem>
         {trimmed.length > 0 &&
           trimmed !== "$" &&

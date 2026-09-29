@@ -22,6 +22,7 @@ import {
 } from "@/src/features/scores";
 import { type DatabaseRow } from "@/src/server/api/services/sqlInterface";
 import { NoDataOrLoading } from "@/src/components/NoDataOrLoading";
+import { useTranslation } from "react-i18next";
 
 const dropValuesForCategoricalScores = (
   value: number,
@@ -58,6 +59,7 @@ export const ScoresTable = ({
   isLoading?: boolean;
   metricsVersion: ViewVersion;
 }) => {
+  const { t: tApp } = useTranslation("app");
   const localFilters = createTracesTimeFilter(
     globalFilterState,
     "scoreTimestamp",
@@ -148,7 +150,7 @@ export const ScoresTable = ({
 
   if (!zeroValueScores || !oneValueScores) {
     return (
-      <DashboardCard title="Scores" isLoading={false}>
+      <DashboardCard title={tApp("ui.scores")} isLoading={false}>
         <NoDataOrLoading isLoading={false} />
       </DashboardCard>
     );
@@ -200,7 +202,7 @@ export const ScoresTable = ({
       // shrink so the row area scrolls internally. (LFE-11035)
       className={cn(className, "h-full")}
       cardContentClassName="min-h-0"
-      title="Scores"
+      title={tApp("ui.scores")}
       isLoading={
         isLoading ||
         metrics.isPending ||
@@ -212,7 +214,7 @@ export const ScoresTable = ({
         headers={[
           "Name",
           <RightAlignedCell key="count">#</RightAlignedCell>,
-          <RightAlignedCell key="average">Avg</RightAlignedCell>,
+          <RightAlignedCell key="average">{tApp("ui.Avg")}</RightAlignedCell>,
           <RightAlignedCell key="zero">0</RightAlignedCell>,
           <RightAlignedCell key="one">1</RightAlignedCell>,
         ]}
@@ -254,7 +256,7 @@ export const ScoresTable = ({
       >
         <TotalMetric
           metric={totalScores ? compactNumberFormatter(totalScores) : "0"}
-          description="Total scores tracked"
+          description={tApp("ui.TotalScoresTracked")}
         />
       </DashboardTable>
     </DashboardCard>

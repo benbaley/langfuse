@@ -60,6 +60,7 @@ import {
   PROMPT_TOOL_STRUCTURED_OUTPUT_CONFLICT_MESSAGE,
   PromptType,
 } from "@langfuse/shared";
+import { Trans, useTranslation } from "react-i18next";
 
 const LegacyExperimentNameValidation = ({
   projectId,
@@ -111,6 +112,8 @@ export const MultiStepExperimentForm = ({
   enableLegacyNameValidation?: boolean;
   useV2Evaluators?: boolean;
 }) => {
+  const { t: tMore } = useTranslation("coreMore");
+  const { t: tFeatures } = useTranslation("features");
   const capture = usePostHogClientCapture();
   const [activeStep, setActiveStep] = useState("prompt");
   const evaluatorAssignmentsRef =
@@ -134,11 +137,11 @@ export const MultiStepExperimentForm = ({
   );
 
   const steps = [
-    { id: "prompt", label: "Prompt & Model" },
-    { id: "dataset", label: "Dataset" },
-    { id: "evaluators", label: "Evaluators" },
-    { id: "details", label: "Experiment run details" },
-    { id: "review", label: "Review" },
+    { id: "prompt", label: tFeatures("ui.promptModel") },
+    { id: "dataset", label: tFeatures("ui.dataset") },
+    { id: "evaluators", label: tFeatures("ui.evaluators") },
+    { id: "details", label: tFeatures("ui.experimentRunDetails") },
+    { id: "review", label: tFeatures("ui.review") },
   ];
 
   const hasEvalReadAccess = useHasProjectAccess({
@@ -468,7 +471,7 @@ export const MultiStepExperimentForm = ({
     ) {
       return (
         <CircleX
-          aria-label={`${stepLabel} has errors`}
+          aria-label={tMore("experiments.stepErrors", { step: stepLabel })}
           className="mr-1.5 h-3.5 w-3.5 text-red-500"
         />
       );
@@ -579,18 +582,21 @@ export const MultiStepExperimentForm = ({
   return (
     <>
       <DialogHeader>
-        <DialogTitle>Run Experiment</DialogTitle>
+        <DialogTitle>{tFeatures("ui.runExperimentTitle")}</DialogTitle>
         <DialogDescription>
-          Run an experiment to evaluate prompts and model configurations against
-          a dataset. See{" "}
-          <Link
-            href="https://langfuse.com/docs/evaluation/dataset-runs/native-run"
-            target="_blank"
-            className="underline"
-          >
-            documentation
-          </Link>{" "}
-          to learn more.
+          <Trans
+            ns="coreMore"
+            i18nKey="experiments.runHelp"
+            components={{
+              docs: (
+                <Link
+                  href="https://langfuse.com/docs/evaluation/dataset-runs/native-run"
+                  target="_blank"
+                  className="underline"
+                />
+              ),
+            }}
+          />
         </DialogDescription>
       </DialogHeader>
       {enableLegacyNameValidation && (
@@ -702,7 +708,7 @@ export const MultiStepExperimentForm = ({
                 disabled={activeStep === "prompt"}
               >
                 <ChevronLeft className="mr-2 h-4 w-4" />
-                Previous
+                {tFeatures("ui.previous")}
               </Button>
 
               <div className="flex gap-2">
@@ -722,7 +728,7 @@ export const MultiStepExperimentForm = ({
                         v2EvaluatorSelection.isUpdating)
                     }
                   >
-                    Next
+                    {tFeatures("ui.next")}
                     <ChevronRight className="ml-2 h-4 w-4" />
                   </Button>
                 ) : (
@@ -731,7 +737,7 @@ export const MultiStepExperimentForm = ({
                     disabled={!isStepValid("review")}
                     loading={form.formState.isSubmitting}
                   >
-                    Run Experiment
+                    {tFeatures("ui.runExperimentTitle")}
                   </Button>
                 )}
               </div>

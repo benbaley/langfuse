@@ -4,6 +4,7 @@
  * Used for all main application pages when user is authenticated
  */
 
+import { useTranslation } from "react-i18next";
 import {
   useEffect,
   useState,
@@ -119,6 +120,7 @@ export function AuthenticatedLayout({
   metadata,
   onSignOut,
 }: AuthenticatedLayoutProps) {
+  const { t } = useTranslation("navigation");
   const { isLangfuseCloud, region: currentRegion } = useLangfuseCloudRegion();
   const [featurePreviewOpen, setFeaturePreviewOpen] = useState(false);
   const router = useRouter();
@@ -176,6 +178,7 @@ export function AuthenticatedLayout({
     {
       type: "link" as const,
       name: "Account Settings",
+      content: t("accountSettings"),
       href: "/account/settings",
     },
     ...(showV4Migration
@@ -183,6 +186,7 @@ export function AuthenticatedLayout({
           {
             type: "link" as const,
             name: "v4 Migration",
+            content: t("v4Migration"),
             href: "/v4-migration",
           },
         ]
@@ -198,6 +202,7 @@ export function AuthenticatedLayout({
           {
             type: "action" as const,
             name: "Feature Preview",
+            content: t("featurePreview"),
             onClick: () => setFeaturePreviewOpen(true),
           },
         ]
@@ -210,9 +215,9 @@ export function AuthenticatedLayout({
             subItems: regionMenuItems,
             content: (
               <>
-                Regions
+                {t("regions")}
                 <div className="ml-2 inline-flex rounded bg-black/5 p-1 text-xs dark:bg-white/10">
-                  Current: {currentRegion}
+                  {t("current", { value: currentRegion })}
                 </div>
               </>
             ),
@@ -227,16 +232,23 @@ export function AuthenticatedLayout({
             subItems: instanceMenuItems,
             content: currentInstance ? (
               <>
-                Instances
+                {t("instances")}
                 <div className="ml-2 inline-flex rounded bg-black/5 p-1 text-xs dark:bg-white/10">
-                  Current: {currentInstance.name}
+                  {t("current", { value: currentInstance.name })}
                 </div>
               </>
-            ) : undefined,
+            ) : (
+              t("instances")
+            ),
           },
         ]
       : []),
-    { type: "action" as const, name: "Sign out", onClick: onSignOut },
+    {
+      type: "action" as const,
+      name: "Sign out",
+      content: t("signOut"),
+      onClick: onSignOut,
+    },
   ];
 
   return (

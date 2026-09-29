@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 /* eslint-disable @repo/no-style-props, @repo/no-margin-on-root-elements */
 "use client";
 
@@ -107,6 +108,8 @@ const DialogContent = React.forwardRef<
     },
     ref,
   ) => {
+const { t: tUi } = useTranslation("uiMore");
+
     const handleKeyDown = (e: React.KeyboardEvent) => {
       // Prevent Enter/Space key events from propagating to parent elements
       // This prevents triggering actions like row clicks when submitting forms in dialogs
@@ -162,7 +165,7 @@ const DialogContent = React.forwardRef<
           <div className="[&:has(.dialog-header)]:hidden [&:not(:has(.dialog-header))]:absolute [&:not(:has(.dialog-header))]:top-3 [&:not(:has(.dialog-header))]:right-3 [&:not(:has(.dialog-header))]:z-20">
             <DialogPrimitive.Close className="ring-offset-background focus:ring-ring data-[state=open]:bg-accent data-[state=open]:text-muted-foreground rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none">
               <X className="h-4 w-4" />
-              <span className="sr-only">Close</span>
+              <span className="sr-only">{tUi("close")}</span>
             </DialogPrimitive.Close>
           </div>
         </DialogPrimitive.Content>
@@ -241,8 +244,9 @@ const DialogHeader = ({
   variant,
   ...props
 }: React.HTMLAttributes<HTMLDivElement> &
-  VariantProps<typeof dialogHeaderVariants>) => (
-  <div
+  VariantProps<typeof dialogHeaderVariants>) =>{
+const { t: tUi } = useTranslation("uiMore");
+return (<div
     className={cn(
       "dialog-header",
       dialogHeaderVariants({ variant, className }),
@@ -259,11 +263,11 @@ const DialogHeader = ({
         tabIndex={-1}
       >
         <X className="h-4 w-4" />
-        <span className="sr-only">Close</span>
+        <span className="sr-only">{tUi("close")}</span>
       </DialogPrimitive.Close>
     </div>
-  </div>
-);
+  </div>);
+};
 DialogHeader.displayName = "DialogHeader";
 
 const DialogBody = React.forwardRef<

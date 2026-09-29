@@ -1,6 +1,7 @@
 import { Scale, X } from "lucide-react";
 
 import { Button } from "@/src/components/ui/button";
+import { useTranslation } from "react-i18next";
 
 export function EvaluatorGalleryDecisionModelBanner({
   onTry,
@@ -9,6 +10,7 @@ export function EvaluatorGalleryDecisionModelBanner({
   onTry: () => void;
   onDismiss: () => void;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   return (
     <div className="border-primary-accent/30 bg-primary-accent/5 flex flex-wrap items-center gap-3 rounded-md border px-4 py-3 text-sm">
       <Scale
@@ -16,21 +18,21 @@ export function EvaluatorGalleryDecisionModelBanner({
         aria-hidden="true"
       />
       <div className="min-w-0 flex-1">
-        <span className="font-bold">New: decision-model evaluators.</span>{" "}
+        <span className="font-bold">
+          {tFeatures("ui.newDecisionModelEvaluators")}
+        </span>{" "}
         <span className="text-muted-foreground">
-          Ask TypeSafe Jev typed questions about each observation and get
-          calibrated answers in one call, at a fraction of an LLM judge&apos;s
-          cost. Experimental.
+          {tFeatures("evalsMore:gallery.decisionHelp")}
         </span>
       </div>
       <Button type="button" size="sm" onClick={onTry}>
-        Try a decision model
+        {tFeatures("ui.tryADecisionModel")}
       </Button>
       <Button
         type="button"
         variant="ghost"
         size="icon-xs"
-        aria-label="Dismiss"
+        aria-label={tFeatures("ui.dismiss")}
         onClick={onDismiss}
       >
         <X className="h-3.5 w-3.5" />

@@ -1,4 +1,5 @@
 /* eslint-disable @repo/no-null-render */
+import { useTranslation } from "react-i18next";
 import {
   CommandDialog,
   CommandEmpty,
@@ -82,11 +83,12 @@ function MainNavigationGroup({
   navItems: Array<{ title: string; url: string }>;
   onNavigate: (item: { title: string; url: string }) => void;
 }) {
+  const { t } = useTranslation("navigation");
   const router = useRouter();
   const capture = usePostHogClientCapture();
 
   return (
-    <CommandGroup heading="Main Navigation">
+    <CommandGroup heading={t("mainNavigation")}>
       {navItems.map((item) => (
         <CommandItem
           key={item.url}
@@ -110,6 +112,7 @@ function MainNavigationGroup({
 }
 
 function ProjectsGroup({ onNavigate }: { onNavigate: () => void }) {
+  const { t } = useTranslation("navigation");
   const router = useRouter();
   const capture = usePostHogClientCapture();
   const { allProjectItems } = useNavigationItems();
@@ -119,7 +122,7 @@ function ProjectsGroup({ onNavigate }: { onNavigate: () => void }) {
   return (
     <>
       <CommandSeparator />
-      <CommandGroup heading="Projects">
+      <CommandGroup heading={t("projects")}>
         {allProjectItems.map((item) => (
           <CommandItem
             key={item.url}
@@ -145,6 +148,7 @@ function ProjectsGroup({ onNavigate }: { onNavigate: () => void }) {
 }
 
 function DashboardsGroup({ onNavigate }: { onNavigate: () => void }) {
+  const { t } = useTranslation("navigation");
   const router = useRouter();
   const capture = usePostHogClientCapture();
   const { project } = useQueryProjectOrOrganization();
@@ -172,7 +176,7 @@ function DashboardsGroup({ onNavigate }: { onNavigate: () => void }) {
   return (
     <>
       <CommandSeparator />
-      <CommandGroup heading="Dashboards">
+      <CommandGroup heading={t("dashboards")}>
         {dashboards.map((dashboard) => (
           <CommandItem
             key={dashboard.id}
@@ -203,6 +207,7 @@ function DashboardsGroup({ onNavigate }: { onNavigate: () => void }) {
 }
 
 function ProjectSettingsGroup({ onNavigate }: { onNavigate: () => void }) {
+  const { t } = useTranslation("navigation");
   const router = useRouter();
   const capture = usePostHogClientCapture();
   const settingsPages = useProjectSettingsPages();
@@ -211,7 +216,7 @@ function ProjectSettingsGroup({ onNavigate }: { onNavigate: () => void }) {
   const projectSettingsItems = settingsPages
     .filter((page) => page.show !== false && !("href" in page))
     .map((page) => ({
-      title: `Project Settings > ${page.title}`,
+      title: t("projectSettingsPath", { page: page.title }),
       url: `/project/${project?.id}/settings${page.slug === "index" ? "" : `/${page.slug}`}`,
       keywords: page.cmdKKeywords || [],
     }));
@@ -221,7 +226,7 @@ function ProjectSettingsGroup({ onNavigate }: { onNavigate: () => void }) {
   return (
     <>
       <CommandSeparator />
-      <CommandGroup heading="Project Settings">
+      <CommandGroup heading={t("projectSettings")}>
         {projectSettingsItems.map((item) => (
           <CommandItem
             key={item.url}
@@ -246,6 +251,7 @@ function ProjectSettingsGroup({ onNavigate }: { onNavigate: () => void }) {
 }
 
 function OrganizationSettingsGroup({ onNavigate }: { onNavigate: () => void }) {
+  const { t } = useTranslation("navigation");
   const router = useRouter();
   const capture = usePostHogClientCapture();
   const orgSettingsPages = useOrganizationSettingsPages();
@@ -254,7 +260,7 @@ function OrganizationSettingsGroup({ onNavigate }: { onNavigate: () => void }) {
   const orgSettingsItems = orgSettingsPages
     .filter((page) => page.show !== false && !("href" in page))
     .map((page) => ({
-      title: `Organization Settings > ${page.title}`,
+      title: t("organizationSettingsPath", { page: page.title }),
       url: `/organization/${organization?.id}/settings${page.slug === "index" ? "" : `/${page.slug}`}`,
       keywords: page.cmdKKeywords || [],
     }));
@@ -264,7 +270,7 @@ function OrganizationSettingsGroup({ onNavigate }: { onNavigate: () => void }) {
   return (
     <>
       <CommandSeparator />
-      <CommandGroup heading="Organization Settings">
+      <CommandGroup heading={t("organizationSettings")}>
         {orgSettingsItems.map((item) => (
           <CommandItem
             key={item.url}
@@ -289,6 +295,7 @@ function OrganizationSettingsGroup({ onNavigate }: { onNavigate: () => void }) {
 }
 
 function AccountSettingsGroup({ onNavigate }: { onNavigate: () => void }) {
+  const { t } = useTranslation("navigation");
   const router = useRouter();
   const capture = usePostHogClientCapture();
   const accountSettingsPages = useAccountSettingsPages();
@@ -296,7 +303,7 @@ function AccountSettingsGroup({ onNavigate }: { onNavigate: () => void }) {
   const accountSettingsItems = accountSettingsPages
     .filter((page) => !("href" in page))
     .map((page) => ({
-      title: `Account Settings > ${page.title}`,
+      title: t("accountSettingsPath", { page: page.title }),
       url: `/account/settings${page.slug === "index" ? "" : `/${page.slug}`}`,
       keywords: page.cmdKKeywords || [],
     }));
@@ -306,7 +313,7 @@ function AccountSettingsGroup({ onNavigate }: { onNavigate: () => void }) {
   return (
     <>
       <CommandSeparator />
-      <CommandGroup heading="Account Settings">
+      <CommandGroup heading={t("accountSettings")}>
         {accountSettingsItems.map((item) => (
           <CommandItem
             key={item.url}
@@ -337,6 +344,7 @@ function CommandMenuComponent({
 }) {
   const { open, setOpen } = useCommandMenu();
   const capture = usePostHogClientCapture();
+  const { t } = useTranslation("navigation");
   const router = useRouter();
   const { project } = useQueryProjectOrOrganization();
   const { isV4 } = useReadPath();
@@ -411,7 +419,7 @@ function CommandMenuComponent({
       }}
     >
       <CommandInput
-        placeholder="Type a command or search..."
+        placeholder={t("commandSearch")}
         className="border-none focus:border-none focus:ring-0 focus:ring-transparent focus:outline-hidden"
         value={search}
         onValueChange={(value) => {
@@ -420,9 +428,9 @@ function CommandMenuComponent({
         }}
       />
       <CommandList>
-        <CommandEmpty>No results found.</CommandEmpty>
+        <CommandEmpty>{t("noResults")}</CommandEmpty>
         {idNavigationItem ? (
-          <CommandGroup heading="Tracing">
+          <CommandGroup heading={t("tracing")}>
             <CommandItem
               value={`${idNavigationItem.title} ${search}`}
               onSelect={() => {
@@ -433,7 +441,11 @@ function CommandMenuComponent({
                 handleNavigate();
               }}
             >
-              {idNavigationItem.title}
+              {t(
+                idNavigationItem.type === "trace_id"
+                  ? "findTraceById"
+                  : "findObservationById",
+              )}
             </CommandItem>
           </CommandGroup>
         ) : null}

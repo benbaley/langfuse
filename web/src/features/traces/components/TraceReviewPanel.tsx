@@ -8,6 +8,7 @@ import { AnnotationPanelContent } from "@/src/features/scores/components/Annotat
 import { hasBlockingOverlay } from "@/src/features/scores/lib/keyboardShortcuts";
 import { useTraceReviewPanel } from "../contexts/TraceReviewPanelContext";
 import { type TraceReviewPanelStore } from "../state/traceReviewPanelStore";
+import { useTranslation } from "react-i18next";
 
 function closeReviewPanel(store: TraceReviewPanelStore, router: NextRouter) {
   store.getState().actions.close();
@@ -20,13 +21,14 @@ function closeReviewPanel(store: TraceReviewPanelStore, router: NextRouter) {
 }
 
 function CloseReviewPanelButton() {
+  const { t: tFeatures } = useTranslation("features");
   const store = useTraceReviewPanel();
   const router = useRouter();
   return (
     <Button
       variant="ghost"
       size="icon-xs"
-      aria-label="Close side panel"
+      aria-label={tFeatures("ui.closeSidePanel")}
       onClick={() => closeReviewPanel(store, router)}
     >
       <X className="size-4" />
@@ -35,6 +37,7 @@ function CloseReviewPanelButton() {
 }
 
 function TraceCommentsPanel({ projectId }: { projectId: string }) {
+  const { t: tFeatures } = useTranslation("features");
   const store = useTraceReviewPanel();
   const target = useStore(store, (state) => state.comments!.target);
   const sessionKey = useStore(store, (state) => state.comments!.key);
@@ -46,12 +49,12 @@ function TraceCommentsPanel({ projectId }: { projectId: string }) {
   const actions = store.getState().actions;
   return (
     <section
-      aria-label="Comments"
+      aria-label={tFeatures("ui.comments")}
       className="flex h-full min-h-0 flex-col"
       hidden={!active}
     >
       <div className="flex shrink-0 items-center justify-between border-b px-4 py-2">
-        <h2 className="text-sm font-bold">Comments</h2>
+        <h2 className="text-sm font-bold">{tFeatures("ui.comments")}</h2>
         <CloseReviewPanelButton />
       </div>
       <div className="min-h-0 flex-1">
@@ -80,12 +83,13 @@ function TraceCommentsPanel({ projectId }: { projectId: string }) {
 }
 
 function TraceAnnotationPanel() {
+  const { t: tFeatures } = useTranslation("features");
   const store = useTraceReviewPanel();
   const annotation = useStore(store, (state) => state.annotation!);
   const active = useStore(store, (state) => state.active === "annotate");
   return (
     <section
-      aria-label="Annotate"
+      aria-label={tFeatures("ui.annotate")}
       className="h-full overflow-y-auto p-1 [--annotation-surface:var(--background)]"
       hidden={!active}
     >

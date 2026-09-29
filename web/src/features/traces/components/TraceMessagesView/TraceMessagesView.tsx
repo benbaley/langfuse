@@ -19,6 +19,7 @@ import { useSelection } from "@/src/features/traces/contexts/SelectionContext";
 import { useTraceData } from "@/src/features/traces/contexts/TraceDataContext";
 import { toIOPreview } from "@/src/features/traces/parsers/toIOPreview";
 import { useDesktopLayoutContextOptional } from "../TraceLayoutDesktop";
+import { useTranslation } from "react-i18next";
 
 type Transcript = NonNullable<
   RouterOutputs["events"]["transcriptByTraceId"]["transcript"]
@@ -30,6 +31,8 @@ type Thread = Transcript["threads"][number];
 const MAX_MEDIA_LOOKUPS_PER_TURN = 20;
 
 export function TraceMessagesView() {
+  const { t: tMore } = useTranslation("coreMore");
+  const { t: tFeatures } = useTranslation("features");
   const { trace, observations } = useTraceData();
   const { data, isLoading, error } = api.events.transcriptByTraceId.useQuery({
     projectId: trace.projectId,
@@ -42,7 +45,7 @@ export function TraceMessagesView() {
   );
 
   if (isLoading) {
-    return <Notice>Assembling messages…</Notice>;
+    return <Notice>{tFeatures("ui.assemblingMessages")}</Notice>;
   }
   if (error) {
     return <Notice>{error.message}</Notice>;
@@ -51,10 +54,7 @@ export function TraceMessagesView() {
     return (
       <div className="flex flex-col">
         {data?.cutoff && <CutoffNotice />}
-        <Notice>
-          No messages. Transcripts are assembled from generations and tool
-          observations with chat-shaped input and output.
-        </Notice>
+        <Notice>{tMore("traces.noMessages")}</Notice>
       </div>
     );
   }
@@ -66,7 +66,7 @@ export function TraceMessagesView() {
       {threads.map((thread, index) => (
         <ErrorBoundary
           key={index}
-          fallback={<Notice>Unprocessable content.</Notice>}
+          fallback={<Notice>{tFeatures("ui.unprocessableContent")}</Notice>}
         >
           <ThreadBlock
             thread={thread}
@@ -94,6 +94,8 @@ function ThreadBlock({
   projectId: string;
   traceId: string;
 }) {
+  const { t: tMore } = useTranslation("coreMore");
+  const { t: tFeatures } = useTranslation("features");
   const { setSelectedNodeId } = useSelection();
   const layout = useDesktopLayoutContextOptional();
   // History is context, not the point of the view; start folded.
@@ -128,8 +130,13 @@ function ThreadBlock({
               className="hover:text-foreground"
               onClick={() => setShowHistory((shown) => !shown)}
             >
-              {showHistory ? "Hide" : "Show"} conversation history (
-              {thread.conversationHistory.length})
+              {showHistory
+                ? tMore("traces.hideHistory", {
+                    count: thread.conversationHistory.length,
+                  })
+                : tMore("traces.showHistory", {
+                    count: thread.conversationHistory.length,
+                  })}
             </button>
           </SectionLabel>
           {showHistory && (
@@ -137,7 +144,7 @@ function ThreadBlock({
               <MessageList messages={thread.conversationHistory} media={[]} />
             </div>
           )}
-          <SectionLabel>Current turn</SectionLabel>
+          <SectionLabel>{tFeatures("ui.currentTurn")}</SectionLabel>
         </>
       )}
       <div className="flex flex-wrap gap-1">
@@ -147,7 +154,7 @@ function ThreadBlock({
             variant="outline"
             size="sm"
             className="h-6 px-2 text-xs"
-            title="Show observation"
+            title={tFeatures("ui.showObservation")}
             onClick={() => selectObservation(id)}
           >
             {observationNames.get(id) ?? id}
@@ -209,10 +216,12 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 }
 
 function CutoffNotice() {
+  const { t: tFeatures } = useTranslation("features");
   return (
     <Notice>
-      This trace exceeds the observation cap. Later observations are not part of
-      the transcript.
+      {tFeatures(
+        "ui.thisTraceExceedsTheObservationCapLaterObservationsAreNotPartOfTheTranscript",
+      )}
     </Notice>
   );
 }

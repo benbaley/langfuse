@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { Button } from "@/src/components/ui/button";
 import { Textarea } from "@/src/components/ui/textarea";
@@ -21,6 +22,8 @@ interface DataTableAIFiltersProps {
 export function DataTableAIFilters({
   onFiltersGenerated,
 }: DataTableAIFiltersProps) {
+const { t: tUi } = useTranslation("uiMore");
+
   const [aiPrompt, setAiPrompt] = useState("");
   const [aiError, setAiError] = useState<string | null>(null);
   const projectId = useProjectIdFromURL();
@@ -66,10 +69,7 @@ export function DataTableAIFilters({
   // When AI features are not enabled
   if (!organization?.aiFeaturesEnabled) {
     return (
-      <AIFeaturesDisabledNotice organizationId={organization?.id}>
-        AI-powered filters use natural language to generate deterministic
-        filters.
-      </AIFeaturesDisabledNotice>
+      <AIFeaturesDisabledNotice organizationId={organization?.id}>{tUi("aiFilterDescription")}</AIFeaturesDisabledNotice>
     );
   }
 
@@ -77,7 +77,7 @@ export function DataTableAIFilters({
   return (
     <div className="flex flex-col gap-3">
       <div className="flex items-center gap-2">
-        <span className="text-sm font-bold">Filter with AI</span>
+        <span className="text-sm font-bold">{tUi("filterWithAi")}</span>
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -99,7 +99,7 @@ export function DataTableAIFilters({
           setAiPrompt(e.target.value);
           if (aiError) setAiError(null);
         }}
-        placeholder="Describe the filters you want to apply..."
+        placeholder={tUi("describeFilters")}
         className="min-h-[80px] resize-none"
         disabled={createFilterMutation.isPending}
         onKeyDown={(e) => {

@@ -15,6 +15,7 @@ import { mapLegacyUiTableFilterToView } from "@/src/features/dashboard/lib/dashb
 import { DashboardLineTimeSeriesChart } from "@/src/features/dashboard/components/DashboardLineTimeSeriesChart";
 import { useScheduledDashboardExecuteQuery } from "@/src/features/dashboard/hooks/useDashboardQueryScheduler";
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 
 export const TracesAndObservationsTimeSeriesChart = ({
   className,
@@ -39,6 +40,7 @@ export const TracesAndObservationsTimeSeriesChart = ({
   schedulerId?: string;
   syncId?: string;
 }) => {
+  const { t: tApp } = useTranslation("app");
   const isV2 = metricsVersion === "v2";
 
   const tracesQuery: QueryType = {
@@ -80,10 +82,12 @@ export const TracesAndObservationsTimeSeriesChart = ({
       traces.data
         ? traces.data.map((item) => ({
             ts: new Date(item.time_dimension as any).getTime(),
-            values: [{ label: "Traces", value: Number(item.count_count) }],
+            values: [
+              { label: tApp("ui.traces"), value: Number(item.count_count) },
+            ],
           }))
         : [],
-    [traces.data],
+    [tApp, traces.data],
   );
 
   const total = traces.data?.reduce((acc, item) => {
@@ -187,7 +191,7 @@ export const TracesAndObservationsTimeSeriesChart = ({
   return (
     <DashboardCard
       className={className}
-      title={isV2 ? "Observations by time" : "Traces by time"}
+      title={isV2 ? tApp("ui.ObservationsByTime") : tApp("ui.TracesByTime")}
       isLoading={
         isLoading || observations.isPending || (!isV2 && traces.isPending)
       }
@@ -231,7 +235,9 @@ export const TracesAndObservationsTimeSeriesChart = ({
                       observations.isPending ||
                       (!isV2 && traces.isPending)
                     }
-                    description="Traces contain details about LLM applications and can be created using the SDK."
+                    description={tApp(
+                      "ui.TracesContainDetailsAboutLlmApplicationsAndCanBeCreatedUsingTheSdk",
+                    )}
                     href="https://langfuse.com/docs/observability/overview"
                     className="h-auto grow"
                   />

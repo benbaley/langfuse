@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { Check, ChevronDown, X } from "lucide-react";
 
 import { cn } from "@/src/utils/tailwind";
+import { useTranslation } from "react-i18next";
 
 export function SessionTimelineCollapsiblePart({
   label,
@@ -19,6 +20,7 @@ export function SessionTimelineCollapsiblePart({
   alignment: "start" | "center" | "row";
   children: React.ReactNode;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
@@ -47,11 +49,14 @@ export function SessionTimelineCollapsiblePart({
             {label}
           </span>
           {status === "success" ? (
-            <Check className="h-3 w-3 shrink-0" aria-label="Succeeded" />
+            <Check
+              className="h-3 w-3 shrink-0"
+              aria-label={tFeatures("ui.succeeded")}
+            />
           ) : status === "error" ? (
             <X
               className="text-destructive h-3 w-3 shrink-0"
-              aria-label="Failed"
+              aria-label={tFeatures("ui.failed")}
             />
           ) : null}
           <ChevronDown

@@ -3,8 +3,10 @@ import { useRouter } from "next/router";
 import { useHasProjectAccess } from "@/src/features/rbac";
 import { SupportOrUpgradePage } from "@/src/ee/features/billing";
 import { DefaultEvalModelSetup } from "@/src/features/evals/components/default-eval-model-setup";
+import { useTranslation } from "react-i18next";
 
 export default function DefaultEvaluationModelPage() {
+  const { t: tFeatures } = useTranslation("features");
   const router = useRouter();
   const projectId = router.query.projectId as string;
 
@@ -21,7 +23,7 @@ export default function DefaultEvaluationModelPage() {
     <Page
       withPadding
       headerProps={{
-        title: "Default Evaluation Model",
+        title: tFeatures("ui.defaultEvaluationModel"),
         help: {
           description: "Configure a default evaluation model for your project.",
           href: "https://langfuse.com/docs/evaluation/evaluation-methods/llm-as-a-judge",

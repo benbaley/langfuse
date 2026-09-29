@@ -228,7 +228,10 @@ export default defineConfig({
           include: ["src/**/*.clienttest.{ts,tsx}"],
           exclude: sharedExclude,
           environment: "jsdom",
-          setupFiles: ["@testing-library/jest-dom/vitest"],
+          setupFiles: [
+            "@testing-library/jest-dom/vitest",
+            "./src/features/i18n/test-setup.ts",
+          ],
         },
       },
       serverProject("server", sharedContextServerTestFiles, {

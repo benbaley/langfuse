@@ -117,6 +117,7 @@ import { AddTracesToAnnotationQueueDialogController } from "@/src/features/annot
 import { useHasProjectAccess } from "@/src/features/rbac";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics";
 import { ConfirmationDialogController } from "@/src/components/design-system/ConfirmationDialogController/ConfirmationDialogController";
+import { Trans, useTranslation } from "react-i18next";
 
 export type TracesTableRow = {
   // Shown by default
@@ -189,6 +190,8 @@ function TracesTableInternal({
 }: TracesTableProps & {
   openDeleteTraceDialog: (traceId: string) => void;
 }) {
+  const { t: tFeatures } = useTranslation("features");
+  const { t: tCore } = useTranslation("core");
   const capture = usePostHogClientCapture();
   const peekContext = usePeekTableState();
   const hasTraceDeleteAccess = useHasProjectAccess({
@@ -603,9 +606,8 @@ function TracesTableInternal({
   const traceDeleteMutation = api.traces.deleteMany.useMutation({
     onSuccess: () => {
       showSuccessToast({
-        title: "Traces deleted",
-        description:
-          "Selected traces will be deleted. Traces are removed asynchronously and may continue to be visible for up to 15 minutes.",
+        title: tFeatures("ui.tracesDeleted"),
+        description: tCore("traces.deleteQueued"),
       });
     },
     onSettled: () => {
@@ -627,11 +629,11 @@ function TracesTableInternal({
         });
       }
       showSuccessToast({
-        title: "Traces added to queue",
-        description: `Selected traces will be added to queue "${data.queueName}". This may take a minute.`,
+        title: tFeatures("ui.tracesAddedToQueue"),
+        description: tCore("traces.addedToQueue", { queue: data.queueName }),
         link: {
           href: `/project/${projectId}/annotation-queues/${data.queueId}`,
-          text: `View queue "${data.queueName}"`,
+          text: tCore("traces.viewQueue", { queue: data.queueName }),
         },
       });
     },
@@ -702,8 +704,10 @@ function TracesTableInternal({
           {
             id: ActionId.TraceDelete,
             type: BatchActionType.Delete,
-            label: "Delete Traces",
-            description: `This action permanently deletes ${displayCount} traces and cannot be undone. Trace deletion happens asynchronously and may take up to 24 hours.`,
+            label: tFeatures("ui.deleteTraces"),
+            description: tCore("traces.deleteConfirm", {
+              selectedCount: displayCount,
+            }),
             disabled: selectAll && hasCommentFilter,
             disabledReason:
               "Batch deletion does not support comment filters. Remove the comment filter to delete.",
@@ -718,8 +722,8 @@ function TracesTableInternal({
     {
       id: ActionId.TraceAddToAnnotationQueue,
       type: BatchActionType.Create,
-      label: "Add to Annotation Queue",
-      description: `Add ${displayCount} selected traces to an annotation queue.`,
+      label: tFeatures("ui.addToAnnotationQueue"),
+      description: tCore("traces.addToQueue", { selectedCount: displayCount }),
       customDialog: true,
       accessCheck: {
         scope: "annotationQueues:CUD",
@@ -733,21 +737,21 @@ function TracesTableInternal({
     ...(hideControls ? [] : [selectActionColumn]),
     createDateTableColumn<TracesTableRow>({
       accessorKey: "timestamp",
-      header: "Timestamp",
+      header: tFeatures("ui.timestamp"),
       size: 150,
       enableHiding: true,
       enableSorting,
     }),
     createTextTableColumn<TracesTableRow>({
       accessorKey: "name",
-      header: "Name",
+      header: tFeatures("ui.name"),
       size: 150,
       enableHiding: true,
       enableSorting,
     }),
     {
       accessorKey: "input",
-      header: "Input",
+      header: tFeatures("ui.input"),
       id: "input",
       size: 400,
       cellBackground: "gray",
@@ -772,7 +776,7 @@ function TracesTableInternal({
     },
     {
       accessorKey: "output",
-      header: "Output",
+      header: tFeatures("ui.output"),
       id: "output",
       size: 400,
       cellBackground: "green",
@@ -798,7 +802,7 @@ function TracesTableInternal({
     {
       accessorKey: "levelCounts",
       id: "levelCounts",
-      header: "Observation Levels",
+      header: tFeatures("ui.observationLevels"),
       size: 150,
       loadingCell: <Skeleton className="h-4 w-1/2" />,
       cell: ({ row }) => {
@@ -823,7 +827,7 @@ function TracesTableInternal({
     {
       accessorKey: "latency",
       id: "latency",
-      header: "Latency",
+      header: tFeatures("ui.latency"),
       size: 100,
       loadingCell: <Skeleton className="h-4 w-1/2" />,
       cell: ({ row }) => {
@@ -842,7 +846,7 @@ function TracesTableInternal({
     createTokenUsageTableColumn<TracesTableRow, TracesTableRow["usage"]>({
       id: "tokens",
       accessorFn: (row) => row.usage,
-      header: "Tokens",
+      header: tFeatures("ui.tokens"),
       size: 180,
       enableSorting,
       enableHiding: true,
@@ -864,7 +868,7 @@ function TracesTableInternal({
     {
       accessorKey: "totalCost",
       id: "totalCost",
-      header: "Total Cost",
+      header: tFeatures("ui.totalCost"),
       size: 130,
       loadingCell: <Skeleton className="h-4 w-1/2" />,
       cell: ({ row }) => {
@@ -890,29 +894,31 @@ function TracesTableInternal({
     },
     createBadgeTableColumn<TracesTableRow>({
       accessorKey: "environment",
-      header: "Environment",
+      header: tFeatures("ui.environment"),
       size: 150,
       enableHiding: true,
     }),
     createTagsTableColumn<TracesTableRow>({
       accessorKey: "tags",
-      header: "Tags",
+      header: tFeatures("ui.tags"),
       size: 150,
       headerTooltip: {
         description: (
-          <>
-            Group traces with tags. Read more about implementing tags{" "}
-            <a
-              href="https://langfuse.com/docs/observability/features/tags"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="decoration-primary/30 hover:decoration-primary underline"
-              onClick={(e) => e.stopPropagation()}
-            >
-              here
-            </a>
-            .
-          </>
+          <Trans
+            t={tCore}
+            i18nKey="traces.tagsHelp"
+            components={{
+              docs: (
+                <a
+                  href="https://langfuse.com/docs/observability/features/tags"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="decoration-primary/30 hover:decoration-primary underline"
+                  onClick={(e) => e.stopPropagation()}
+                />
+              ),
+            }}
+          />
         ),
         href: "https://langfuse.com/docs/observability/features/tags",
       },
@@ -921,27 +927,28 @@ function TracesTableInternal({
     }),
     {
       accessorKey: "metadata",
-      header: "Metadata",
+      header: tFeatures("ui.metadata"),
       size: 400,
       loadingCell: () => (
         <ConnectedIOTableCell isLoading singleLine={rowHeight === "s"} />
       ),
       headerTooltip: {
         description: (
-          <>
-            Add metadata to traces to track additional information. Read more
-            about adding metadata{" "}
-            <a
-              href="https://langfuse.com/docs/observability/features/metadata"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="decoration-primary/30 hover:decoration-primary underline"
-              onClick={(e) => e.stopPropagation()}
-            >
-              here
-            </a>
-            .
-          </>
+          <Trans
+            t={tCore}
+            i18nKey="traces.metadataHelp"
+            components={{
+              docs: (
+                <a
+                  href="https://langfuse.com/docs/observability/features/metadata"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="decoration-primary/30 hover:decoration-primary underline"
+                  onClick={(e) => e.stopPropagation()}
+                />
+              ),
+            }}
+          />
         ),
         href: "https://langfuse.com/docs/observability/features/metadata",
       },
@@ -966,7 +973,7 @@ function TracesTableInternal({
       : [
           {
             accessorKey: "scores",
-            header: "Scores",
+            header: tFeatures("ui.scores"),
             id: "scores",
             enableHiding: true,
             defaultHidden: true,
@@ -981,24 +988,25 @@ function TracesTableInternal({
     createIdTableColumn<TracesTableRow>({
       accessorKey: "sessionId",
       enableColumnFilter: !omittedFilter.includes("sessionId"),
-      header: "Session",
+      header: tFeatures("ui.session"),
       size: 150,
       headerTooltip: {
         description: (
-          <>
-            Group traces into sessions to track longer conversations/workflows.
-            Read more about sessions{" "}
-            <a
-              href="https://langfuse.com/docs/observability/features/sessions"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="decoration-primary/30 hover:decoration-primary underline"
-              onClick={(e) => e.stopPropagation()}
-            >
-              here
-            </a>
-            .
-          </>
+          <Trans
+            t={tCore}
+            i18nKey="traces.sessionsHelp"
+            components={{
+              docs: (
+                <a
+                  href="https://langfuse.com/docs/observability/features/sessions"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="decoration-primary/30 hover:decoration-primary underline"
+                  onClick={(e) => e.stopPropagation()}
+                />
+              ),
+            }}
+          />
         ),
         href: "https://langfuse.com/docs/observability/features/sessions",
       },
@@ -1008,24 +1016,25 @@ function TracesTableInternal({
     }),
     createIdTableColumn<TracesTableRow>({
       accessorKey: "userId",
-      header: "User",
+      header: tFeatures("ui.user"),
       size: 150,
       headerTooltip: {
         description: (
-          <>
-            Add <code>userId</code> to traces to track users. Read more about
-            user tracking{" "}
-            <a
-              href="https://langfuse.com/docs/observability/features/users"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="decoration-primary/30 hover:decoration-primary underline"
-              onClick={(e) => e.stopPropagation()}
-            >
-              here
-            </a>
-            .
-          </>
+          <Trans
+            t={tCore}
+            i18nKey="traces.userHelp"
+            components={{
+              docs: (
+                <a
+                  href="https://langfuse.com/docs/observability/features/users"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="decoration-primary/30 hover:decoration-primary underline"
+                  onClick={(e) => e.stopPropagation()}
+                />
+              ),
+            }}
+          />
         ),
         href: "https://langfuse.com/docs/observability/features/users",
       },
@@ -1035,10 +1044,10 @@ function TracesTableInternal({
     }),
     createNumberTableColumn<TracesTableRow, bigint>({
       accessorKey: "observationCount",
-      header: "Observations",
+      header: tFeatures("ui.observations"),
       size: 120,
       headerTooltip: {
-        description: "The number of observations in the trace.",
+        description: tCore("traces.observationCountHelp"),
       },
       enableHiding: true,
       defaultHidden: true,
@@ -1048,7 +1057,7 @@ function TracesTableInternal({
     }),
     createStatusTableColumn<TracesTableRow, ObservationLevelType>({
       accessorKey: "level",
-      header: "Status",
+      header: tFeatures("ui.status"),
       size: 75,
       defaultHidden: true,
       enableHiding: true,
@@ -1063,23 +1072,25 @@ function TracesTableInternal({
     }),
     createTextTableColumn<TracesTableRow>({
       accessorKey: "version",
-      header: "Version",
+      header: tFeatures("ui.version"),
       size: 100,
       headerTooltip: {
         description: (
-          <>
-            Track changes via the version tag. Read more about versions{" "}
-            <a
-              href="https://langfuse.com/docs/observability/features/releases-and-versioning"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="decoration-primary/30 hover:decoration-primary underline"
-              onClick={(e) => e.stopPropagation()}
-            >
-              here
-            </a>
-            .
-          </>
+          <Trans
+            t={tCore}
+            i18nKey="traces.versionHelp"
+            components={{
+              docs: (
+                <a
+                  href="https://langfuse.com/docs/observability/features/releases-and-versioning"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="decoration-primary/30 hover:decoration-primary underline"
+                  onClick={(e) => e.stopPropagation()}
+                />
+              ),
+            }}
+          />
         ),
         href: "https://langfuse.com/docs/observability/features/releases-and-versioning",
       },
@@ -1089,24 +1100,25 @@ function TracesTableInternal({
     }),
     createTextTableColumn<TracesTableRow>({
       accessorKey: "release",
-      header: "Release",
+      header: tFeatures("ui.release"),
       size: 100,
       headerTooltip: {
         description: (
-          <>
-            Track changes to your application via the release tag. Read more
-            about the release tag{" "}
-            <a
-              href="https://langfuse.com/docs/observability/features/releases-and-versioning"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="decoration-primary/30 hover:decoration-primary underline"
-              onClick={(e) => e.stopPropagation()}
-            >
-              here
-            </a>
-            .
-          </>
+          <Trans
+            t={tCore}
+            i18nKey="traces.releaseHelp"
+            components={{
+              docs: (
+                <a
+                  href="https://langfuse.com/docs/observability/features/releases-and-versioning"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="decoration-primary/30 hover:decoration-primary underline"
+                  onClick={(e) => e.stopPropagation()}
+                />
+              ),
+            }}
+          />
         ),
         href: "https://langfuse.com/docs/observability/features/releases-and-versioning",
       },
@@ -1116,7 +1128,7 @@ function TracesTableInternal({
     }),
     createIdTableColumn<TracesTableRow>({
       accessorKey: "id",
-      header: "Trace ID",
+      header: tFeatures("ui.traceId"),
       size: 90,
       defaultHidden: true,
       enableHiding: true,
@@ -1124,7 +1136,7 @@ function TracesTableInternal({
     }),
     {
       accessorKey: "cost",
-      header: "Cost",
+      header: tFeatures("ui.cost"),
       id: "cost",
       enableHiding: true,
       defaultHidden: true,
@@ -1137,7 +1149,7 @@ function TracesTableInternal({
         createNumberTableColumn<TracesTableRow>({
           accessorFn: (row) => row.cost?.inputCost?.toNumber(),
           id: "inputCost",
-          header: "Input Cost",
+          header: tFeatures("ui.inputCost"),
           size: 100,
           formatter: (value) => usdFormatter(value),
           getValue: (value, { row }) => {
@@ -1151,7 +1163,7 @@ function TracesTableInternal({
         createNumberTableColumn<TracesTableRow>({
           accessorFn: (row) => row.cost?.outputCost?.toNumber(),
           id: "outputCost",
-          header: "Output Cost",
+          header: tFeatures("ui.outputCost"),
           size: 100,
           formatter: (value) => usdFormatter(value),
           getValue: (value, { row }) => {
@@ -1166,7 +1178,7 @@ function TracesTableInternal({
     },
     {
       accessorKey: "usage",
-      header: "Usage",
+      header: tFeatures("ui.usage"),
       id: "usage",
       enableHiding: true,
       defaultHidden: true,
@@ -1179,7 +1191,7 @@ function TracesTableInternal({
         createNumberTableColumn<TracesTableRow, bigint>({
           accessorFn: (row) => row.usage.inputUsage,
           id: "inputTokens",
-          header: "Input Tokens",
+          header: tFeatures("ui.inputTokens"),
           size: 110,
           formatter: (value) => numberFormatter(value, 0),
           getValue: (value, { row }) =>
@@ -1193,7 +1205,7 @@ function TracesTableInternal({
         createNumberTableColumn<TracesTableRow, bigint>({
           accessorFn: (row) => row.usage.outputUsage,
           id: "outputTokens",
-          header: "Output Tokens",
+          header: tFeatures("ui.outputTokens"),
           size: 110,
           formatter: (value) => numberFormatter(value, 0),
           getValue: (value, { row }) =>
@@ -1207,7 +1219,7 @@ function TracesTableInternal({
         createNumberTableColumn<TracesTableRow, bigint>({
           accessorFn: (row) => row.usage.totalUsage,
           id: "totalTokens",
-          header: "Total Tokens",
+          header: tFeatures("ui.totalTokens"),
           size: 110,
           formatter: (value) => numberFormatter(value, 0),
           getValue: (value, { row }) =>
@@ -1226,7 +1238,7 @@ function TracesTableInternal({
           createDropdownTableColumn<TracesTableRow, TracesTableRow["id"]>({
             id: "action",
             accessorFn: (row) => row.id,
-            header: "Action",
+            header: tFeatures("ui.action"),
             size: 70,
             isFixedPosition: true,
             renderMenu: (traceId) =>
@@ -1238,7 +1250,7 @@ function TracesTableInternal({
                   onSelect={() => openDeleteTraceDialog(traceId)}
                 >
                   <Trash2 className="mr-2 h-4 w-4" />
-                  Delete
+                  {tFeatures("ui.delete")}
                 </DropdownMenuItem>
               ) : null,
           }),
@@ -1470,7 +1482,9 @@ function TracesTableInternal({
                       setSelectedRows({});
                       setSelectAll(false);
                     }}
-                    description={`Add ${displayCount} selected traces to an annotation queue.`}
+                    description={tCore("traces.addToQueue", {
+                      selectedCount: displayCount,
+                    })}
                     onAddToQueue={handleAddToAnnotationQueue}
                   >
                     {({ openDialog }) => (
@@ -1651,6 +1665,8 @@ const TracesDynamicCell = ({
 };
 
 export default function TracesTable(props: TracesTableProps) {
+  const { t: tFeatures } = useTranslation("features");
+  const { t: tCore } = useTranslation("core");
   const [traceIdToDelete, setTraceIdToDelete] = useState<string | null>(null);
   const capture = usePostHogClientCapture();
   const utils = api.useUtils();
@@ -1658,9 +1674,8 @@ export default function TracesTable(props: TracesTableProps) {
     onSuccess: () => {
       capture("trace:delete", { source: "table-single-row" });
       showSuccessToast({
-        title: "Trace deleted",
-        description:
-          "Selected trace will be deleted. Traces are removed asynchronously and may continue to be visible for up to 24 hours.",
+        title: tFeatures("ui.traceDeleted"),
+        description: tCore("traces.singleDeleteQueued"),
       });
       utils.traces.all.invalidate();
     },
@@ -1668,8 +1683,10 @@ export default function TracesTable(props: TracesTableProps) {
 
   return (
     <ConfirmationDialogController
-      title="Please confirm"
-      text="This action cannot be undone. It removes all the data associated with this trace."
+      title={tFeatures("ui.pleaseConfirm")}
+      text={tFeatures(
+        "ui.thisActionCannotBeUndoneItRemovesAllTheDataAssociatedWithThisTrace",
+      )}
       confirmLabel="Delete trace"
       variant="destructive"
       loading={traceMutation.isPending}

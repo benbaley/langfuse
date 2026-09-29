@@ -269,6 +269,8 @@ jobs:
       - name: Load default env
         run: |
           cp .env.dev.example .env
+      - name: validate UI translations
+        run: pnpm --filter web run i18n:check
       - name: lint web
         # Three packages with four ESLint workers leave headroom on 16 vCPUs.
         run: pnpm turbo run lint --filter=!ai-gateway --filter=!@langfuse/native --concurrency=3 -- --concurrency=4

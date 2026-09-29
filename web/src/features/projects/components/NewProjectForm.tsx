@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Button } from "@/src/components/ui/button";
 import type * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -23,11 +24,29 @@ export const NewProjectForm = ({
   orgId: string;
   onSuccess: (projectId: string) => void;
 }) => {
+  const { t } = useTranslation("settings");
   const capture = usePostHogClientCapture();
   const { update: updateSession } = useSession();
 
   const form = useForm({
-    resolver: zodResolver(projectNameSchema),
+    resolver: async (values, context, options) => {
+      const result = await zodResolver(projectNameSchema)(
+        values,
+        context,
+        options,
+      );
+      const error = result.errors.name;
+      if (error?.message) {
+        const translationKeys: Record<string, string> = {
+          "Must have at least 3 characters": "nameMinimum",
+          "Must have at most 60 characters": "nameMaximum",
+          "Text cannot contain HTML tags": "noHtml",
+        };
+        const key = translationKeys[error.message];
+        if (key) error.message = t(key);
+      }
+      return result;
+    },
     defaultValues: {
       name: "",
     },
@@ -70,7 +89,7 @@ export const NewProjectForm = ({
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Project name</FormLabel>
+              <FormLabel>{t("projectNameLabel")}</FormLabel>
               <FormControl>
                 <Input
                   placeholder="my-llm-project"
@@ -83,7 +102,7 @@ export const NewProjectForm = ({
           )}
         />
         <Button type="submit" loading={createProjectMutation.isPending}>
-          Create
+          {t("create")}
         </Button>
       </form>
     </Form>

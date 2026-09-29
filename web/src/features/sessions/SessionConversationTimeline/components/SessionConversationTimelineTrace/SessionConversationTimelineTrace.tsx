@@ -39,6 +39,7 @@ import { formatIntervalSeconds } from "@/src/utils/dates";
 import { cn } from "@/src/utils/tailwind";
 import { getLevelColors } from "@/src/components/level-colors";
 import { decodeUnicodeEscapesOnly } from "@/src/utils/unicode";
+import { useTranslation } from "react-i18next";
 
 type EventObservation = RouterOutputs["events"]["all"]["observations"][number];
 type EventObservationIO = RouterOutputs["events"]["batchIO"][number];
@@ -149,25 +150,26 @@ function SessionObservationActionsMenuContent({
   observation: SessionObservation;
   actions: SessionObservationActions;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   return (
     <DropdownMenuContent align="end" sideOffset={0}>
       <DropdownMenuItem
         disabled={actions.annotate.disabled}
         onSelect={() => actions.annotate.onSelect(observation)}
       >
-        Annotate
+        {tFeatures("ui.annotate")}
       </DropdownMenuItem>
       <DropdownMenuItem
         disabled={actions.comment.disabled}
         onSelect={() => actions.comment.onSelect(observation)}
       >
-        Comments
+        {tFeatures("ui.comments")}
       </DropdownMenuItem>
       <DropdownMenuItem
         disabled={actions.addToDataset.disabled}
         onSelect={() => actions.addToDataset.onSelect(observation)}
       >
-        Add to dataset
+        {tFeatures("ui.addToDatasetTitle")}
       </DropdownMenuItem>
       {observation.name ? (
         <DropdownMenuItem
@@ -175,7 +177,7 @@ function SessionObservationActionsMenuContent({
             actions.onFilterByName(observation.name as string, "any of")
           }
         >
-          Only show observations with the same name
+          {tFeatures("ui.onlyShowObservationsWithTheSameName")}
         </DropdownMenuItem>
       ) : null}
       {observation.name ? (
@@ -184,7 +186,7 @@ function SessionObservationActionsMenuContent({
             actions.onFilterByName(observation.name as string, "none of")
           }
         >
-          Exclude observations with the same name
+          {tFeatures("ui.excludeObservationsWithTheSameName")}
         </DropdownMenuItem>
       ) : null}
     </DropdownMenuContent>
@@ -336,6 +338,8 @@ function SessionTimelineToolRow({
   observation?: SessionObservation;
   actions?: SessionObservationActions;
 }) {
+  const { t: tMore } = useTranslation("coreMore");
+  const { t: tFeatures } = useTranslation("features");
   return (
     <section
       data-session-observation-id={id}
@@ -392,7 +396,9 @@ function SessionTimelineToolRow({
                   variant="ghost"
                   size="icon-xs"
                   className="text-muted-foreground hover:text-foreground shrink-0"
-                  aria-label={`Actions for ${observation.name ?? observation.id}`}
+                  aria-label={tMore("action.for", {
+                    name: observation.name ?? observation.id,
+                  })}
                 >
                   <MoreHorizontal className="h-3.5 w-3.5" aria-hidden="true" />
                 </Button>
@@ -408,13 +414,15 @@ function SessionTimelineToolRow({
                 <span
                   className="text-muted-foreground/50 flex h-6 w-6 shrink-0 items-center justify-center"
                   role="img"
-                  aria-label="Actions available on parent observation"
+                  aria-label={tFeatures(
+                    "ui.actionsAvailableOnParentObservation",
+                  )}
                 >
                   <MoreHorizontal className="h-3.5 w-3.5" aria-hidden="true" />
                 </span>
               </TooltipTrigger>
               <TooltipContent side="top">
-                Actions are available on the parent observation
+                {tFeatures("ui.actionsAreAvailableOnTheParentObservation")}
               </TooltipContent>
             </Tooltip>
           ) : null}
@@ -425,7 +433,8 @@ function SessionTimelineToolRow({
           {hasPreviewValue(input) ? (
             <div className="relative flex min-w-0 flex-col gap-1">
               <span className="text-muted-foreground font-mono text-[10px] font-bold uppercase">
-                Input{inputTruncated ? " (truncated)" : ""}
+                {tFeatures("ui.input")}
+                {inputTruncated ? " (truncated)" : ""}
               </span>
               <pre className="bg-muted/30 max-h-48 overflow-auto rounded-md border p-3 font-mono text-xs break-all whitespace-pre-wrap">
                 {toPreviewText(input)}
@@ -438,7 +447,8 @@ function SessionTimelineToolRow({
           {hasPreviewValue(output) ? (
             <div className="relative flex min-w-0 flex-col gap-1">
               <span className="text-muted-foreground font-mono text-[10px] font-bold uppercase">
-                Output{outputTruncated ? " (truncated)" : ""}
+                {tFeatures("ui.output")}
+                {outputTruncated ? " (truncated)" : ""}
               </span>
               <pre className="bg-muted/30 max-h-48 overflow-auto rounded-md border p-3 font-mono text-xs break-all whitespace-pre-wrap">
                 {toPreviewText(output)}
@@ -449,7 +459,7 @@ function SessionTimelineToolRow({
           {!hasPreviewValue(input) && !hasPreviewValue(output) ? (
             <div className="relative">
               <span className="text-muted-foreground text-xs">
-                No input or output
+                {tFeatures("ui.noInputOrOutput")}
               </span>
               {showRailEnd ? <SessionTimelineRailEnd /> : null}
             </div>
@@ -477,6 +487,8 @@ function SessionTimelineConversationObservation({
   onOpenInTraceView: () => void;
   actions?: SessionObservationActions;
 }) {
+  const { t: tMore } = useTranslation("coreMore");
+  const { t: tFeatures } = useTranslation("features");
   const isTruncated = observation.inputTruncated || observation.outputTruncated;
   const visibleMessages = processedMessages.messages;
   const hasTimelineContent =
@@ -527,8 +539,8 @@ function SessionTimelineConversationObservation({
               <span
                 className="bg-muted text-muted-foreground shrink-0 rounded-md p-1"
                 role="img"
-                aria-label="Content truncated"
-                title="Content truncated"
+                aria-label={tFeatures("ui.contentTruncated")}
+                title={tFeatures("ui.contentTruncated")}
               >
                 <FileWarning className="h-3 w-3" aria-hidden="true" />
               </span>
@@ -537,8 +549,8 @@ function SessionTimelineConversationObservation({
               <span
                 className="bg-muted text-muted-foreground shrink-0 rounded-md p-1"
                 role="img"
-                aria-label="No conversational content"
-                title="No conversational content"
+                aria-label={tFeatures("ui.noConversationalContent")}
+                title={tFeatures("ui.noConversationalContent")}
               >
                 <MessageSquareOff className="h-3 w-3" aria-hidden="true" />
               </span>
@@ -547,8 +559,8 @@ function SessionTimelineConversationObservation({
               <span
                 className="bg-muted text-muted-foreground shrink-0 rounded-md p-1"
                 role="img"
-                aria-label="Metadata omitted because it is too large"
-                title="Metadata omitted because it is too large"
+                aria-label={tFeatures("ui.metadataOmittedBecauseItIsTooLarge")}
+                title={tFeatures("ui.metadataOmittedBecauseItIsTooLarge")}
               >
                 <FileWarning className="h-3 w-3" aria-hidden="true" />
               </span>
@@ -569,7 +581,9 @@ function SessionTimelineConversationObservation({
                     variant="ghost"
                     size="icon-xs"
                     className="text-muted-foreground hover:text-foreground shrink-0"
-                    aria-label={`Actions for ${observation.name ?? observation.id}`}
+                    aria-label={tMore("action.for", {
+                      name: observation.name ?? observation.id,
+                    })}
                   >
                     <MoreHorizontal
                       className="h-3.5 w-3.5"
@@ -596,10 +610,10 @@ function SessionTimelineConversationObservation({
         ) : showNonMessageBody && parsed?.type === "error" ? (
           <div className="border-destructive/40 bg-destructive/5 flex items-center justify-between gap-3 rounded-lg border p-3">
             <span className="text-destructive text-xs">
-              This observation could not be parsed.
+              {tFeatures("ui.thisObservationCouldNotBeParsed")}
             </span>
             <Button variant="outline" size="sm" onClick={onOpenInTraceView}>
-              Open trace
+              {tFeatures("ui.openTrace")}
             </Button>
           </div>
         ) : visibleMessages.length > 0 ? (
@@ -1025,6 +1039,8 @@ export function SessionConversationTimelineTrace({
   observationActions?: SessionObservationActions;
   scrollTarget: { observationId: string; requestId: number } | null;
 }) {
+  const { t: tMore } = useTranslation("coreMore");
+  const { t: tFeatures } = useTranslation("features");
   return (
     <div
       className="px-4 pb-14 sm:px-6 lg:px-10"
@@ -1035,12 +1051,12 @@ export function SessionConversationTimelineTrace({
           type="button"
           className="text-muted-foreground hover:text-foreground ph-no-capture flex shrink-0 items-center gap-2 font-mono text-xs transition-colors"
           onClick={onOpenTrace}
-          title={`${trace.name ?? "Trace"} (${trace.id})`}
+          title={`${trace.name ?? tFeatures("ui.trace")} (${trace.id})`}
         >
           <span className="border-border bg-tertiary text-foreground flex h-4 w-4 shrink-0 items-center justify-center rounded-sm border font-mono text-[10px]">
             {turnNumber}
           </span>
-          <span>trace · {trace.id}</span>
+          <span>{tMore("sessions.traceId", { id: trace.id })}</span>
         </button>
         <div className="border-border min-w-0 flex-1 border-t border-dashed" />
       </div>
@@ -1048,7 +1064,7 @@ export function SessionConversationTimelineTrace({
       {state.type === "loading" ? (
         <div
           role="status"
-          aria-label="Loading conversation"
+          aria-label={tFeatures("ui.loadingConversation")}
           className="flex flex-col gap-1"
         >
           {[
@@ -1110,16 +1126,18 @@ export function SessionConversationTimelineTrace({
         </div>
       ) : state.type === "error" ? (
         <div className="border-destructive/40 bg-destructive/5 text-foreground rounded-lg border p-4 text-xs">
-          Failed to load observations.
+          {tFeatures("ui.failedToLoadObservationsMessage")}
         </div>
       ) : state.type === "empty" || state.type === "filtered-empty" ? (
         <div className="text-muted-foreground flex items-center justify-between gap-4 rounded-lg border border-dashed p-4 text-xs">
           <span>
             {state.type === "empty"
-              ? "This trace has no observations."
+              ? tFeatures("ui.thisTraceHasNoObservations")
               : state.viewLabel
                 ? `No observation matches the “${state.viewLabel}” view in this trace.`
-                : "No observation matches the current filters in this trace."}
+                : tFeatures(
+                    "ui.noObservationMatchesTheCurrentFiltersInThisTrace",
+                  )}
           </span>
           {state.type === "filtered-empty" ? (
             <Button
@@ -1129,7 +1147,7 @@ export function SessionConversationTimelineTrace({
               className="shrink-0"
               onClick={state.onClearFilters}
             >
-              Clear filters
+              {tFeatures("ui.clearFilters")}
             </Button>
           ) : null}
         </div>

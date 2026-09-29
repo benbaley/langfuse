@@ -6,6 +6,7 @@ import { usePostHogClientCapture } from "@/src/features/posthog-analytics";
 import { api } from "@/src/utils/api";
 import { type ReactNode, useState } from "react";
 import { useRouter } from "next/router";
+import { useTranslation } from "react-i18next";
 
 export interface DeleteDatasetDialogDataProps {
   projectId: string;
@@ -23,6 +24,8 @@ export function DeleteDatasetDialog({
 }: DeleteDatasetDialogDataProps & {
   children: (control: { openDialog: () => void }) => ReactNode;
 }) {
+  const { t: tMore } = useTranslation("coreMore");
+  const { t: tFeatures } = useTranslation("features");
   const router = useRouter();
   const capture = usePostHogClientCapture();
   const [deleteConfirmationInput, setDeleteConfirmationInput] = useState("");
@@ -61,16 +64,18 @@ export function DeleteDatasetDialog({
             close();
           }}
           size="lg"
-          title="Please confirm"
-          description="This action cannot be undone and removes all the data associated with this dataset."
-          confirmLabel="Delete dataset"
+          title={tFeatures("ui.pleaseConfirm")}
+          description={tFeatures(
+            "ui.thisActionCannotBeUndoneAndRemovesAllTheDataAssociatedWithThisDataset",
+          )}
+          confirmLabel={tMore("datasets.delete")}
           confirmDisabled={deleteConfirmationInput !== datasetName}
           loading={deleteMutation.isPending}
           onConfirm={() => handleDelete(close)}
         >
           <div className="grid w-full gap-1.5">
             <Label htmlFor="delete-confirmation">
-              Type &quot;{datasetName}&quot; to confirm deletion
+              {tMore("datasets.confirmName", { name: datasetName })}
             </Label>
             <Input
               id="delete-confirmation"

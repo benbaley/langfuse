@@ -13,6 +13,7 @@ import {
   TooltipTrigger,
 } from "@/src/components/ui/tooltip";
 import { cn } from "@/src/utils/tailwind";
+import { useTranslation } from "react-i18next";
 
 /** Displays whether an evaluator is active, inactive, or blocked. */
 export function EvaluatorStatusBadge({
@@ -28,6 +29,7 @@ export function EvaluatorStatusBadge({
   blockReason?: EvaluatorBlockReason | null;
   blockMessage?: string | null;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const badge = (
     <Badge
       variant={blocked ? "warning" : active ? "default" : "secondary"}
@@ -39,7 +41,12 @@ export function EvaluatorStatusBadge({
       )}
     >
       <Circle className="h-2 w-2 fill-current" />
-      {blocked ? "Blocked" : active ? "Active" : "Inactive"} · {ruleCount}
+      {blocked
+        ? tFeatures("ui.blocked")
+        : active
+          ? tFeatures("ui.active")
+          : tFeatures("ui.inactive")}{" "}
+      · {ruleCount}
     </Badge>
   );
 

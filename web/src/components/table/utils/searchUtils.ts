@@ -12,18 +12,6 @@ export function getSearchMode(
   return "metadata";
 }
 
-// Helper function to get the button label based on current search type
-export function getSearchButtonLabel(
-  searchType: TracingSearchType[] | undefined,
-  metadataLabel?: string,
-): string {
-  if (!searchType) return metadataLabel ?? "IDs / Names";
-  if (searchType.includes("content")) return "Full Text: Content";
-  if (searchType.includes("input")) return "Full Text: Input";
-  if (searchType.includes("output")) return "Full Text: Output";
-  return metadataLabel ?? "IDs / Names";
-}
-
 export function hasFullTextSearchType(
   searchType: TracingSearchType[] | undefined,
 ): boolean {

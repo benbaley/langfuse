@@ -6,8 +6,11 @@ import { api } from "@/src/utils/api";
 import { ScoresOnboarding } from "@/src/components/onboarding/ScoresOnboarding";
 import { getScoresTabs, SCORES_TABS } from "@/src/features/navigation";
 import { useReadPath } from "@/src/features/events";
+import { useTranslation, useTranslation as useNavigationTranslation } from "react-i18next";
 
 export default function ScoresPage() {
+  const { t: tNavigation } = useNavigationTranslation("navigation");
+  const { t: tFeatures } = useTranslation("features");
   const router = useRouter();
   const projectId = router.query.projectId as string;
   const { isV4 } = useReadPath();
@@ -31,14 +34,13 @@ export default function ScoresPage() {
   return (
     <Page
       headerProps={{
-        title: "Scores",
+        title: tFeatures("ui.scores"),
         help: {
-          description:
-            "A scores is an evaluation of a traces or observations. It can be created from user feedback, model-based evaluations, or manual review. See docs to learn more.",
+          description: tFeatures("help.scores"),
           href: "https://langfuse.com/docs/evaluation/overview",
         },
         tabsProps: {
-          tabs: getScoresTabs(projectId),
+          tabs: getScoresTabs(projectId, tNavigation),
           activeTab: SCORES_TABS.SCORES,
         },
       }}

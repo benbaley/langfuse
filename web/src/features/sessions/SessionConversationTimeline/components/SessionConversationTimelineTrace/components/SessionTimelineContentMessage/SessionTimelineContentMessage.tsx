@@ -5,6 +5,7 @@ import { type ReasoningPart } from "@langfuse/shared/src/utils/normalized-io";
 import { type SessionTimelineConversationMessage } from "@/src/features/sessions/SessionConversationTimeline/fns/processTimelineMessages";
 import { SessionTimelinePart } from "@/src/features/sessions/SessionConversationTimeline/components/SessionTimelinePart/SessionTimelinePart";
 import { cn } from "@/src/utils/tailwind";
+import { useTranslation } from "react-i18next";
 
 const rolePresentation = {
   user: {
@@ -44,6 +45,8 @@ export function SessionTimelineContentMessage({
   parts: SessionTimelineConversationMessage["parts"];
   senderName: SessionTimelineConversationMessage["senderName"];
 }) {
+  const { t: tMore } = useTranslation("coreMore");
+  const { t: tFeatures } = useTranslation("features");
   const presentation = rolePresentation[role];
   const Icon = presentation.icon;
   const showSender = Boolean(senderName && senderName !== presentation.label);
@@ -120,9 +123,9 @@ export function SessionTimelineContentMessage({
                   <Icon className="h-3 w-3 shrink-0" />
                   <span
                     className="text-foreground truncate"
-                    title={senderName ?? presentation.label}
+                    title={senderName ?? tMore(`sessions.role.${role}`)}
                   >
-                    {senderName ?? presentation.label}
+                    {senderName ?? tMore(`sessions.role.${role}`)}
                   </span>
                 </div>
               ) : null}
@@ -147,7 +150,7 @@ export function SessionTimelineContentMessage({
                     )}
                     aria-hidden="true"
                   />
-                  JSON-only message detected
+                  {tFeatures("ui.jsonOnlyMessageDetected")}
                 </button>
               ) : null}
               {!isJsonOnly || isJsonExpanded ? (

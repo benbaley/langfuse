@@ -1,5 +1,7 @@
 // @vitest-environment node
 
+import { createUiI18n } from "@/src/features/i18n/instance";
+
 import {
   getFacetSummary,
   rankFacetOptions,
@@ -37,6 +39,28 @@ function categorical(
 }
 
 describe("getFacetSummary", () => {
+  it("localizes filter summaries without translating or changing customer values", () => {
+    const instance = createUiI18n("zh-CN");
+    const filter = categorical({
+      isActive: true,
+      operator: "none of",
+      options: ["All", "production"],
+      value: ["production"],
+      excludedValues: ["All"],
+    });
+    const before = structuredClone({
+      value: filter.value,
+      excludedValues: filter.excludedValues,
+    });
+    expect(getFacetSummary(filter, instance.t)).toBe("不包含 All");
+    instance.changeLanguage("en");
+    expect(getFacetSummary(filter, instance.t)).toBe("not All");
+    expect({
+      value: filter.value,
+      excludedValues: filter.excludedValues,
+    }).toEqual(before);
+  });
+
   it("reads 'All' for an inactive checkbox facet with options (all-checked = no filter)", () => {
     expect(
       getFacetSummary(categorical({ options: ["a", "b"], value: ["a", "b"] })),

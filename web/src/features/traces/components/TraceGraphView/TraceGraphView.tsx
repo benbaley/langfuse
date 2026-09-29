@@ -18,8 +18,10 @@ import { usePostHogClientCapture } from "@/src/features/posthog-analytics";
 import { useTraceAnalyticsDimensions } from "@/src/features/traces/hooks/useTraceAnalyticsDimensions";
 import { useTraceSearchMatches } from "@/src/features/traces/hooks/useTraceSearchMatches";
 import { useMobileLayoutContextOptional } from "../TraceLayoutMobile";
+import { useTranslation } from "react-i18next";
 
 export function TraceGraphView() {
+  const { t: tFeatures } = useTranslation("features");
   const { agentGraphData, isLoading } = useTraceGraphData();
   const activeObservationIds = useActiveObservationIds();
   const { graphViewMode, setGraphViewMode } = useViewPreferences();
@@ -61,7 +63,9 @@ export function TraceGraphView() {
   if (isLoading) {
     return (
       <div className="flex h-full w-full items-center justify-center">
-        <span className="text-muted-foreground text-sm">Loading graph...</span>
+        <span className="text-muted-foreground text-sm">
+          {tFeatures("ui.loadingGraph")}
+        </span>
       </div>
     );
   }

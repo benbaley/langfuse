@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 /* eslint-disable no-nested-ternary */
 /* eslint-disable @repo/no-style-props */
 import { cn } from "@/src/utils/tailwind";
@@ -397,6 +398,7 @@ function MarkdownRenderer({
   markdown: string;
   className?: string;
 }) {
+  const { t: tMore } = useTranslation("coreMore");
   const promptReferenceProjectId = usePromptReferenceProjectId();
   const characterLimit = useMarkdownRenderCharacterLimit();
 
@@ -414,8 +416,7 @@ function MarkdownRenderer({
       <div className={cn("space-y-2 overflow-x-auto text-sm", className)}>
         <div className="text-muted-foreground flex items-center gap-1 text-xs">
           <Info className="h-3 w-3" />
-          Content is too large or deeply nested to render as markdown.
-          Displaying as plain text.
+          {tMore("io.markdownTooLarge")}
         </div>
         <pre className="text-sm break-words whitespace-pre-wrap">
           {markdown}
@@ -454,7 +455,7 @@ function MarkdownRenderer({
       <>
         <div className="text-muted-foreground flex items-center gap-1 text-xs">
           <Info className="h-3 w-3" />
-          Markdown parsing failed. Displaying raw JSON.
+          {tMore("io.markdownFailed")}
         </div>
         <JSONView json={markdown} className="min-w-0" />
       </>
@@ -506,6 +507,7 @@ export function MarkdownView({
       role. Falls back to matching the title for callers without role data. */
   isSystemPrompt?: boolean;
 }) {
+  const { t: tMore } = useTranslation("coreMore");
   const { forcedTheme, resolvedTheme } = useTheme();
   const theme = forcedTheme ?? resolvedTheme;
 
@@ -641,7 +643,7 @@ export function MarkdownView({
       {remainingMedia.length > 0 && (
         <>
           <div className="text-muted-foreground mx-3 border-t px-2 py-1 text-xs">
-            Media
+            {tMore("io.media")}
           </div>
           <div className="ph-no-capture mx-3 flex flex-wrap gap-2 px-2 pt-1 pb-4">
             {remainingMedia.map((m) => (

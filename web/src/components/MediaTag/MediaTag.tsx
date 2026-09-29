@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 /* eslint-disable no-nested-ternary */
 /* eslint-disable @repo/no-style-props */
 import * as React from "react";
@@ -164,12 +165,15 @@ const MEDIA_KIND_PREVIEW = {
       preload="metadata"
     />
   ),
-  file: () => (
-    <div className="text-muted-foreground flex h-24 w-64 flex-col items-center justify-center gap-2">
-      <File className="h-5 w-5" />
-      <span className="text-xs">No inline preview</span>
-    </div>
-  ),
+  file: function FilePreview() {
+    const { t: tMore } = useTranslation("coreMore");
+    return (
+      <div className="text-muted-foreground flex h-24 w-64 flex-col items-center justify-center gap-2">
+        <File className="h-5 w-5" />
+        <span className="text-xs">{tMore("io.noInlinePreview")}</span>
+      </div>
+    );
+  },
 } satisfies Record<MediaKind, PreviewRenderer>;
 
 /** The peek body — a glance, not a full player. Images/video show a thumbnail;
@@ -185,11 +189,12 @@ function PeekBody({
   url?: string;
   onPreviewError: () => void;
 }) {
+  const { t: tMore } = useTranslation("coreMore");
   if (status === "error") {
     return (
       <div className="text-muted-foreground flex h-24 w-64 flex-col items-center justify-center gap-2">
         <ImageOff className="h-5 w-5" />
-        <span className="text-xs">Failed to load media</span>
+        <span className="text-xs">{tMore("io.mediaFailed")}</span>
       </div>
     );
   }
@@ -225,6 +230,7 @@ export const MediaTag = React.forwardRef<HTMLButtonElement, MediaTagProps>(
     },
     ref,
   ) => {
+    const { t: tMore } = useTranslation("coreMore");
     const kind = getMediaKind(contentType);
     const chipLabel = label ?? getDefaultLabel(contentType);
     const hasGeneratedLabel = label === undefined;
@@ -258,7 +264,7 @@ export const MediaTag = React.forwardRef<HTMLButtonElement, MediaTagProps>(
             // (`closest("[data-media-tag]")`): IOTableCell suppresses its
             // expand-on-hover card and native title while over a chip.
             data-media-tag=""
-            aria-label={`${chipLabel} media`}
+            aria-label={tMore("io.mediaLabel", { label: chipLabel })}
             aria-expanded={isOpen}
             className={mediaTagVariants({ intent })}
             onClick={openPeek}
@@ -317,7 +323,7 @@ export const MediaTag = React.forwardRef<HTMLButtonElement, MediaTagProps>(
                 variant="outline"
                 size={openActionLabel ? "sm" : "icon-xs"}
                 className={openActionLabel ? "gap-1.5" : undefined}
-                title="Open in new tab"
+                title={tMore("action.openNewTab")}
               >
                 <a href={url} target="_blank" rel="noopener noreferrer">
                   {openActionLabel ? <span>{openActionLabel}</span> : null}
@@ -330,7 +336,7 @@ export const MediaTag = React.forwardRef<HTMLButtonElement, MediaTagProps>(
                 size={openActionLabel ? "sm" : "icon-xs"}
                 className={openActionLabel ? "gap-1.5" : undefined}
                 disabled
-                title="Open in new tab"
+                title={tMore("action.openNewTab")}
               >
                 {openActionLabel ? <span>{openActionLabel}</span> : null}
                 <ExternalLink className="h-3 w-3" />

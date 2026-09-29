@@ -13,6 +13,7 @@ import { Check, Copy, LockIcon, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 const SKILLS_INSTALL_COMMAND =
   "Install the Langfuse AI skill from github.com/langfuse/skills and use it to add tracing to this application with Langfuse following best practices.";
@@ -26,6 +27,7 @@ function CopyableSnippet({
   value: string;
   onCopy?: () => void;
 }) {
+  const { t: tApp } = useTranslation("app");
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
@@ -51,7 +53,7 @@ function CopyableSnippet({
         onClick={() => handleCopy()}
       >
         {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-        {copied ? "Copied" : "Copy prompt"}
+        {copied ? tApp("ui.Copied") : tApp("ui.CopyPrompt")}
       </Button>
     </div>
   );
@@ -62,6 +64,7 @@ export function TracesSetupOnboardingCard({
 }: {
   projectId: string;
 }) {
+  const { t: tApp } = useTranslation("app");
   const capture = usePostHogClientCapture();
   const baseUrl = useLangfuseBaseUrl();
   const hasApiKeyCreateAccess = useHasProjectAccess({
@@ -93,13 +96,15 @@ export function TracesSetupOnboardingCard({
   return (
     <SplashScreen
       waitingFor="Waiting for first trace"
-      title="Time to log your first trace, it only takes a minute"
-      description="Get your API keys first, then ask your coding agent to add observability with Langfuse to your application."
+      title={tApp("ui.TimeToLogYourFirstTraceItOnlyTakesAMinute")}
+      description={tApp(
+        "ui.GetYourApiKeysFirstThenAskYourCodingAgentToAddObservabilityWithLangfuseToYourApplication",
+      )}
       videoSrc="https://static.langfuse.com/prod-assets/onboarding/traces-overview-v1.mp4"
       videoPosition="bottom"
       steps={[
         {
-          title: "Create API keys",
+          title: tApp("ui.CreateApiKeys"),
           description:
             "Your application needs API keys to send traces to Langfuse.",
           content: apiKeys ? (
@@ -119,7 +124,7 @@ export function TracesSetupOnboardingCard({
                   loading={mutCreateApiKey.isPending}
                   className="self-start"
                 >
-                  Create new API key
+                  {tApp("ui.CreateNewApiKey")}
                 </Button>
               ) : (
                 <Button disabled className="self-start">
@@ -127,24 +132,24 @@ export function TracesSetupOnboardingCard({
                     className="mr-2 -ml-0.5 h-4 w-4"
                     aria-hidden="true"
                   />
-                  Create new API key
+                  {tApp("ui.CreateNewApiKey")}
                 </Button>
               )}
               <ActionButton
                 href={`/project/${projectId}/settings/api-keys`}
                 variant="secondary"
               >
-                Manage API keys
+                {tApp("ui.ManageApiKeys")}
               </ActionButton>
             </div>
           ),
         },
         {
-          title: "Add tracing with your coding agent",
+          title: tApp("ui.AddTracingWithYourCodingAgent"),
           badge: (
             <Badge variant="tertiary" className="gap-1">
               <Sparkles className="h-3 w-3" />
-              Recommended
+              {tApp("ui.Recommended")}
             </Badge>
           ),
           description:
@@ -172,14 +177,14 @@ export function TracesSetupOnboardingCard({
                     })
                   }
                 >
-                  or follow our docs to set up tracing manually
+                  {tApp("ui.OrFollowOurDocsToSetUpTracingManually")}
                 </Link>
               </div>
             </>
           ),
         },
         {
-          title: "Run your app — traces will appear here",
+          title: tApp("ui.RunYourAppTracesWillAppearHere"),
           description:
             "Once your app makes an LLM call, traces show up within seconds.",
         },

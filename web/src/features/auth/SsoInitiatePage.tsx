@@ -4,8 +4,10 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { ErrorPageWithSentry } from "@/src/components/error-page";
 import { Spinner } from "@/src/components/layouts/spinner";
+import { useTranslation } from "react-i18next";
 
 export default function SsoInitiatePage() {
+  const { t: tApp } = useTranslation("app");
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
 
@@ -44,9 +46,12 @@ export default function SsoInitiatePage() {
     return (
       <>
         <Head>
-          <title>Sign-in Error | Langfuse</title>
+          <title>{tApp("ui.SignInErrorLangfuse")}</title>
         </Head>
-        <ErrorPageWithSentry title="SSO Sign-in Failed" message={error} />
+        <ErrorPageWithSentry
+          title={tApp("ui.SsoSignInFailed")}
+          message={error}
+        />
       </>
     );
   }
@@ -55,7 +60,7 @@ export default function SsoInitiatePage() {
   return (
     <>
       <Head>
-        <title>Signing in | Langfuse</title>
+        <title>{tApp("ui.SigningInLangfuse")}</title>
       </Head>
       <Spinner message="Redirecting to your identity provider..." />
     </>

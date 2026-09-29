@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { DropdownMenu } from "@/src/components/design-system/DropdownMenu/DropdownMenu";
 import { createProjectRoute } from "@/src/features/setup";
 import { PlusIcon, Settings } from "lucide-react";
@@ -22,6 +23,7 @@ type ProjectDropdownMenuProps = {
 );
 
 export function ProjectDropdownMenu(props: ProjectDropdownMenuProps) {
+  const { t } = useTranslation("settingsMore");
   const { children, organizationId, canCreateProjects, getProjectPath } = props;
   const projects = props.state === "loaded" ? props.projects : null;
 
@@ -35,7 +37,7 @@ export function ProjectDropdownMenu(props: ProjectDropdownMenuProps) {
             href: getProjectPath(project.id),
             secondaryAction: {
               href: `/project/${project.id}/settings`,
-              ariaLabel: `Go to settings for ${project.name}`,
+              ariaLabel: t("navigation.settingsFor", { name: project.name }),
               icon: Settings,
             },
           }))
@@ -49,18 +51,18 @@ export function ProjectDropdownMenu(props: ProjectDropdownMenuProps) {
             {
               type: "item" as const,
               id: "create",
-              title: "New Project",
+              title: t("navigation.newProject"),
               href: createProjectRoute(organizationId),
               icon: PlusIcon,
             },
           ]
         : []),
     ],
-    [canCreateProjects, getProjectPath, organizationId, projects],
+    [canCreateProjects, getProjectPath, organizationId, projects, t],
   );
 
   return (
-    <DropdownMenu title="Projects" items={items}>
+    <DropdownMenu title={t("navigation.projects")} items={items}>
       {children}
     </DropdownMenu>
   );

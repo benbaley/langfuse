@@ -1,4 +1,6 @@
-import { render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
+import { I18nextProvider } from "react-i18next";
+import { createUiI18n } from "@/src/features/i18n/instance";
 import { type Role } from "@langfuse/shared/src/db";
 
 const { projectApiKeys, mockSession } = vi.hoisted(() => ({
@@ -70,7 +72,7 @@ import { ApiKeyList } from "./ApiKeyList";
 
 const PROJECT_ID = "project-1";
 
-function renderAsProjectRole(role: Role) {
+function renderAsProjectRole(role: Role, i18n = createUiI18n("en")) {
   mockSession.data = {
     user: {
       admin: false,
@@ -78,10 +80,39 @@ function renderAsProjectRole(role: Role) {
     },
   };
 
-  return render(<ApiKeyList entityId={PROJECT_ID} scope="project" />);
+  return render(
+    <I18nextProvider i18n={i18n}>
+      <ApiKeyList entityId={PROJECT_ID} scope="project" />
+    </I18nextProvider>,
+  );
 }
 
 describe("ApiKeyList project access gating", () => {
+  it("keeps an unsaved note and API key values unchanged when switching languages", async () => {
+    const i18n = createUiI18n("en");
+    renderAsProjectRole("ADMIN", i18n);
+
+    fireEvent.click(screen.getByText("Production key"));
+    const note = screen.getByRole("textbox");
+    fireEvent.change(note, { target: { value: "Production key - 我的备注" } });
+
+    await act(() => i18n.changeLanguage("zh-CN"));
+
+    expect(
+      screen.getByRole("button", { name: "创建新 API 密钥" }),
+    ).toBeInTheDocument();
+    expect(screen.getByDisplayValue("Production key - 我的备注")).toBe(note);
+    expect(screen.getByTitle("pk-lf-1234")).toBeInTheDocument();
+    expect(screen.getByText("sk-lf-...5678")).toBeInTheDocument();
+
+    await act(() => i18n.changeLanguage("en"));
+
+    expect(screen.getByDisplayValue("Production key - 我的备注")).toBe(note);
+    expect(
+      screen.getByRole("button", { name: "Create new API keys" }),
+    ).toBeInTheDocument();
+  });
+
   it("lists keys read-only for a MEMBER, who holds apiKeys:read but not apiKeys:CUD", () => {
     renderAsProjectRole("MEMBER");
 

@@ -15,16 +15,19 @@ export const evalLogFilterConfig: FilterConfig = {
       type: "categorical" as const,
       column: "status",
       label: "Status",
+      labelKey: "field.status",
     },
     {
       type: "string" as const,
       column: "traceId",
       label: "Trace ID",
+      labelKey: "field.trace_id",
     },
     {
       type: "string" as const,
       column: "executionTraceId",
       label: "Execution Trace ID",
+      labelKey: "field.execution_trace_id",
     },
   ],
 };

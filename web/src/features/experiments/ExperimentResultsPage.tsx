@@ -25,8 +25,10 @@ import {
   type ExperimentDiffMode,
   type ExperimentResultsLayout,
 } from "@/src/features/experiments/hooks/useExperimentResultsState";
+import { useTranslation } from "react-i18next";
 
 export default function ExperimentResultsPage() {
+  const { t: tFeatures } = useTranslation("features");
   const router = useRouter();
   const projectId = router.query.projectId as string;
 
@@ -118,7 +120,7 @@ export default function ExperimentResultsPage() {
   // Show spinner while session loads or while redirecting when beta is off
   if (!isExperimentsBetaActive) {
     return (
-      <Page headerProps={{ title: "Experiments" }}>
+      <Page headerProps={{ title: tFeatures("ui.experiments") }}>
         <div className="flex h-full items-center justify-center">
           <Spinner size="xl" variant="muted" />
         </div>

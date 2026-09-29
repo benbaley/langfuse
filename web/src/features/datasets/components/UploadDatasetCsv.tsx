@@ -11,6 +11,7 @@ import { parseCsvClient } from "@/src/features/datasets/lib/csv/helpers";
 import { DialogBody } from "@/src/components/ui/dialog";
 import { Dropzone } from "@/src/components/design-system/Dropzone/Dropzone";
 import type { CsvPreviewResult } from "@/src/features/datasets/lib/csv/types";
+import { useTranslation } from "react-i18next";
 
 export const MAX_FILE_SIZE_BYTES = 1024 * 1024 * 1 * 10; // 10MB
 const ACCEPTED_FILE_TYPES = ["text/csv"] as const;
@@ -27,6 +28,7 @@ export const UploadDatasetCsv = ({
   setPreview: (preview: CsvPreviewResult | null) => void;
   setCsvFile: (file: File | null) => void;
 }) => {
+  const { t: tFeatures } = useTranslation("features");
   const handleFiles = async (files: File[]) => {
     const file = files[0];
     if (!file) return;
@@ -67,10 +69,13 @@ export const UploadDatasetCsv = ({
     <DialogBody className="border-t">
       <Card className="h-full items-center justify-center border-none">
         <CardHeader className="text-center">
-          <CardTitle className="text-lg">Add items to dataset</CardTitle>
+          <CardTitle className="text-lg">
+            {tFeatures("ui.addItemsToDataset")}
+          </CardTitle>
           <CardDescription>
-            Add items to dataset by uploading a file, add items manually or via
-            our SDKs/API
+            {tFeatures(
+              "ui.addItemsToDatasetByUploadingAFileAddItemsManuallyOrViaOurSdksApi",
+            )}
           </CardDescription>
         </CardHeader>
         <CardContent>

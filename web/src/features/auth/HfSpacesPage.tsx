@@ -9,12 +9,14 @@ import Head from "next/head";
 import Link from "next/link";
 import { PlusIcon } from "lucide-react";
 import { CodeView } from "@/src/components/ui/CodeJsonViewer";
+import { useTranslation } from "react-i18next";
 
 export type PageProps = {
   deploymentDomain: string;
 };
 
 export default function HfSpacesPage({ deploymentDomain }: PageProps) {
+  const { t: tApp } = useTranslation("app");
   return (
     <>
       <Head>
@@ -40,7 +42,10 @@ export default function HfSpacesPage({ deploymentDomain }: PageProps) {
 
         <div className="bg-background mt-14 px-6 py-10 shadow-sm sm:mx-auto sm:w-full sm:max-w-[480px] sm:rounded-lg sm:px-10">
           <div className="space-y-8">
-            <CodeView content={deploymentDomain} title="HF Space Host" />
+            <CodeView
+              content={deploymentDomain}
+              title={tApp("ui.HfSpaceHost")}
+            />
 
             <Button className="w-full" asChild>
               <Link
@@ -48,7 +53,7 @@ export default function HfSpacesPage({ deploymentDomain }: PageProps) {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                Open in new tab
+                {tApp("ui.OpenInNewTab")}
               </Link>
             </Button>
           </div>

@@ -8,8 +8,10 @@ import { api } from "@/src/utils/api";
 import { DatasetsOnboarding } from "@/src/components/onboarding/DatasetsOnboarding";
 import { LockIcon, PlusIcon } from "lucide-react";
 import { useQueryParam, StringParam } from "use-query-params";
+import { useTranslation } from "react-i18next";
 
 export default function DatasetsPage() {
+  const { t: tFeatures } = useTranslation("features");
   const router = useRouter();
   const projectId = router.query.projectId as string;
   const [currentFolderPath] = useQueryParam("folder", StringParam);
@@ -33,10 +35,9 @@ export default function DatasetsPage() {
     return (
       <Page
         headerProps={{
-          title: "Datasets",
+          title: tFeatures("ui.datasets"),
           help: {
-            description:
-              "Datasets in Langfuse are a collection of inputs (and expected outputs) of an LLM application. They are used to benchmark new releases before deployment to production. See docs to learn more.",
+            description: tFeatures("help.datasets"),
             href: "https://langfuse.com/docs/evaluation/dataset-runs/datasets",
           },
         }}
@@ -50,10 +51,9 @@ export default function DatasetsPage() {
   return (
     <Page
       headerProps={{
-        title: "Datasets",
+        title: tFeatures("ui.datasets"),
         help: {
-          description:
-            "Datasets in Langfuse are a collection of inputs (and expected outputs) of an LLM application. They are used to benchmark new releases before deployment to production. See docs to learn more.",
+          description: tFeatures("help.datasets"),
           href: "https://langfuse.com/docs/evaluation/dataset-runs/datasets",
         },
         actionButtonsRight: (
@@ -73,7 +73,7 @@ export default function DatasetsPage() {
                   onClick={openDialog}
                   variant="default"
                   icon={disabled === undefined ? PlusIcon : LockIcon}
-                  text="New dataset"
+                  text={tFeatures("ui.newDataset")}
                 />
               </DialogTrigger>
             )}

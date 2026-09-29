@@ -31,6 +31,7 @@ import { useViewPreferences } from "@/src/features/traces/contexts/ViewPreferenc
 import { useTraceData } from "@/src/features/traces/contexts/TraceDataContext";
 import { selectNodeScores } from "@/src/features/traces/fns/nodeScores";
 import type Decimal from "decimal.js";
+import { useTranslation } from "react-i18next";
 
 interface SpanContentProps {
   node: TreeNode;
@@ -51,6 +52,7 @@ export function SpanContent({
   onHover,
   className,
 }: SpanContentProps) {
+  const { t: tFeatures } = useTranslation("features");
   const { mergedScores } = useTraceData();
   const {
     showDuration,
@@ -132,8 +134,8 @@ export function SpanContent({
               <span
                 title={
                   node.type === "TRACE"
-                    ? "Total trace duration"
-                    : "Own span duration"
+                    ? tFeatures("ui.totalTraceDuration")
+                    : tFeatures("ui.ownSpanDuration")
                 }
                 className={cn(
                   "text-foreground-tertiary text-xs",
@@ -155,7 +157,7 @@ export function SpanContent({
             {/* Tokens, only without a cost */}
             {shouldRenderCostTokens && tokenTotal ? (
               <span
-                title="Total tokens"
+                title={tFeatures("ui.totalTokensTitle")}
                 className="text-foreground-tertiary text-xs"
               >
                 {numberFormatter(tokenTotal, 0)} tokens

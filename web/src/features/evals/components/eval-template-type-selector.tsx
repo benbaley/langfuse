@@ -19,6 +19,7 @@ import {
   type CodeEvalSourceCodeLanguage,
   getDefaultCodeEvalSource,
 } from "@/src/features/evals/utils/code-eval-template-validation";
+import { useTranslation } from "react-i18next";
 
 type EvalTemplateFormInput = z.input<typeof templateFormSchema>;
 type EvalTemplateFormOutput = z.output<typeof templateFormSchema>;
@@ -46,6 +47,7 @@ export function EvalTemplateTypeSelector({
   mode: Exclude<EvalTemplateTypeSelectorMode, "hidden">;
   onChange?: () => void;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const sourceCodeDraftsRef = useRef<CodeEvalSourceDrafts>({});
   const evalTemplateType = form.watch("type");
   const sourceCodeLanguage =
@@ -94,7 +96,7 @@ export function EvalTemplateTypeSelector({
       name="type"
       render={() => (
         <FormItem>
-          <FormLabel>Type</FormLabel>
+          <FormLabel>{tFeatures("ui.type")}</FormLabel>
           <FormControl>
             <Tabs
               value={selectedValue}

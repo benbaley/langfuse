@@ -5,8 +5,10 @@ import { useExperimentPeekNavigation } from "../hooks/useExperimentPeekNavigatio
 import { useExperimentNames } from "../hooks/useExperimentNames";
 import { getExperimentColorStyles } from "./table/types";
 import { cn } from "@/src/utils/tailwind";
+import { useTranslation } from "react-i18next";
 
 export function ExperimentPeekFooter({ projectId }: { projectId: string }) {
+  const { t: tFeatures } = useTranslation("features");
   const {
     currentExperimentId,
     currentIndex,
@@ -42,7 +44,7 @@ export function ExperimentPeekFooter({ projectId }: { projectId: string }) {
           size="sm"
           className={cn("shrink-0 font-bold", colorStyles?.badgeClass)}
         >
-          {currentIndex === 0 ? "Baseline" : "Comp"}
+          {currentIndex === 0 ? tFeatures("ui.baseline") : "Comp"}
         </Badge>
       </div>
       <div className="flex items-center gap-1">
@@ -51,7 +53,7 @@ export function ExperimentPeekFooter({ projectId }: { projectId: string }) {
           className="gap-1.5 px-2"
           disabled={!hasPrev}
           onClick={goToPrev}
-          title="Previous experiment"
+          title={tFeatures("ui.previousExperiment")}
         >
           <ArrowLeft className="h-4 w-4" />
         </Button>
@@ -63,7 +65,7 @@ export function ExperimentPeekFooter({ projectId }: { projectId: string }) {
           className="gap-1.5 px-2"
           disabled={!hasNext}
           onClick={goToNext}
-          title="Next experiment"
+          title={tFeatures("ui.nextExperiment")}
         >
           <ArrowRight className="h-4 w-4" />
         </Button>

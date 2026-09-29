@@ -23,8 +23,11 @@ import {
 } from "@/src/components/ui/dropdown-menu";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 export default function PromptsPage() {
+  const { t: tMore } = useTranslation("coreMore");
+  const { t: tFeatures } = useTranslation("features");
   const router = useRouter();
   const projectId = router.query.projectId as string;
   const routeSegments = router.query.folder;
@@ -77,7 +80,7 @@ export default function PromptsPage() {
       URL.revokeObjectURL(url);
       capture("prompts:bulk_export", { mode });
     } catch {
-      toast.error("Failed to export prompts. Please try again.");
+      toast.error(tMore("prompts.exportFailed"));
     } finally {
       setIsExporting(false);
     }
@@ -121,10 +124,9 @@ export default function PromptsPage() {
   return (
     <Page
       headerProps={{
-        title: "Prompts",
+        title: tFeatures("ui.prompts"),
         help: {
-          description:
-            "Manage and version your prompts in Langfuse. Edit and update them via the UI and SDK. Retrieve the production version via the SDKs. Learn more in the docs.",
+          description: tFeatures("help.prompts"),
           href: "https://langfuse.com/docs/prompt-management/get-started",
         },
         actionButtonsRight: (
@@ -135,15 +137,17 @@ export default function PromptsPage() {
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" disabled={isExporting}>
                     <UploadIcon className="mr-1 h-4 w-4" />
-                    {isExporting ? "Exporting…" : "Export"}
+                    {isExporting
+                      ? tFeatures("ui.exporting")
+                      : tFeatures("ui.export")}
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem onClick={() => handleExport("latest")}>
-                    Latest version per prompt
+                    {tFeatures("ui.latestVersionPerPrompt")}
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => handleExport("all")}>
-                    All versions
+                    {tFeatures("ui.allVersions")}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -158,7 +162,7 @@ export default function PromptsPage() {
                     onClick={openDialog}
                   >
                     <Download className="mr-1 h-4 w-4" />
-                    Import
+                    {tFeatures("ui.import")}
                   </Button>
                 )}
               </ImportPromptsButtonDialogController>
@@ -178,7 +182,7 @@ export default function PromptsPage() {
                   : undefined
               }
             >
-              New prompt
+              {tFeatures("ui.newPrompt")}
             </ActionButton>
           </>
         ),

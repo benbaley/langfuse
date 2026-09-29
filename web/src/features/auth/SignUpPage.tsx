@@ -1,3 +1,4 @@
+import { LanguageSelector } from "@/src/features/i18n";
 import { Button } from "@/src/components/ui/button";
 import {
   Form,
@@ -10,6 +11,10 @@ import {
 import { Input } from "@/src/components/ui/input";
 import { signupSchema } from "@/src/features/auth/lib/signupSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  localizeAuthMessage,
+  localizeAuthResolver,
+} from "@/src/features/auth/lib/localizeAuthResolver";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
@@ -36,6 +41,7 @@ import useLocalStorage from "@/src/components/useLocalStorage";
 import { noUrlCheck, StringNoHTMLNonEmpty } from "@langfuse/shared";
 import { PASSWORD_SETUP_EMAIL_STORAGE_KEY } from "@/src/features/auth-credentials";
 import { getDemoTargetPath } from "@/src/features/onboarding/lib/demoCallbackRedirect";
+import { useTranslation } from "react-i18next";
 
 type NextAuthProvider = NonNullable<Parameters<typeof signIn>[0]>;
 
@@ -76,6 +82,8 @@ export default function SignUpPage({
 function StandardSignupFlow({
   authProviders,
 }: Pick<PageProps, "authProviders" | "emailVerificationRequired">) {
+  const { t: tAuth } = useTranslation("auth");
+  const { t: tApp } = useTranslation("app");
   const { isLangfuseCloud } = useLangfuseCloudRegion();
   const router = useRouter();
   const capture = usePostHogClientCapture();
@@ -104,7 +112,9 @@ function StandardSignupFlow({
     );
 
   const form = useForm({
-    resolver: showPasswordStep ? zodResolver(signupSchema) : undefined,
+    resolver: showPasswordStep
+      ? localizeAuthResolver(zodResolver(signupSchema))
+      : undefined,
     defaultValues: {
       name: "",
       email: emailParam ?? "",
@@ -134,7 +144,7 @@ function StandardSignupFlow({
 
     if (!emailResult.success) {
       form.setError("email", {
-        message: "Invalid email address",
+        message: "validation.email",
       });
       setContinueLoading(false);
       return;
@@ -189,7 +199,7 @@ function StandardSignupFlow({
         expected: isJsonParseSyntaxError(error),
         extra: { context: "auth.signUp.checkSso" },
       });
-      setFormError("Unable to check SSO configuration. Please try again.");
+      setFormError("errors.checkSso");
     } finally {
       setContinueLoading(false);
     }
@@ -229,7 +239,7 @@ function StandardSignupFlow({
         callbackUrl,
       });
     } catch {
-      setFormError("An error occurred. Please try again.");
+      setFormError("errors.retry");
     }
   }
 
@@ -253,11 +263,15 @@ function StandardSignupFlow({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel>{tApp("ui.name")}</FormLabel>
                   <FormControl>
                     <Input placeholder="Jane Doe" {...field} />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage
+                    translateError={(message) =>
+                      localizeAuthMessage(tAuth, message)
+                    }
+                  />
                 </FormItem>
               )}
             />
@@ -267,7 +281,7 @@ function StandardSignupFlow({
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <FormLabel>{tApp("ui.Email")}</FormLabel>
                 <FormControl>
                   <Input
                     placeholder="jsdoe@example.com"
@@ -276,7 +290,11 @@ function StandardSignupFlow({
                     {...field}
                   />
                 </FormControl>
-                <FormMessage />
+                <FormMessage
+                  translateError={(message) =>
+                    localizeAuthMessage(tAuth, message)
+                  }
+                />
               </FormItem>
             )}
           />
@@ -286,11 +304,15 @@ function StandardSignupFlow({
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel>{tApp("ui.Password")}</FormLabel>
                   <FormControl>
                     <PasswordInput {...field} />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage
+                    translateError={(message) =>
+                      localizeAuthMessage(tAuth, message)
+                    }
+                  />
                 </FormItem>
               )}
             />
@@ -304,11 +326,11 @@ function StandardSignupFlow({
             disabled={showPasswordStep ? false : form.watch("email") === ""}
             data-testid="submit-email-password-sign-up-form"
           >
-            {showPasswordStep ? "Sign up" : "Continue"}
+            {showPasswordStep ? tApp("ui.SignUp") : tApp("ui.Continue")}
           </Button>
           {formError ? (
             <div className="text-destructive text-center text-sm font-bold">
-              {formError}
+              {localizeAuthMessage(tAuth, formError)}
             </div>
           ) : null}
         </form>
@@ -328,6 +350,8 @@ function StandardSignupFlow({
 function VerifiedSignupFlow({
   authProviders,
 }: Pick<PageProps, "authProviders" | "emailVerificationRequired">) {
+  const { t: tAuth } = useTranslation("auth");
+  const { t: tApp } = useTranslation("app");
   const router = useRouter();
   const capture = usePostHogClientCapture();
   const emailParam = router.query.email as string | undefined;
@@ -348,7 +372,7 @@ function VerifiedSignupFlow({
     );
 
   const form = useForm({
-    resolver: zodResolver(signupVerifyFormSchema),
+    resolver: localizeAuthResolver(zodResolver(signupVerifyFormSchema)),
     defaultValues: {
       name: "",
       email: emailParam ?? "",
@@ -387,7 +411,7 @@ function VerifiedSignupFlow({
       if (signInRes?.error) {
         setFormError(
           signInRes.error === "AccessDenied"
-            ? "Unable to send verification email. Please try again."
+            ? "errors.verificationEmail"
             : signInRes.error,
         );
         return;
@@ -400,7 +424,7 @@ function VerifiedSignupFlow({
       );
       await router.push(setupPasswordPath);
     } catch {
-      setFormError("An error occurred. Please try again.");
+      setFormError("errors.retry");
     }
   }
 
@@ -416,11 +440,15 @@ function VerifiedSignupFlow({
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Name</FormLabel>
+                <FormLabel>{tApp("ui.name")}</FormLabel>
                 <FormControl>
                   <Input placeholder="Jane Doe" {...field} />
                 </FormControl>
-                <FormMessage />
+                <FormMessage
+                  translateError={(message) =>
+                    localizeAuthMessage(tAuth, message)
+                  }
+                />
               </FormItem>
             )}
           />
@@ -429,7 +457,7 @@ function VerifiedSignupFlow({
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <FormLabel>{tApp("ui.Email")}</FormLabel>
                 <FormControl>
                   <Input
                     placeholder="jsdoe@example.com"
@@ -438,7 +466,11 @@ function VerifiedSignupFlow({
                     {...field}
                   />
                 </FormControl>
-                <FormMessage />
+                <FormMessage
+                  translateError={(message) =>
+                    localizeAuthMessage(tAuth, message)
+                  }
+                />
               </FormItem>
             )}
           />
@@ -448,11 +480,11 @@ function VerifiedSignupFlow({
             loading={form.formState.isSubmitting}
             data-testid="submit-email-password-sign-up-form"
           >
-            Continue
+            {tApp("ui.Continue")}
           </Button>
           {formError ? (
             <div className="text-destructive text-center text-sm font-bold">
-              {formError}
+              {localizeAuthMessage(tAuth, formError)}
             </div>
           ) : null}
         </form>
@@ -470,6 +502,7 @@ function VerifiedSignupFlow({
 }
 
 function SignupPageShell({ children }: { children: React.ReactNode }) {
+  const { t: tApp } = useTranslation("app");
   const { isLangfuseCloud } = useLangfuseCloudRegion();
 
   return (
@@ -479,13 +512,16 @@ function SignupPageShell({ children }: { children: React.ReactNode }) {
           <div className="mx-auto w-fit">
             <LangfuseIcon alt="" />
           </div>
+          <div className="mt-4 flex justify-center">
+            <LanguageSelector />
+          </div>
           <h2 className="text-primary mt-4 text-center text-2xl leading-9 font-bold tracking-tight">
-            Create new account
+            {tApp("ui.CreateNewAccount")}
           </h2>
         </div>
         {isLangfuseCloud ? (
           <div className="text-center sm:mx-auto sm:w-full sm:max-w-[480px]">
-            No credit card required.
+            {tApp("ui.NoCreditCardRequired")}
           </div>
         ) : null}
 
@@ -503,15 +539,16 @@ function SignupPageShell({ children }: { children: React.ReactNode }) {
 }
 
 function SignupFooter() {
+  const { t: tApp } = useTranslation("app");
   const router = useRouter();
   return (
     <p className="text-muted-foreground mt-10 text-center text-sm">
-      Already have an account?{" "}
+      {tApp("ui.AlreadyHaveAnAccount")}{" "}
       <Link
         href={`/auth/sign-in${router.asPath.includes("?") ? router.asPath.substring(router.asPath.indexOf("?")) : ""}`}
         className="text-link hover:text-link-hover leading-6 font-bold"
       >
-        Sign in
+        {tApp("ui.SignIn")}
       </Link>
     </p>
   );

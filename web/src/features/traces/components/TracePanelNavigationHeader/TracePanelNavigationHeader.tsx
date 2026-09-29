@@ -63,6 +63,7 @@ import { toast } from "sonner";
 import { TRACE_DOWNLOAD_OMIT_LARGE_FIELDS_THRESHOLD } from "@/src/features/traces/constants/traceDownloadConfig";
 import { useWatchedPromiseCallback } from "@/src/hooks/useWatchedPromiseCallback";
 import { useElementSize } from "@/src/hooks/useElementSize";
+import { useTranslation } from "react-i18next";
 
 interface TracePanelNavigationHeaderProps {
   isPanelCollapsed: boolean;
@@ -100,6 +101,7 @@ function TracePanelNavigationHeaderExpanded({
   onTogglePanel,
   shouldPulseToggle = false,
 }: TracePanelNavigationHeaderProps) {
+  const { t: tFeatures } = useTranslation("features");
   const { searchInputValue, setSearchInputValue, setSearchQueryImmediate } =
     useSearch();
   const { expandAll, collapseAll, collapsedNodes } = useSelection();
@@ -235,14 +237,16 @@ function TracePanelNavigationHeaderExpanded({
         ) : (
           <FoldVertical className="mr-2 h-3.5 w-3.5" />
         )}
-        {isEverythingCollapsed ? "Expand all" : "Collapse all"}
+        {isEverythingCollapsed
+          ? tFeatures("ui.expandAll")
+          : tFeatures("ui.collapseAll")}
       </DropdownMenuItem>
       <DropdownMenuItem
         onSelect={() => handleDownload()}
         disabled={isDownloading}
       >
         <Download className="mr-2 h-3.5 w-3.5" />
-        Download trace as JSON
+        {tFeatures("ui.downloadTraceAsJson")}
       </DropdownMenuItem>
       <PlaybackMenuItems />
       <DropdownMenuSeparator />
@@ -259,7 +263,7 @@ function TracePanelNavigationHeaderExpanded({
     >
       <CommandInput
         showBorder={false}
-        placeholder="Search"
+        placeholder={tFeatures("ui.searchTitle")}
         className="@max-[439px]/navheader:placeholder:text-muted-foreground h-7 min-w-0 border-0 pr-0 focus:ring-0 @max-[439px]/navheader:h-[1.625rem]"
         value={searchInputValue}
         onValueChange={setSearchInputValue}
@@ -304,7 +308,11 @@ function TracePanelNavigationHeaderExpanded({
                 onClick={handleToggleTreeNodes}
                 variant="ghost"
                 size="icon"
-                title={isEverythingCollapsed ? "Expand all" : "Collapse all"}
+                title={
+                  isEverythingCollapsed
+                    ? tFeatures("ui.expandAll")
+                    : tFeatures("ui.collapseAll")
+                }
                 className="h-7 w-7"
               >
                 {isEverythingCollapsed ? (
@@ -321,7 +329,7 @@ function TracePanelNavigationHeaderExpanded({
                 size="icon"
                 onClick={handleDownload}
                 disabled={isDownloading}
-                title="Download trace as JSON"
+                title={tFeatures("ui.downloadTraceAsJson")}
                 className="h-7 w-7"
               >
                 {isDownloading ? (
@@ -338,8 +346,8 @@ function TracePanelNavigationHeaderExpanded({
                   <Button
                     variant="ghost"
                     size="icon"
-                    title="More"
-                    aria-label="More options"
+                    title={tFeatures("ui.more")}
+                    aria-label={tFeatures("ui.moreOptions")}
                     className="h-7 w-7"
                   >
                     <MoreHorizontal className="h-3.5 w-3.5" />
@@ -377,17 +385,17 @@ function TracePanelNavigationHeaderExpanded({
                     }
                   >
                     <DropdownMenuRadioItem value="tree">
-                      Tree
+                      {tFeatures("ui.tree")}
                     </DropdownMenuRadioItem>
                     <DropdownMenuRadioItem value="timeline">
-                      Timeline
+                      {tFeatures("ui.timeline")}
                     </DropdownMenuRadioItem>
                     <DropdownMenuRadioItem
                       value="graph"
                       disabled={Boolean(graphDisabledReason)}
                     >
                       <span className="flex min-w-0 flex-col">
-                        <span>Graph</span>
+                        <span>{tFeatures("ui.graph")}</span>
                         {graphDisabledReason && (
                           <span className="text-muted-foreground text-xs font-normal">
                             {graphDisabledReason}
@@ -397,7 +405,7 @@ function TracePanelNavigationHeaderExpanded({
                     </DropdownMenuRadioItem>
                     {messagesEnabled && (
                       <DropdownMenuRadioItem value="messages">
-                        Messages
+                        {tFeatures("ui.messages")}
                       </DropdownMenuRadioItem>
                     )}
                   </DropdownMenuRadioGroup>
@@ -408,7 +416,7 @@ function TracePanelNavigationHeaderExpanded({
                     <Button
                       variant="outline"
                       size="sm"
-                      aria-label="Select trace view"
+                      aria-label={tFeatures("ui.selectTraceView")}
                       className="h-7 min-w-20 justify-between gap-1 px-2 text-xs font-bold"
                     >
                       {TRACE_VIEW_LABELS[activeView]}
@@ -463,12 +471,13 @@ function ViewModeSwitch({
   showMessages: boolean;
   onSelect: (view: TraceViewMode) => void;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   return (
     <div className="bg-muted/60 inline-flex h-7 shrink-0 items-center rounded-md border p-0.5">
       <ViewModeSegment
         active={activeView === "tree"}
         onClick={() => onSelect("tree")}
-        label="Tree"
+        label={tFeatures("ui.tree")}
       />
       {/* One Timeline. What it IS depends on the Compact Timeline feature
           preview — see TracePanelNavigation — rather than on a third segment
@@ -476,12 +485,12 @@ function ViewModeSwitch({
       <ViewModeSegment
         active={activeView === "timeline"}
         onClick={() => onSelect("timeline")}
-        label="Timeline"
+        label={tFeatures("ui.timeline")}
       />
       <ViewModeSegment
         active={activeView === "graph"}
         onClick={() => onSelect("graph")}
-        label="Graph"
+        label={tFeatures("ui.graph")}
         disabled={Boolean(graphDisabledReason)}
         title={graphDisabledReason}
       />
@@ -489,7 +498,7 @@ function ViewModeSwitch({
         <ViewModeSegment
           active={activeView === "messages"}
           onClick={() => onSelect("messages")}
-          label="Messages"
+          label={tFeatures("ui.messages")}
         />
       )}
     </div>

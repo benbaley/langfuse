@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 /* eslint-disable @repo/no-style-props, @repo/no-margin-on-root-elements */
 "use client";
 
@@ -295,6 +296,8 @@ const SidebarTrigger = React.forwardRef<
   React.ComponentRef<typeof Button>,
   React.ComponentProps<typeof Button>
 >(({ className, onClick, ...props }, ref) => {
+const { t: tUi } = useTranslation("uiMore");
+
   const { toggleSidebar } = useSidebar();
 
   return (
@@ -317,7 +320,7 @@ const SidebarTrigger = React.forwardRef<
           desktop (toggles the docked sidebar). */}
       <Menu className="size-5 md:hidden" />
       <PanelLeft className="hidden size-5 md:block" />
-      <span className="sr-only">Toggle Sidebar</span>
+      <span className="sr-only">{tUi("toggleSidebar")}</span>
     </Button>
   );
 });
@@ -327,16 +330,18 @@ const SidebarRail = React.forwardRef<
   HTMLButtonElement,
   React.ComponentProps<"button">
 >(({ className, ...props }, ref) => {
+const { t: tUi } = useTranslation("uiMore");
+
   const { toggleSidebar } = useSidebar();
 
   return (
     <button
       ref={ref}
       data-sidebar="rail"
-      aria-label="Toggle Sidebar"
+      aria-label={tUi("toggleSidebar")}
       tabIndex={-1}
       onClick={toggleSidebar}
-      title="Toggle Sidebar"
+      title={tUi("toggleSidebar")}
       className={cn(
         "hover:after:bg-sidebar-border absolute inset-y-0 z-50 hidden w-4 -translate-x-1/2 transition-all ease-linear group-data-[side=left]:-right-4 group-data-[side=right]:left-0 after:absolute after:inset-y-0 after:left-1/2 after:w-[2px] md:flex",
         "cursor-pointer",

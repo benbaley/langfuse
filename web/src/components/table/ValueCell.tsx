@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 /* eslint-disable no-nested-ternary */
 import { memo, type JSX, useState } from "react";
 import { useRouter } from "next/router";
@@ -234,6 +235,8 @@ function ValueCellActionsMenuContent({
   row: Row<JsonTableRow>;
   metadataActions: MetadataFilterActions;
 }) {
+const { t: tUi } = useTranslation("uiMore");
+
   const router = useRouter();
   const { value, type, hasChildren, level } = row.original;
 
@@ -299,9 +302,7 @@ function ValueCellActionsMenuContent({
         {hasChildren ? "Copy structure" : "Copy value"}
       </DropdownMenuItem>
       <DropdownMenuItem className="text-xs" onSelect={handleCopyPath}>
-        <Copy className="mr-2 h-3.5 w-3.5 shrink-0" />
-        Copy path
-      </DropdownMenuItem>
+        <Copy className="mr-2 h-3.5 w-3.5 shrink-0" />{tUi("copyPath")}</DropdownMenuItem>
       {isScalarLeaf && (
         <>
           <DropdownMenuSeparator />
@@ -311,7 +312,7 @@ function ValueCellActionsMenuContent({
           >
             <Filter className="mr-2 h-3.5 w-3.5 shrink-0" />
             <span className="flex min-w-0 flex-col">
-              <span>Include in filter</span>
+              <span>{tUi("includeFilter")}</span>
               <span
                 className="text-muted-foreground truncate font-mono"
                 title={includeFilterText}
@@ -326,7 +327,7 @@ function ValueCellActionsMenuContent({
           >
             <FilterX className="mr-2 h-3.5 w-3.5 shrink-0" />
             <span className="flex min-w-0 flex-col">
-              <span>Exclude from filter</span>
+              <span>{tUi("excludeFilter")}</span>
               <span
                 className="text-muted-foreground truncate font-mono"
                 title={excludeFilterText}
@@ -358,6 +359,8 @@ export const ValueCell = memo(
     /** Replaces the built-in menu, for tables with their own row actions. */
     rowActions?: (row: Row<JsonTableRow>) => React.ReactNode;
   }) => {
+const { t: tUi } = useTranslation("uiMore");
+
     const { value, type } = row.original;
     const cellId = `${row.id}-value`;
     const isCellExpanded = expandedCells.has(cellId);
@@ -550,8 +553,8 @@ export const ValueCell = memo(
                 <Button
                   variant="ghost"
                   size="icon"
-                  aria-label="Value actions"
-                  title="Actions"
+                  aria-label={tUi("valueActions")}
+                  title={tUi("actions")}
                   className={cn(
                     ROW_ACTION_BUTTON_CLASSES,
                     ROW_MENU_OFFSET,
@@ -570,8 +573,8 @@ export const ValueCell = memo(
             size="icon"
             className={cn(ROW_ACTION_BUTTON_CLASSES, ROW_COPY_OFFSET)}
             onClick={handleCopy}
-            title="Copy value"
-            aria-label="Copy cell value"
+            title={tUi("copyValue")}
+            aria-label={tUi("copyCellValue")}
           >
             {showCopySuccess ? (
               <Check className="h-3 w-3" />

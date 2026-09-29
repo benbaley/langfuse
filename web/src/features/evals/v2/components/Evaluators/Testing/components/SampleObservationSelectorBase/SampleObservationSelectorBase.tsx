@@ -51,6 +51,7 @@ import {
 import { useReusableRuleFilterPresets } from "@/src/features/evals/v2/hooks/useReusableRuleFilterPresets";
 import type { EvaluatorFilterExperience } from "@/src/features/evals/v2/types/evaluatorFilterExperience";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics";
+import { useTranslation } from "react-i18next";
 
 export type SampleObservation =
   RouterOutputs["events"]["all"]["observations"][number];
@@ -158,6 +159,7 @@ export type SampleObservationSelectorBaseProps = {
 export function SampleObservationSelectorBase(
   props: SampleObservationSelectorBaseProps,
 ) {
+  const { t: tFeatures } = useTranslation("features");
   const {
     projectId,
     timeRange,
@@ -201,7 +203,7 @@ export function SampleObservationSelectorBase(
       ? [
           ...EXAMPLES,
           {
-            label: "Datasets",
+            label: tFeatures("ui.datasets"),
             icon: Database,
             filters: [
               {
@@ -214,7 +216,7 @@ export function SampleObservationSelectorBase(
           },
         ]
       : EXAMPLES;
-  }, [datasetOptions]);
+  }, [tFeatures, datasetOptions]);
   const setFilters = (
     next: FilterState | ((current: FilterState) => FilterState),
   ) => {
@@ -396,26 +398,26 @@ export function SampleObservationSelectorBase(
       ...leadingColumns,
       createDateTableColumn<SampleObservation>({
         accessorKey: "startTime",
-        header: "Start time",
+        header: tFeatures("ui.startTimeTitle"),
         size: 170,
         enableHiding: true,
       }),
       createTextTableColumn<SampleObservation>({
         accessorKey: "type",
-        header: "Type",
+        header: tFeatures("ui.type"),
         size: 110,
         enableHiding: true,
       }),
       createTextTableColumn<SampleObservation>({
         accessorKey: "name",
-        header: "Name",
+        header: tFeatures("ui.name"),
         size: 200,
         enableHiding: true,
         mapValue: (value) => value ?? "—",
       }),
       createTextTableColumn<SampleObservation>({
         accessorKey: "traceName",
-        header: "Trace name",
+        header: tFeatures("ui.traceNameTitle"),
         size: 180,
         enableHiding: true,
         defaultHidden: true,
@@ -423,7 +425,7 @@ export function SampleObservationSelectorBase(
       }),
       createIOTableColumn<SampleObservation>({
         accessorKey: "input",
-        header: "Input",
+        header: tFeatures("ui.input"),
         size: 300,
         enableHiding: true,
         getCell: (_value, { row }) => {
@@ -437,7 +439,7 @@ export function SampleObservationSelectorBase(
       }),
       createIOTableColumn<SampleObservation>({
         accessorKey: "output",
-        header: "Output",
+        header: tFeatures("ui.output"),
         size: 300,
         enableHiding: true,
         getCell: (_value, { row }) => {
@@ -451,7 +453,7 @@ export function SampleObservationSelectorBase(
       }),
       createIOTableColumn<SampleObservation>({
         accessorKey: "metadata",
-        header: "Metadata",
+        header: tFeatures("ui.metadata"),
         size: 300,
         enableHiding: true,
         getCell: (_value, { row }) => {
@@ -464,13 +466,19 @@ export function SampleObservationSelectorBase(
       }),
       createTextTableColumn<SampleObservation>({
         accessorKey: "environment",
-        header: "Environment",
+        header: tFeatures("ui.environment"),
         size: 130,
         enableHiding: true,
         defaultHidden: true,
       }),
     ],
-    [observationIOById, observationIOPending, leadingColumns, rowHeight],
+    [
+      tFeatures,
+      observationIOById,
+      observationIOPending,
+      leadingColumns,
+      rowHeight,
+    ],
   );
   const [columnVisibility, setColumnVisibility] =
     useColumnVisibility<SampleObservation>(
@@ -497,7 +505,7 @@ export function SampleObservationSelectorBase(
     <div className="flex shrink-0 flex-col gap-6">
       <section className="flex flex-col gap-2">
         <SectionHeader
-          title="Filter observations"
+          title={tFeatures("ui.filterObservations")}
           meta={null}
           description={filterDescription}
           tooltip={filterTooltip}
@@ -565,7 +573,7 @@ export function SampleObservationSelectorBase(
 
       <section className="flex min-h-0 flex-col gap-2">
         <SectionHeader
-          title="Matching observations"
+          title={tFeatures("ui.matchingObservations")}
           meta={
             options.approxTotalCount !== null ? (
               <span className="text-muted-foreground shrink-0 text-sm">
@@ -626,7 +634,7 @@ export function SampleObservationSelectorBase(
             rowHeight={rowHeight}
             onRowClick={onOpenTrace}
             getRowClassName={getRowClassName}
-            noResultsMessage="No observations match the current filters and time range."
+            noResultsMessage={tFeatures("evalsMore:sample.noResults")}
           />
         </div>
       </section>

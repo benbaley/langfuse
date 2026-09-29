@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 /* eslint-disable @repo/no-style-props, @repo/no-abstracted-overlay-trigger */
 import * as React from "react";
 import { Check, ChevronDown, Plus } from "lucide-react";
@@ -44,6 +45,7 @@ export function SingleSelect({
   /** Shows the stable option value in muted brackets after its display label. */
   showOptionValue?: boolean;
 }) {
+  const { t } = useTranslation("filters");
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
 
@@ -153,7 +155,7 @@ export function SingleSelect({
               )}
               title={selectedTitle}
             >
-              {label ?? title ?? "Select"}
+              {label ?? title ?? t("ui.select")}
             </span>
             {shouldShowOptionValue(selectedOption) && selectedOption ? (
               <span
@@ -274,7 +276,7 @@ export function SingleSelect({
                 >
                   <Plus className="mr-2 h-4 w-4 shrink-0 opacity-50" />
                   <div className="overflow-x-hidden text-ellipsis whitespace-nowrap">
-                    Use &ldquo;{search.trim()}&rdquo;
+                    {t("ui.useValue", { value: search.trim() })}
                   </div>
                 </InputCommandItem>
               </InputCommandGroup>

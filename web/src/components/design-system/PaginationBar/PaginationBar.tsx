@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 /* eslint-disable boundaries/dependencies */
 import {
   ChevronLeft,
@@ -38,6 +39,8 @@ function PageNumberInput({
   pageCount: number;
   onNavigate: (pageIndex: number) => void;
 }) {
+const { t: tUi } = useTranslation("uiMore");
+
   const [value, setValue] = useState<number | string>(currentPage);
 
   const submit = (nextValue: string) => {
@@ -53,7 +56,7 @@ function PageNumberInput({
 
   return (
     <Input
-      aria-label="Page number"
+      aria-label={tUi("pageNumber")}
       type="number"
       min={1}
       max={pageCount}
@@ -79,6 +82,8 @@ export function PaginationBar({
   onChange,
   pageSizeOptions = [10, 20, 30, 40, 50],
 }: PaginationBarProps) {
+const { t: tUi } = useTranslation("uiMore");
+
   const pageCount = Math.max(1, Math.ceil((totalCount ?? 0) / state.pageSize));
   const currentPage = state.pageIndex + 1;
   const canGoBack = state.pageIndex > 0;
@@ -88,12 +93,8 @@ export function PaginationBar({
     <div className="bg-background @container/pagination sticky bottom-0 z-10 flex w-full min-w-0 justify-end border-t py-2 pr-2 font-bold">
       <div className="flex min-w-0 flex-wrap items-center justify-end gap-x-4 gap-y-2 @min-[520px]/pagination:gap-x-6 @min-[720px]/pagination:gap-x-8">
         <div className="flex shrink-0 items-center gap-2">
-          <span className="text-sm whitespace-nowrap @min-[440px]/pagination:hidden">
-            Rows
-          </span>
-          <span className="hidden text-sm whitespace-nowrap @min-[440px]/pagination:block">
-            Rows per page
-          </span>
+          <span className="text-sm whitespace-nowrap @min-[440px]/pagination:hidden">{tUi("rows")}</span>
+          <span className="hidden text-sm whitespace-nowrap @min-[440px]/pagination:block">{tUi("rowsPerPage")}</span>
           <Select
             value={`${state.pageSize}`}
             onValueChange={(value) => {
@@ -136,7 +137,7 @@ export function PaginationBar({
                 icon={ChevronsLeft}
                 onClick={() => onChange({ ...state, pageIndex: 0 })}
                 disabled={!canGoBack}
-                label="Go to first page"
+                label={tUi("firstPage")}
                 variant="outline"
               />
             </span>
@@ -146,7 +147,7 @@ export function PaginationBar({
                 onChange({ ...state, pageIndex: state.pageIndex - 1 })
               }
               disabled={!canGoBack}
-              label="Go to previous page"
+              label={tUi("previousPage")}
               variant="outline"
             />
             <IconButton
@@ -155,7 +156,7 @@ export function PaginationBar({
                 onChange({ ...state, pageIndex: state.pageIndex + 1 })
               }
               disabled={!canGoForward}
-              label="Go to next page"
+              label={tUi("nextPage")}
               variant="outline"
             />
             <span className="hidden @min-[560px]/pagination:inline-flex">
@@ -163,7 +164,7 @@ export function PaginationBar({
                 icon={ChevronsRight}
                 onClick={() => onChange({ ...state, pageIndex: pageCount - 1 })}
                 disabled={!canGoForward}
-                label="Go to last page"
+                label={tUi("lastPage")}
                 variant="outline"
               />
             </span>

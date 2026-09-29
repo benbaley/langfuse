@@ -130,6 +130,7 @@ import {
 import { resetStaleDefaultColumnOrder } from "@/src/features/experiments/fns/experimentItemsColumnOrder";
 import { shouldIgnoreRowClickTarget } from "@/src/components/table/shouldIgnoreRowClickTarget";
 import { resolveExperimentPeekTarget } from "@/src/features/experiments/fns/resolveExperimentPeekTarget";
+import { useTranslation } from "react-i18next";
 
 /**
  * A row on its way into the peek, carrying which experiment's cell was
@@ -532,6 +533,8 @@ export default function ExperimentItemsTable({
   hideControls = false,
   toolbarSettings,
 }: ExperimentItemsTableProps) {
+  const { t: tMore } = useTranslation("coreMore");
+  const { t: tFeatures } = useTranslation("features");
   const { setDetailPageList } = useDetailPageLists();
   const [selectedRows, setSelectedRows] = useState<RowSelectionState>({});
   const [showRunEvaluationDialog, setShowRunEvaluationDialog] = useState(false);
@@ -1297,7 +1300,7 @@ export default function ExperimentItemsTable({
 
   const expectedOutputColumn = createIOTableColumn<ExperimentItemsTableRow>({
     accessorKey: "expectedOutput",
-    header: "Expected Output",
+    header: tFeatures("ui.expectedOutput"),
     size: 300,
     enableHiding: true,
     // An empty expected output used to render as two literal quote characters.
@@ -1347,13 +1350,13 @@ export default function ExperimentItemsTable({
     ...(hideControls ? [] : [selectActionColumn]),
     createIdTableColumn<ExperimentItemsTableRow>({
       accessorKey: "itemId",
-      header: "Item ID",
+      header: tFeatures("ui.itemIdTitle"),
       size: 150,
       enableHiding: true,
     }),
     createIOTableColumn<ExperimentItemsTableRow>({
       accessorKey: "input",
-      header: "Input",
+      header: tFeatures("ui.input"),
       size: 300,
       enableHiding: true,
       getCell: (value) => (ioLoading ? { type: "loading" } : (value ?? null)),
@@ -1364,7 +1367,7 @@ export default function ExperimentItemsTable({
     // are the drill-down a regression sends you to (peek carries it too).
     {
       accessorKey: "observationScores",
-      header: "Observation Scores",
+      header: tFeatures("ui.observationScores"),
       id: "observationScores",
       enableHiding: true,
       cell: () => {
@@ -1376,7 +1379,7 @@ export default function ExperimentItemsTable({
     },
     {
       accessorKey: "traceScores",
-      header: "Trace Scores",
+      header: tFeatures("ui.traceScores"),
       id: "traceScores",
       enableHiding: true,
       cell: () => {
@@ -1392,7 +1395,7 @@ export default function ExperimentItemsTable({
     {
       accessorKey: "output",
       id: "output",
-      header: "Output",
+      header: tFeatures("ui.output"),
       size: 300,
       enableHiding: true,
       cell: ({ row }) => {
@@ -2024,8 +2027,8 @@ export default function ExperimentItemsTable({
         {
           id: ActionId.ObservationBatchEvaluation,
           type: BatchActionType.Create,
-          label: "Evaluate",
-          description: "Run evaluators on selected items",
+          label: tFeatures("ui.evaluate"),
+          description: tMore("experiments.evaluateItems"),
           icon: <LightbulbIcon className="h-4 w-4 sm:mr-2" />,
           customDialog: true,
           accessCheck: {
@@ -2166,7 +2169,7 @@ export default function ExperimentItemsTable({
               ) : (
                 <div className="flex flex-1 items-center justify-center">
                   <span className="text-muted-foreground text-sm">
-                    Please select a baseline experiment.
+                    {tFeatures("ui.pleaseSelectABaselineExperiment")}
                   </span>
                 </div>
               )
@@ -2209,7 +2212,7 @@ export default function ExperimentItemsTable({
               ) : (
                 <div className="flex flex-1 items-center justify-center">
                   <span className="text-muted-foreground text-sm">
-                    Please select a baseline experiment.
+                    {tFeatures("ui.pleaseSelectABaselineExperiment")}
                   </span>
                 </div>
               )
@@ -2234,7 +2237,7 @@ export default function ExperimentItemsTable({
                 noResultsMessage={
                   !hasSelectedRuns ? (
                     <span className="text-muted-foreground text-sm">
-                      Please select a baseline experiment.
+                      {tFeatures("ui.pleaseSelectABaselineExperiment")}
                     </span>
                   ) : scoreComparisonEmptyMessage ? (
                     <span className="text-muted-foreground text-sm">

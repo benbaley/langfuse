@@ -11,6 +11,7 @@ import {
 } from "@/src/features/traces/components/BreakdownTooltip";
 import { usdFormatter, formatTokenCounts } from "@/src/utils/numbers";
 import { InfoIcon } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export function CostBadge({
   totalCost,
@@ -53,6 +54,7 @@ export function UsageBadge({
   totalUsage: number;
   usageDetails: Record<string, number>;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const tokenText = formatTokenCounts(
     inputUsage,
     outputUsage,
@@ -69,7 +71,7 @@ export function UsageBadge({
       {tokenText ? (
         <Badge text={tokenText} trailingIcon={InfoIcon} />
       ) : (
-        <BadgeShell aria-label="View usage breakdown">
+        <BadgeShell aria-label={tFeatures("ui.viewUsageBreakdown")}>
           <InfoIcon aria-hidden className="size-3" />
         </BadgeShell>
       )}

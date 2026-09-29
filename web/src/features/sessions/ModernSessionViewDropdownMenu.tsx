@@ -1,7 +1,10 @@
 import { type TableViewPresetState } from "@langfuse/shared";
 import { Check, Filter, Settings2 } from "lucide-react";
 
-import { SESSION_DETAIL_SYSTEM_PRESETS } from "@/src/features/sessions/session-detail-presets";
+import {
+  SESSION_DETAIL_SYSTEM_PRESETS,
+  translateSessionDetailPreset,
+} from "@/src/features/sessions/session-detail-presets";
 import {
   DropdownMenuContent,
   DropdownMenuItem,
@@ -9,6 +12,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
 } from "@/src/components/ui/dropdown-menu";
+import { useTranslation } from "react-i18next";
 
 export type ModernSessionViewDropdownMenuControls = {
   matchingSystemPresetId: string | undefined;
@@ -29,30 +33,36 @@ export function ModernSessionViewDropdownMenu({
 }: {
   controls: ModernSessionViewDropdownMenuControls;
 }) {
+  const { t: tMore } = useTranslation("coreMore");
+  const { t: tFeatures } = useTranslation("features");
   return (
     <DropdownMenuContent align="end" className="w-72">
-      <DropdownMenuLabel>System Presets</DropdownMenuLabel>
-      {SESSION_DETAIL_SYSTEM_PRESETS.filter(
-        (preset) => preset.filters.length > 0,
-      ).map((preset) => (
-        <DropdownMenuItemWithSecondaryAction
-          key={preset.id}
-          title={preset.name}
-          onClick={() => controls.onApplyPreset(preset)}
-          // TODO: We are abusing the `secondaryAction` prop here to show a checkmark for the selected preset. This is not ideal, but it works for now. We should consider adding a `selected` prop to `DropdownMenuItemWithSecondaryAction` in the future.
-          secondaryAction={
-            controls.matchingSystemPresetId === preset.id
-              ? {
-                  icon: Check,
-                  ariaLabel: `${preset.name} selected`,
-                  onClick: () => controls.onApplyPreset(preset),
-                }
-              : undefined
-          }
-        />
-      ))}
+      <DropdownMenuLabel>{tFeatures("ui.systemPresets")}</DropdownMenuLabel>
+      {SESSION_DETAIL_SYSTEM_PRESETS.map((preset) =>
+        translateSessionDetailPreset(preset, tMore),
+      )
+        .filter((preset) => preset.filters.length > 0)
+        .map((preset) => (
+          <DropdownMenuItemWithSecondaryAction
+            key={preset.id}
+            title={preset.name}
+            onClick={() => controls.onApplyPreset(preset)}
+            // TODO: We are abusing the `secondaryAction` prop here to show a checkmark for the selected preset. This is not ideal, but it works for now. We should consider adding a `selected` prop to `DropdownMenuItemWithSecondaryAction` in the future.
+            secondaryAction={
+              controls.matchingSystemPresetId === preset.id
+                ? {
+                    icon: Check,
+                    ariaLabel: tMore("sessions.selectedView", {
+                      name: preset.name,
+                    }),
+                    onClick: () => controls.onApplyPreset(preset),
+                  }
+                : undefined
+            }
+          />
+        ))}
       <DropdownMenuSeparator />
-      <DropdownMenuLabel>Saved Views</DropdownMenuLabel>
+      <DropdownMenuLabel>{tFeatures("ui.savedViews")}</DropdownMenuLabel>
       {controls.savedViews.map((view) => (
         <DropdownMenuItemWithSecondaryAction
           key={view.id}
@@ -62,7 +72,9 @@ export function ModernSessionViewDropdownMenu({
             controls.matchingSavedViewId === view.id
               ? {
                   icon: Check,
-                  ariaLabel: `${view.name} selected`,
+                  ariaLabel: tMore("sessions.selectedView", {
+                    name: view.name,
+                  }),
                   onClick: () => controls.onApplySavedView(view),
                 }
               : undefined
@@ -70,17 +82,19 @@ export function ModernSessionViewDropdownMenu({
         />
       ))}
       {controls.savedViews.length === 0 ? (
-        <DropdownMenuItem disabled>No saved views</DropdownMenuItem>
+        <DropdownMenuItem disabled>
+          {tFeatures("ui.noSavedViews")}
+        </DropdownMenuItem>
       ) : null}
       <DropdownMenuSeparator />
       <DropdownMenuItemWithSecondaryAction
-        title="Manage Views"
+        title={tFeatures("ui.manageViews")}
         icon={Settings2}
         onClick={controls.onManageViews}
       />
       <DropdownMenuSeparator />
       <DropdownMenuItemWithSecondaryAction
-        title="Apply custom filter"
+        title={tFeatures("ui.applyCustomFilter")}
         icon={Filter}
         onClick={controls.onOpenFilterDialog}
       />

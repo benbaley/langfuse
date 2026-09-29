@@ -81,6 +81,7 @@ import { ObservationPreview } from "./ObservationPreview";
 import { ObservationAttributesTab } from "./ObservationAttributesTab";
 import { buildModelParameters } from "@/src/features/traces/fns/buildModelParameters";
 import { buildObservationAttributes } from "@/src/features/traces/fns/buildObservationAttributes";
+import { useTranslation } from "react-i18next";
 
 export interface ConnectedObservationDetailViewProps {
   observation: ObservationReturnTypeWithMetadata;
@@ -93,6 +94,8 @@ export function ConnectedObservationDetailView({
   projectId,
   traceId,
 }: ConnectedObservationDetailViewProps) {
+  const { t: tMore } = useTranslation("coreMore");
+  const { t: tFeatures } = useTranslation("features");
   const router = useRouter();
   // Tab and view state from URL (via SelectionContext)
   const {
@@ -379,21 +382,29 @@ export function ConnectedObservationDetailView({
           >
             <TooltipProvider>
               <TabsBarList>
-                <TabsBarTrigger value="preview">Preview</TabsBarTrigger>
-                <TabsBarTrigger value="attributes">Attributes</TabsBarTrigger>
+                <TabsBarTrigger value="preview">
+                  {tFeatures("ui.preview")}
+                </TabsBarTrigger>
+                <TabsBarTrigger value="attributes">
+                  {tFeatures("ui.attributes")}
+                </TabsBarTrigger>
                 {showScoresTab ? (
-                  <TabsBarTrigger value="scores">Scores</TabsBarTrigger>
+                  <TabsBarTrigger value="scores">
+                    {tFeatures("ui.scores")}
+                  </TabsBarTrigger>
                 ) : null}
                 {showLogViewTab ? (
                   <TabsBarTrigger value="log">
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <span>Log View</span>
+                        <span>{tFeatures("ui.logView")}</span>
                       </TooltipTrigger>
                       <TooltipContent className="text-xs">
                         {isLogViewVirtualized
                           ? `Shows all ${observations.length} observations with virtualization enabled.`
-                          : "Shows all observations concatenated. Great for quickly scanning through them."}
+                          : tFeatures(
+                              "ui.showsAllObservationsConcatenatedGreatForQuicklyScanningThroughThem",
+                            )}
                       </TooltipContent>
                     </Tooltip>
                   </TabsBarTrigger>
@@ -424,7 +435,7 @@ export function ConnectedObservationDetailView({
                           <Tabs.Trigger
                             value="pretty"
                             size="sm"
-                            label="Formatted"
+                            label={tFeatures("ui.formatted")}
                           />
                           {selectedTab === "log" && isLogViewVirtualized ? (
                             <HoverCard openDelay={200}>
@@ -444,15 +455,14 @@ export function ConnectedObservationDetailView({
                                 sideOffset={8}
                               >
                                 <p className="font-bold">
-                                  JSON view unavailable
+                                  {tFeatures("ui.jsonViewUnavailable")}
                                 </p>
                                 <p className="text-muted-foreground mt-1">
-                                  Disabled for traces with{" "}
-                                  {
-                                    TRACE_VIEW_CONFIG.logView
-                                      .virtualizationThreshold
-                                  }
-                                  + observations to maintain performance.
+                                  {tMore("traces.jsonDisabled", {
+                                    count:
+                                      TRACE_VIEW_CONFIG.logView
+                                        .virtualizationThreshold,
+                                  })}
                                 </p>
                               </HoverCardContent>
                             </HoverCard>
@@ -471,7 +481,7 @@ export function ConnectedObservationDetailView({
                             onCheckedChange={handleBetaToggle}
                           />
                           <span className="text-muted-foreground text-xs">
-                            Beta
+                            {tMore("ui.beta")}
                           </span>
                         </div>
                       )}

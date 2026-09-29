@@ -1,4 +1,5 @@
 /* eslint-disable no-nested-ternary */
+import { Trans, useTranslation } from "react-i18next";
 import { showErrorToast, showSuccessToast } from "@/src/features/notifications";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Pencil, Plus, Trash2, Webhook, X } from "lucide-react";
@@ -85,7 +86,7 @@ const webCalloutFormSchema = z
       if (!WEB_CALLOUT_HEADER_NAME_PATTERN.test(name)) {
         ctx.addIssue({
           code: "custom",
-          message: "Invalid header name.",
+          message: "settingsMore:validation.headerInvalid",
           path: ["headers", index, "name"],
         });
       }
@@ -93,7 +94,7 @@ const webCalloutFormSchema = z
       if (WEB_CALLOUT_BLOCKED_HEADER_NAMES.has(lowerName)) {
         ctx.addIssue({
           code: "custom",
-          message: "This header is set by Langfuse and cannot be customized.",
+          message: "settingsMore:validation.headerProtected",
           path: ["headers", index, "name"],
         });
       }
@@ -101,7 +102,7 @@ const webCalloutFormSchema = z
       if (seenHeaderNames.has(lowerName)) {
         ctx.addIssue({
           code: "custom",
-          message: "Header names must be unique.",
+          message: "settingsMore:validation.headerUnique",
           path: ["headers", index, "name"],
         });
       }
@@ -113,6 +114,7 @@ const webCalloutFormSchema = z
 type WebCalloutFormValues = z.infer<typeof webCalloutFormSchema>;
 
 export function WebCalloutSettingsPage(props: { projectId: string }) {
+  const { t } = useTranslation("settingsMore");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingEndpoint, setEditingEndpoint] =
     useState<WebCalloutEndpoint | null>(null);
@@ -130,11 +132,11 @@ export function WebCalloutSettingsPage(props: { projectId: string }) {
   const configuredEndpoint = endpoints.data?.[0];
   const canCreateEndpoint = !configuredEndpoint;
   const addEndpointDisabledReason = endpoints.isLoading
-    ? "Loading callout endpoint configuration."
+    ? t("callout.loading")
     : endpoints.isError
-      ? "Could not load the callout endpoint configuration."
+      ? t("callout.loadFailed")
       : !canCreateEndpoint
-        ? "Currently you can only create one callout per project."
+        ? t("callout.limit")
         : undefined;
 
   const openCreateDialog = () => {
@@ -151,11 +153,11 @@ export function WebCalloutSettingsPage(props: { projectId: string }) {
     () => [
       createTextTableColumn<WebCalloutEndpoint>({
         accessorKey: "name",
-        header: "Name",
+        header: t("common.name"),
       }),
       {
         accessorKey: "url",
-        header: "Endpoint",
+        header: t("callout.endpoint"),
         size: 576,
         cell: ({ getValue }) => {
           const url = getValue<string>();
@@ -168,17 +170,17 @@ export function WebCalloutSettingsPage(props: { projectId: string }) {
       },
       {
         accessorKey: "toastMessage",
-        header: "Toast Message",
+        header: t("callout.toast"),
         cell: ({ row }) => <ToastMessageCell endpoint={row.original} />,
       },
       {
         accessorKey: "requestHeaderKeys",
-        header: "Headers",
+        header: t("webhook.headers"),
         cell: ({ row }) => <HeaderList endpoint={row.original} />,
       },
       createStatusTableColumn<WebCalloutEndpoint, boolean>({
         accessorKey: "enabled",
-        header: "Status",
+        header: t("common.status"),
         getStatus: (enabled) => (enabled ? "active" : "disabled"),
       }),
       {
@@ -196,7 +198,7 @@ export function WebCalloutSettingsPage(props: { projectId: string }) {
                   <Pencil className="h-4 w-4" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Edit endpoint</TooltipContent>
+              <TooltipContent>{t("callout.edit")}</TooltipContent>
             </Tooltip>
             <DeleteEndpointDialogController
               projectId={props.projectId}
@@ -209,7 +211,7 @@ export function WebCalloutSettingsPage(props: { projectId: string }) {
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent>Delete endpoint</TooltipContent>
+                  <TooltipContent>{t("callout.delete")}</TooltipContent>
                 </Tooltip>
               )}
             </DeleteEndpointDialogController>
@@ -217,17 +219,15 @@ export function WebCalloutSettingsPage(props: { projectId: string }) {
         ),
       },
     ],
-    [openEditDialog, props.projectId],
+    [openEditDialog, props.projectId, t],
   );
 
   if (!hasAccess) {
     return (
       <div>
         <Alert>
-          <Alert.Title>Access Denied</Alert.Title>
-          <Alert.Description>
-            You do not have permission to manage integrations for this project.
-          </Alert.Description>
+          <Alert.Title>{t("common.accessDenied")}</Alert.Title>
+          <Alert.Description>{t("callout.accessDenied")}</Alert.Description>
         </Alert>
       </div>
     );
@@ -236,18 +236,20 @@ export function WebCalloutSettingsPage(props: { projectId: string }) {
   return (
     <div>
       <p className="text-primary mb-4 text-sm">
-        Configure a project-level callout. Your users can trigger a POST to an
-        endpoint on trace, observation, and session detail screens. This can be
-        used to integrate with your services to trigger workflows. See the docs{" "}
-        <a
-          href="https://langfuse.com/docs/observability/features/web-callouts"
-          target="_blank"
-          rel="noreferrer"
-          className="underline underline-offset-2"
-        >
-          here
-        </a>{" "}
-        for more info.
+        <Trans
+          t={t}
+          i18nKey="callout.fullDescription"
+          components={{
+            link: (
+              <a
+                href="https://langfuse.com/docs/observability/features/web-callouts"
+                target="_blank"
+                rel="noreferrer"
+                className="underline underline-offset-2"
+              />
+            ),
+          }}
+        />
       </p>
 
       <div className="mb-4 flex justify-end">
@@ -277,12 +279,10 @@ export function WebCalloutSettingsPage(props: { projectId: string }) {
           isLoading={endpoints.isLoading}
           noResults={
             endpoints.isError ? (
-              <span className="text-destructive">
-                Failed to load the callout endpoint. Please try again.
-              </span>
+              <span className="text-destructive">{t("callout.loadRetry")}</span>
             ) : (
               <span className="text-muted-foreground">
-                No callout endpoint configured.
+                {t("callout.empty")}
               </span>
             )
           }
@@ -296,6 +296,7 @@ function AddEndpointButton(props: {
   disabledReason?: string;
   onClick: () => void;
 }) {
+  const { t } = useTranslation("settingsMore");
   const button = (
     <Button
       disabled={Boolean(props.disabledReason)}
@@ -303,7 +304,8 @@ function AddEndpointButton(props: {
       onClick={props.onClick}
     >
       <Plus className="mr-1 h-4 w-4" />
-      Add endpoint
+
+      {t("callout.add")}
     </Button>
   );
 
@@ -322,10 +324,11 @@ function AddEndpointButton(props: {
 }
 
 function HeaderList(props: { endpoint: WebCalloutEndpoint }) {
+  const { t } = useTranslation("settingsMore");
   const headers = props.endpoint.requestHeaderKeys;
 
   if (headers.length === 0) {
-    return <span className="text-muted-foreground">None</span>;
+    return <span className="text-muted-foreground">{t("common.none")}</span>;
   }
 
   return (
@@ -351,20 +354,19 @@ function WebCalloutEndpointDialog(props: {
   onOpenChange: (open: boolean) => void;
   trigger: ReactNode;
 }) {
+  const { t } = useTranslation("settingsMore");
   const utils = api.useUtils();
   const upsertMutation = api.webCallouts.upsert.useMutation({
     onSuccess: async () => {
       await utils.webCallouts.invalidate();
       showSuccessToast({
-        title: props.endpoint
-          ? "Callout endpoint updated"
-          : "Callout endpoint created",
-        description: "Web callout configuration was saved.",
+        title: props.endpoint ? t("callout.updated") : t("callout.created"),
+        description: t("callout.saved"),
       });
       props.onOpenChange(false);
     },
     onError: (error) => {
-      showErrorToast("Failed to save callout endpoint", error.message);
+      showErrorToast(t("callout.saveFailed"), error.message);
     },
   });
 
@@ -402,18 +404,17 @@ function WebCalloutEndpointDialog(props: {
       <DialogContent size="lg">
         <DialogHeader>
           <DialogTitle>
-            {props.endpoint ? "Edit Callout Endpoint" : "Add Callout Endpoint"}
+            {props.endpoint ? t("callout.editTitle") : t("callout.addTitle")}
           </DialogTitle>
           <DialogDescription>
-            Langfuse sends a backend JSON POST when a user clicks a web callout
-            action.{" "}
+            {t("callout.formHint")}{" "}
             <a
               href="https://langfuse.com/docs/observability/features/web-callouts"
               target="_blank"
               rel="noreferrer"
               className="underline underline-offset-2"
             >
-              View docs
+              {t("callout.docs")}
             </a>
             .
           </DialogDescription>
@@ -430,11 +431,18 @@ function WebCalloutEndpointDialog(props: {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Name</FormLabel>
+                    <FormLabel>{t("common.name")}</FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage
+                      translateError={(message) =>
+                        typeof message === "string" &&
+                        message.startsWith("settingsMore:")
+                          ? t(message.slice("settingsMore:".length))
+                          : undefined
+                      }
+                    />
                   </FormItem>
                 )}
               />
@@ -444,7 +452,7 @@ function WebCalloutEndpointDialog(props: {
                 name="url"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Endpoint URL</FormLabel>
+                    <FormLabel>{t("blob.endpoint")}</FormLabel>
                     <FormControl>
                       <Input
                         placeholder="https://example.com/langfuse/callout"
@@ -452,10 +460,16 @@ function WebCalloutEndpointDialog(props: {
                       />
                     </FormControl>
                     <FormDescription>
-                      HTTP or HTTPS URL. Custom ports are allowed. The endpoint
-                      is called from the Langfuse backend.
+                      {t("callout.endpointHint")}
                     </FormDescription>
-                    <FormMessage />
+                    <FormMessage
+                      translateError={(message) =>
+                        typeof message === "string" &&
+                        message.startsWith("settingsMore:")
+                          ? t(message.slice("settingsMore:".length))
+                          : undefined
+                      }
+                    />
                   </FormItem>
                 )}
               />
@@ -466,10 +480,9 @@ function WebCalloutEndpointDialog(props: {
                 render={({ field }) => (
                   <FormItem className="flex items-center justify-between rounded-md border p-3">
                     <div>
-                      <FormLabel>Enabled</FormLabel>
+                      <FormLabel>{t("common.enabled")}</FormLabel>
                       <FormDescription>
-                        Shows the callout action in trace, observation, and
-                        session detail headers.
+                        {t("callout.enabledHint")}
                       </FormDescription>
                     </div>
                     <FormControl>
@@ -487,24 +500,27 @@ function WebCalloutEndpointDialog(props: {
                 name="toastMessage"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Toast message</FormLabel>
+                    <FormLabel>{t("callout.toastLabel")}</FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
-                    <FormDescription>
-                      Shown after the backend callout succeeds.
-                    </FormDescription>
-                    <FormMessage />
+                    <FormDescription>{t("callout.toastHint")}</FormDescription>
+                    <FormMessage
+                      translateError={(message) =>
+                        typeof message === "string" &&
+                        message.startsWith("settingsMore:")
+                          ? t(message.slice("settingsMore:".length))
+                          : undefined
+                      }
+                    />
                   </FormItem>
                 )}
               />
 
               <div>
-                <FormLabel>Headers</FormLabel>
+                <FormLabel>{t("webhook.headers")}</FormLabel>
                 <FormDescription className="mb-2">
-                  Optional headers added to the backend POST. Content-Type is
-                  set automatically. Leave values empty for existing header
-                  names to keep encrypted values.
+                  {t("callout.headersHint")}
                 </FormDescription>
                 <div className="space-y-2">
                   {fields.map((field, index) => {
@@ -527,9 +543,19 @@ function WebCalloutEndpointDialog(props: {
                           render={({ field }) => (
                             <FormItem>
                               <FormControl>
-                                <Input placeholder="Header name" {...field} />
+                                <Input
+                                  placeholder={t("llm.headerName")}
+                                  {...field}
+                                />
                               </FormControl>
-                              <FormMessage />
+                              <FormMessage
+                                translateError={(message) =>
+                                  typeof message === "string" &&
+                                  message.startsWith("settingsMore:")
+                                    ? t(message.slice("settingsMore:".length))
+                                    : undefined
+                                }
+                              />
                             </FormItem>
                           )}
                         />
@@ -543,13 +569,20 @@ function WebCalloutEndpointDialog(props: {
                                   placeholder={
                                     preservesExistingValue
                                       ? "***"
-                                      : "Header value"
+                                      : t("llm.headerValue")
                                   }
                                   type="password"
                                   {...field}
                                 />
                               </FormControl>
-                              <FormMessage />
+                              <FormMessage
+                                translateError={(message) =>
+                                  typeof message === "string" &&
+                                  message.startsWith("settingsMore:")
+                                    ? t(message.slice("settingsMore:".length))
+                                    : undefined
+                                }
+                              />
                             </FormItem>
                           )}
                         />
@@ -564,7 +597,9 @@ function WebCalloutEndpointDialog(props: {
                               <X className="h-4 w-4" />
                             </Button>
                           </TooltipTrigger>
-                          <TooltipContent>Remove header</TooltipContent>
+                          <TooltipContent>
+                            {t("callout.removeHeader")}
+                          </TooltipContent>
                         </Tooltip>
                       </div>
                     );
@@ -582,7 +617,8 @@ function WebCalloutEndpointDialog(props: {
                   }
                 >
                   <Plus className="mr-1 h-4 w-4" />
-                  Add header
+
+                  {t("callout.addHeader")}
                 </Button>
               </div>
             </DialogBody>
@@ -593,10 +629,10 @@ function WebCalloutEndpointDialog(props: {
                 variant="ghost"
                 onClick={() => props.onOpenChange(false)}
               >
-                Cancel
+                {t("common.cancel")}
               </Button>
               <Button type="submit" loading={upsertMutation.isPending}>
-                Save endpoint
+                {t("callout.save")}
               </Button>
             </DialogFooter>
           </form>
@@ -611,25 +647,26 @@ function DeleteEndpointDialogController(props: {
   endpoint: WebCalloutEndpoint;
   children: (control: { openDialog: () => void }) => ReactNode;
 }) {
+  const { t } = useTranslation("settingsMore");
   const utils = api.useUtils();
   const deleteMutation = api.webCallouts.delete.useMutation({
     onSuccess: async () => {
       await utils.webCallouts.invalidate();
       showSuccessToast({
-        title: "Callout endpoint deleted",
-        description: "The endpoint was removed from this project.",
+        title: t("callout.deleted"),
+        description: t("callout.deletedHint"),
       });
     },
     onError: (error) => {
-      showErrorToast("Failed to delete callout endpoint", error.message);
+      showErrorToast(t("callout.deleteFailed"), error.message);
     },
   });
 
   return (
     <ConfirmationDialogController
-      title="Delete Callout Endpoint"
-      text="This removes the configured endpoint and hides the web callout action."
-      confirmLabel="Delete endpoint"
+      title={t("callout.deleteTitle")}
+      text={t("callout.deleteHint")}
+      confirmLabel={t("callout.delete")}
       variant="destructive"
       loading={deleteMutation.isPending}
       onConfirm={() =>
@@ -687,22 +724,20 @@ export function WebCalloutIntegrationCard(props: {
   projectId: string;
   hasAccess: boolean;
 }) {
+  const { t } = useTranslation("settingsMore");
   return (
     <Card className="p-3">
       <div className="mb-4 flex items-center gap-2">
         <Webhook className="text-foreground h-5 w-5" />
-        <span className="font-bold">Web Callouts</span>
+        <span className="font-bold">{t("callout.title")}</span>
       </div>
-      <p className="text-primary mb-4 text-sm">
-        Send backend callouts from trace, observation, and session detail views
-        to your own application.
-      </p>
+      <p className="text-primary mb-4 text-sm">{t("callout.description")}</p>
       <ActionButton
         variant="secondary"
         hasAccess={props.hasAccess}
         href={`/project/${props.projectId}/settings/integrations/web-callouts`}
       >
-        Configure
+        {t("common.configure")}
       </ActionButton>
     </Card>
   );

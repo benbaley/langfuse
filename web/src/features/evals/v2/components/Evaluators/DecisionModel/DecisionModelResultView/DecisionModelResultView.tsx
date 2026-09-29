@@ -7,8 +7,9 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/src/components/ui/tooltip";
-import { QUESTION_TYPE_COPY } from "@/src/features/evals/v2/components/Evaluators/DecisionModel/QuestionTypeSelector/QuestionTypeSelector";
+import { getQuestionTypeCopy } from "@/src/features/evals/v2/components/Evaluators/DecisionModel/QuestionTypeSelector/QuestionTypeSelector";
 import { cn } from "@/src/utils/tailwind";
+import { useTranslation } from "react-i18next";
 
 export type DecisionModelQuestionResult = {
   questionId: string;
@@ -40,12 +41,17 @@ function confidenceTone(confidence: number) {
 }
 
 function ConfidenceBadge({ confidence }: { confidence: number }) {
+  const { t: tFeatures } = useTranslation("features");
   return (
     <span
       className={cn("font-mono text-xs", confidenceTone(confidence))}
-      title="How concentrated the distribution is (0–1). Not the winner's probability."
+      title={tFeatures(
+        "ui.howConcentratedTheDistributionIs01NotTheWinnerSProbability",
+      )}
     >
-      confidence {confidence.toFixed(2)}
+      {tFeatures("evalsMore:decision.confidence", {
+        value: confidence.toFixed(2),
+      })}
     </span>
   );
 }
@@ -57,12 +63,15 @@ function LevelDescriptionTooltip({
   index: number;
   description: string;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   return (
     <Tooltip>
       <TooltipTrigger
         type="button"
         className="text-muted-foreground focus-visible:ring-ring cursor-help rounded-sm focus-visible:ring-2 focus-visible:outline-none"
-        aria-label={`Level ${index} description`}
+        aria-label={tFeatures("evalsMore:decision.levelDescription", {
+          number: index,
+        })}
       >
         <InfoIcon className="h-3.5 w-3.5" aria-hidden="true" />
       </TooltipTrigger>
@@ -189,15 +198,26 @@ function ScoreDistribution({
 }
 
 function NoulGauge({ probability }: { probability: number }) {
-  const leaning = probability >= 0.5 ? "yes" : "no";
+  const { t: tFeatures } = useTranslation("features");
+  const leaning =
+    probability >= 0.5
+      ? tFeatures("evalsMore:decision.yes")
+      : tFeatures("evalsMore:decision.no");
   return (
     <div className="flex flex-col gap-1 text-xs">
       <div className="flex items-center justify-between font-mono">
-        <span className="text-muted-foreground">no</span>
-        <span className="font-bold">
-          P(yes) = {probability.toFixed(2)} → leaning {leaning}
+        <span className="text-muted-foreground">
+          {tFeatures("evalsMore:decision.no")}
         </span>
-        <span className="text-muted-foreground">yes</span>
+        <span className="font-bold">
+          {tFeatures("evalsMore:decision.probability", {
+            probability: probability.toFixed(2),
+            leaning,
+          })}
+        </span>
+        <span className="text-muted-foreground">
+          {tFeatures("evalsMore:decision.yes")}
+        </span>
       </div>
       <div className="bg-muted relative h-2 rounded-full">
         <span
@@ -249,7 +269,8 @@ function ResultVisual({ result }: { result: DecisionModelQuestionResult }) {
 }
 
 function ResultRow({ result }: { result: DecisionModelQuestionResult }) {
-  const copy = QUESTION_TYPE_COPY[result.type];
+  const { t: tFeatures } = useTranslation("features");
+  const copy = getQuestionTypeCopy(tFeatures)[result.type];
   return (
     <li className="flex flex-col gap-2 rounded-md border p-3">
       <div className="flex flex-wrap items-center justify-between gap-2">

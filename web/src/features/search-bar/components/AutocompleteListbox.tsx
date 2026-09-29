@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 // Presentational autocomplete listbox: a pure ARIA listbox over a
 // CompletionPlan. No context, no data fetching — it renders sections/options
 // and reports picks/highlights to the parent. The live composer wraps it in
@@ -38,6 +39,7 @@ export function AutocompleteListbox({
   onHighlight,
   listboxId = "search-bar-listbox",
 }: AutocompleteListboxProps) {
+  const { t } = useTranslation("filters");
   // Hover may only highlight on REAL pointer movement. When the list
   // re-renders under a stationary mouse (typing/pasting grows the popover),
   // Chromium fires synthetic mouseover events — honoring those would arm
@@ -69,7 +71,7 @@ export function AutocompleteListbox({
     <div
       id={listboxId}
       role="listbox"
-      aria-label="Search suggestions"
+      aria-label={t("ui.suggestions")}
       data-testid="search-bar-autocomplete"
       data-stage={plan.stage}
       className={cn(
@@ -83,26 +85,26 @@ export function AutocompleteListbox({
           data-testid="search-bar-autocomplete-loading"
           className="text-muted-foreground mx-1 flex min-h-8 items-center gap-2 px-3 text-xs"
         >
-          Loading values…
+          {t("ui.loadingValues")}
         </div>
       )}
       {!plan.loading && plan.sections.length === 0 && (
         <div className="text-muted-foreground mx-1 flex min-h-8 items-center gap-2 px-3 text-xs">
-          No suggestions
+          {t("ui.noSuggestions")}
         </div>
       )}
       {plan.sections.map((sec, i) => (
         <div
-          key={sec.title}
+          key={sec.titleKey ? t(sec.titleKey) : sec.title}
           role="group"
-          aria-label={sec.title}
+          aria-label={sec.titleKey ? t(sec.titleKey) : sec.title}
           className={cn(i > 0 && "mt-1.5 border-t pt-1.5")}
         >
           <div
             data-testid="search-bar-autocomplete-section"
             className="text-muted-foreground px-3 pt-1.5 pb-1 text-[10px] tracking-[0.06em] uppercase"
           >
-            {sec.title}
+            {sec.titleKey ? t(sec.titleKey) : sec.title}
           </div>
           {sec.options.map((o) => (
             <div
@@ -142,12 +144,12 @@ export function AutocompleteListbox({
               {o.kind === "value" && o.active && (
                 <Check
                   className="text-foreground/80 h-3.5 w-3.5 flex-none"
-                  aria-label="selected"
+                  aria-label={t("ui.selected")}
                 />
               )}
               {"detail" in o && o.detail !== undefined && (
                 <span className="text-muted-foreground ml-auto pl-6 font-sans text-[11px]">
-                  {o.detail}
+                  {o.detailKey ? t(o.detailKey) : o.detail}
                 </span>
               )}
             </div>

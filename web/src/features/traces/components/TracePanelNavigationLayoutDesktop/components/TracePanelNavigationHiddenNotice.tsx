@@ -14,8 +14,11 @@
 import { ObservationLevel } from "@langfuse/shared";
 import { useTraceData } from "@/src/features/traces/contexts/TraceDataContext";
 import { useViewPreferences } from "@/src/features/traces/contexts/ViewPreferencesContext";
+import { useTranslation } from "react-i18next";
 
 export function TracePanelNavigationHiddenNotice() {
+  const { t: tMore } = useTranslation("coreMore");
+  const { t: tFeatures } = useTranslation("features");
   const { hiddenObservationsCount } = useTraceData();
   const { minObservationLevel, setMinObservationLevel } = useViewPreferences();
 
@@ -32,8 +35,10 @@ export function TracePanelNavigationHiddenNotice() {
     <div className="flex shrink-0 items-center justify-end gap-1 border-b px-4 py-1">
       <span className="text-muted-foreground flex flex-col gap-1 text-xs sm:flex-row">
         <p>
-          {hiddenObservationsCount} hidden observations below{" "}
-          {minObservationLevel} level.
+          {tMore("traces.hiddenBelowLevel", {
+            count: hiddenObservationsCount,
+            level: minObservationLevel,
+          })}
         </p>
         <p
           className="cursor-pointer underline"
@@ -46,7 +51,7 @@ export function TracePanelNavigationHiddenNotice() {
             }
           }}
         >
-          Show all
+          {tFeatures("ui.showAll")}
         </p>
       </span>
     </div>

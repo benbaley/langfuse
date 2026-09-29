@@ -1,4 +1,5 @@
 /* eslint-disable no-nested-ternary */
+import { useTranslation } from "react-i18next";
 import React, {
   useCallback,
   useMemo,
@@ -142,6 +143,7 @@ function ColumnVisibilityListItem<TData, TValue>({
   columnVisibility: VisibilityState;
   isOrderable?: boolean;
 }) {
+  const { t } = useTranslation("common");
   const isFixedPosition = column.isFixedPosition ?? false;
   const { attributes, isDragging, listeners, setNodeRef, transform } =
     useSortable({
@@ -186,9 +188,9 @@ function ColumnVisibilityListItem<TData, TValue>({
           )}
           title={
             !column.enableHiding
-              ? "This column may not be hidden"
+              ? t("columnCannotHide")
               : isFixedPosition
-                ? "This column is fixed in position and cannot be hidden"
+                ? t("columnFixed")
                 : undefined
           }
         >
@@ -208,7 +210,7 @@ function ColumnVisibilityListItem<TData, TValue>({
           {...listeners}
           variant="ghost"
           size="xs"
-          title="Drag and drop to reorder columns"
+          title={t("reorderColumns")}
           className="invisible shrink-0 group-focus-within:visible group-hover:visible"
         >
           <Menu className="h-3 w-3" />
@@ -235,6 +237,7 @@ function GroupVisibilityHeader<TData, TValue>({
   children: React.ReactNode;
   toggleAll: () => void;
 }) {
+  const { t } = useTranslation("common");
   const { attributes, isDragging, listeners, setNodeRef, transform } =
     useSortable({
       id: column.accessorKey,
@@ -296,7 +299,7 @@ function GroupVisibilityHeader<TData, TValue>({
               {...listeners}
               variant="ghost"
               size="xs"
-              title="Drag and drop to reorder columns"
+              title={t("reorderColumns")}
               className="invisible group-focus-within:visible group-hover:visible"
             >
               <Menu className="h-3 w-3" />
@@ -349,6 +352,7 @@ export function DataTableColumnVisibilityFilter<TData, TValue>({
   isV4 = false,
   onColumnGroupToggle,
 }: ColumnVisibilityProps<TData, TValue>) {
+  const { t } = useTranslation("common");
   const capture = usePostHogClientCapture();
   const [openGroups, setOpenGroups] = React.useState<Record<string, boolean>>(
     {},
@@ -488,8 +492,8 @@ export function DataTableColumnVisibilityFilter<TData, TValue>({
               >
                 <span>
                   {count === total
-                    ? "Deselect All Columns"
-                    : "Select All Columns"}
+                    ? t("deselectAllColumns")
+                    : t("selectAllColumns")}
                 </span>
                 <span className="text-muted-foreground text-xs">{`${count}/${total}`}</span>
               </Button>
@@ -585,9 +589,9 @@ export function DataTableColumnVisibilityFilter<TData, TValue>({
           <Button
             variant="outline"
             size={triggerSize}
-            title="Show/hide columns"
+            title={t("showHideColumns")}
           >
-            <span>Columns</span>
+            <span>{t("columns")}</span>
             <div className="bg-input ml-1 rounded-sm px-1 text-xs">{`${count}/${total}`}</div>
           </Button>
         </Trigger>

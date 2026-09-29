@@ -77,6 +77,7 @@ import { createNumberTableColumn } from "@/src/components/design-system/table/co
 import { useOrderByState } from "@/src/features/orderBy";
 import { createUserTableColumn } from "@/src/components/design-system/table/columns/createUserTableColumn";
 import { EvaluatorAlertButton } from "@/src/features/evals/v2/components/Evaluators/EvaluatorAlertButton/EvaluatorAlertButton";
+import { useTranslation, useTranslation as useNavigationTranslation } from "react-i18next";
 
 type EvaluatorRow = RouterOutputs["evalsV2"]["list"]["evaluators"][number];
 
@@ -106,6 +107,7 @@ function EvaluatorsOverviewSelectionBar({
     selectedIds: string[];
   }) => void;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const rowSelection = useStore(selectionStore, (state) => state.rowSelection);
   const selectAll = useStore(selectionStore, (state) => state.selectAll);
   const selectedIds = Object.keys(rowSelection).filter(
@@ -127,7 +129,7 @@ function EvaluatorsOverviewSelectionBar({
         onClick={() => onDeleteSelection({ selectAll, selectedIds })}
       >
         <Trash2 className="h-4 w-4 sm:mr-2" />
-        <span className="hidden sm:inline">Delete</span>
+        <span className="hidden sm:inline">{tFeatures("ui.delete")}</span>
       </Button>
     </OverviewSelectionBar>
   );
@@ -173,6 +175,8 @@ function EvaluatorsTableToolbar({
 }
 
 export default function EvaluatorsPage() {
+  const { t: tNavigation } = useNavigationTranslation("navigation");
+  const { t: tFeatures } = useTranslation("features");
   const router = useRouter();
   const capture = usePostHogClientCapture();
   const projectId = router.query.projectId as string;
@@ -225,14 +229,14 @@ export default function EvaluatorsPage() {
               renderOptionSuffix: (model: string) =>
                 model === projectDefaultModel.defaultModel?.model ? (
                   <Badge variant="secondary" size="sm">
-                    Project default
+                    {tFeatures("ui.projectDefault")}
                   </Badge>
                 ) : null,
             }
           : facet,
       ),
     }),
-    [projectDefaultModel.defaultModel?.model],
+    [tFeatures, projectDefaultModel.defaultModel?.model],
   );
   const viewControllersRef = useRef<Pick<
     ReturnType<typeof useTableViewManager>,
@@ -340,7 +344,7 @@ export default function EvaluatorsPage() {
         isAllMatching: deleteAll,
       });
       showSuccessToast({
-        title: "Evaluators deleted",
+        title: tFeatures("ui.evaluatorsDeleted"),
         description: `${deletedCount} evaluator${deletedCount === 1 ? "" : "s"} deleted.`,
       });
       await Promise.all([
@@ -363,7 +367,7 @@ export default function EvaluatorsPage() {
       {
         accessorKey: "name",
         id: "name",
-        header: "Name",
+        header: tFeatures("ui.name"),
         size: 320,
         isFixedPosition: true,
         enableSorting: true,
@@ -376,7 +380,7 @@ export default function EvaluatorsPage() {
       {
         accessorKey: "status",
         id: "status",
-        header: "Status",
+        header: tFeatures("ui.status"),
         size: 130,
         enableHiding: true,
         cell: ({ row }) => (
@@ -429,7 +433,7 @@ export default function EvaluatorsPage() {
       {
         accessorKey: "type",
         id: "type",
-        header: "Type",
+        header: tFeatures("ui.type"),
         size: 160,
         enableHiding: true,
         enableSorting: true,
@@ -454,7 +458,7 @@ export default function EvaluatorsPage() {
       {
         accessorKey: "model",
         id: "model",
-        header: "Model",
+        header: tFeatures("ui.model"),
         size: 180,
         enableHiding: true,
         cell: ({ row }) => {
@@ -498,7 +502,7 @@ export default function EvaluatorsPage() {
       {
         accessorKey: "actions",
         id: "actions",
-        header: "Actions",
+        header: tFeatures("ui.actions"),
         size: 170,
         isFixedPosition: true,
         enableSorting: false,
@@ -541,6 +545,7 @@ export default function EvaluatorsPage() {
       },
     ],
     [
+      tFeatures,
       costs.data,
       costs.isPending,
       hasExecutionReadAccess,
@@ -615,7 +620,7 @@ export default function EvaluatorsPage() {
   return (
     <Page
       headerProps={{
-        title: "Evaluators",
+        title: tFeatures("ui.evaluators"),
         titleBadges: <V4MigrationUpdateRequiredBadge />,
         help: {
           description:
@@ -655,7 +660,7 @@ export default function EvaluatorsPage() {
                     selectedModel={null}
                     missingDefaultLabel="Set project default model"
                     loading={projectDefaultModel.update.isPending}
-                    loadingText="Setting model..."
+                    loadingText={tFeatures("ui.settingModel")}
                     disabled={
                       !projectDefaultModel.canUpdate ||
                       !projectDefaultModel.canRead ||
@@ -676,12 +681,12 @@ export default function EvaluatorsPage() {
             )}
             <Button onClick={() => setGalleryOpen(true)}>
               <Plus className="mr-2 h-4 w-4" />
-              New evaluator
+              {tFeatures("ui.newEvaluator")}
             </Button>
           </div>
         ),
         tabsProps: {
-          tabs: getEvalsV2Tabs(projectId),
+          tabs: getEvalsV2Tabs(projectId, tNavigation),
           activeTab: EVALS_V2_TABS.EVALUATORS,
         },
       }}

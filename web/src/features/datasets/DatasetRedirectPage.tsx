@@ -1,4 +1,5 @@
 import { type GetServerSideProps } from "next";
+import { useTranslation } from "react-i18next";
 
 // Keep the bare dataset URL as an alias only; tab content lives on explicit routes.
 export const getServerSideProps: GetServerSideProps = async (context) => {
@@ -20,5 +21,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 };
 
 export default function DatasetRedirectPage() {
-  return <div>Redirecting...</div>;
+  const { t: tFeatures } = useTranslation("features");
+  return <div>{tFeatures("ui.redirecting")}</div>;
 }

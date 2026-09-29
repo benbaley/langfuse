@@ -16,6 +16,7 @@ import useLocalStorage from "@/src/components/useLocalStorage";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics";
 import { getEvaluatorCreationAnalyticsProperties } from "@/src/features/evals/v2/fns/evaluators/getEvaluatorCreationAnalyticsProperties";
 import { api } from "@/src/utils/api";
+import { useTranslation } from "react-i18next";
 
 export function EvaluatorGalleryDialog({
   projectId,
@@ -30,6 +31,7 @@ export function EvaluatorGalleryDialog({
   onSelectTemplate: (template: GalleryTemplate) => void;
   onCreateFromScratch: (type: EvalTemplateType) => void;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const capture = usePostHogClientCapture();
   const [search, setSearch] = useState("");
   const [activeSection, setActiveSection] = useState<string>(
@@ -131,10 +133,11 @@ export function EvaluatorGalleryDialog({
         }}
       >
         <DialogHeader className="[&>div]:items-start [&>div>button]:-mt-1 [&>div>button]:-mr-2 [&>div>button]:flex [&>div>button]:size-8 [&>div>button]:items-center [&>div>button]:justify-center">
-          <DialogTitle>Add an evaluator</DialogTitle>
+          <DialogTitle>{tFeatures("ui.addAnEvaluator")}</DialogTitle>
           <DialogDescription>
-            Pick a template to start from or create a new evaluator from
-            scratch.
+            {tFeatures(
+              "ui.pickATemplateToStartFromOrCreateANewEvaluatorFromScratch",
+            )}
           </DialogDescription>
         </DialogHeader>
         <EvaluatorGalleryView

@@ -10,6 +10,7 @@ import { createDateTableColumn } from "@/src/components/design-system/table/colu
 import { createLinkTableColumn } from "@/src/components/design-system/table/columns/createLinkTableColumn";
 import { createTextTableColumn } from "@/src/components/design-system/table/columns/createTextTableColumn";
 import { type LangfuseColumnDef } from "@/src/components/table/types";
+import { useTranslation } from "react-i18next";
 
 export type DashboardTableRow = {
   id: string;
@@ -42,11 +43,12 @@ export function DashboardTable({
   onEdit: (dashboard: DashboardTableRow) => void;
   projectId: string;
 }) {
+  const { t: tApp } = useTranslation("app");
   const columns = useMemo<LangfuseColumnDef<DashboardTableRow>[]>(
     () => [
       createLinkTableColumn<DashboardTableRow>({
         accessorKey: "name",
-        header: "Name",
+        header: tApp("ui.name"),
         enableSorting: true,
         size: 200,
         getCell: (name, { row }) => {
@@ -63,7 +65,7 @@ export function DashboardTable({
       }),
       createTextTableColumn<DashboardTableRow>({
         accessorKey: "description",
-        header: "Description",
+        header: tApp("ui.description"),
         size: 300,
       }),
       createBadgeTableColumn<DashboardTableRow>({
@@ -71,7 +73,7 @@ export function DashboardTable({
         id: "ownerTag",
         accessorFn: (row) =>
           row.owner === "LANGFUSE" ? "Langfuse" : "Project",
-        header: "Owner",
+        header: tApp("ui.Owner"),
         size: 80,
         getBadge: (owner) => ({
           value: owner,
@@ -80,20 +82,20 @@ export function DashboardTable({
       }),
       createDateTableColumn<DashboardTableRow>({
         accessorKey: "createdAt",
-        header: "Created At",
+        header: tApp("ui.CreatedAt"),
         enableSorting: true,
         mode: "relative",
         size: 80,
       }),
       createDateTableColumn<DashboardTableRow>({
         accessorKey: "updatedAt",
-        header: "Updated At",
+        header: tApp("ui.UpdatedAt"),
         enableSorting: true,
         mode: "relative",
         size: 80,
       }),
     ],
-    [projectId],
+    [tApp, projectId],
   );
   const actions = useCallback<
     NonNullable<TableProps<DashboardTableRow>["actions"]>
@@ -102,7 +104,7 @@ export function DashboardTable({
       {
         id: "edit",
         type: "item",
-        title: "Edit",
+        title: tApp("ui.edit"),
         icon: Edit,
         disabled: hasAccess
           ? undefined
@@ -112,7 +114,7 @@ export function DashboardTable({
       {
         id: "clone",
         type: "item",
-        title: "Clone",
+        title: tApp("ui.clone"),
         icon: Copy,
         disabled: hasAccess
           ? undefined
@@ -125,7 +127,7 @@ export function DashboardTable({
             {
               id: "delete",
               type: "item" as const,
-              title: "Delete",
+              title: tApp("ui.delete"),
               icon: Trash2,
               variant: "destructive" as const,
               disabled: hasAccess
@@ -138,7 +140,7 @@ export function DashboardTable({
           ]
         : []),
     ],
-    [hasAccess, onClone, onDelete, onEdit],
+    [tApp, hasAccess, onClone, onDelete, onEdit],
   );
 
   return (

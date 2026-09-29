@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useMemo } from "react";
 import { MarkdownJsonViewHeader } from "@/src/components/ui/MarkdownJsonView";
 import { PrettyJsonView } from "@/src/components/ui/PrettyJsonView";
@@ -27,7 +28,8 @@ export function StatusMessageSection({
   status: ObservationStatusMessage;
   currentView: "pretty" | "json";
 }) {
-  const presentation = getStatusMessagePresentation(status.level);
+  const { t: tMore } = useTranslation("coreMore");
+  const presentation = getStatusMessagePresentation(status.level, tMore);
   const parsedStatusMessage = useMemo(
     () => parseStructuredStatusMessage(status.message),
     [status.message],

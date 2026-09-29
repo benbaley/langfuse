@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { type Role } from "@langfuse/shared";
 import { useId } from "react";
@@ -57,6 +58,7 @@ export function CreateProjectMemberDialog({
   createProjectMember,
   onSuccess,
 }: CreateProjectMemberDialogProps) {
+  const { t } = useTranslation("settings");
   const formId = useId();
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -88,15 +90,17 @@ export function CreateProjectMemberDialog({
     <Dialog
       actions={[
         {
-          label: "Grant access",
+          label: t("grantAccess"),
           type: "submit",
           form: formId,
           loading: isPending,
         },
       ]}
-      title={`Add new member to the ${
-        hasOnlySingleProjectAccess ? "project" : "organization"
-      }`}
+      title={t(
+        hasOnlySingleProjectAccess
+          ? "addProjectMember"
+          : "addOrganizationMember",
+      )}
     >
       <Form {...form}>
         <form
@@ -110,7 +114,7 @@ export function CreateProjectMemberDialog({
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel>{t("email")}</FormLabel>
                   <FormControl>
                     <Input placeholder="jsdoe@example.com" {...field} />
                   </FormControl>
@@ -124,7 +128,7 @@ export function CreateProjectMemberDialog({
                 name="orgRole"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Organization Role</FormLabel>
+                    <FormLabel>{t("organizationRole")}</FormLabel>
                     <Select
                       defaultValue={field.value}
                       onValueChange={(value) =>
@@ -135,7 +139,9 @@ export function CreateProjectMemberDialog({
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select an organization role" />
+                          <SelectValue
+                            placeholder={t("selectOrganizationRole")}
+                          />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -155,7 +161,7 @@ export function CreateProjectMemberDialog({
                 name="projectRole"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Project Role</FormLabel>
+                    <FormLabel>{t("projectRole")}</FormLabel>
                     <Select
                       defaultValue={field.value}
                       onValueChange={(value) =>
@@ -166,7 +172,7 @@ export function CreateProjectMemberDialog({
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select a project role" />
+                          <SelectValue placeholder={t("selectProjectRole")} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -187,8 +193,7 @@ export function CreateProjectMemberDialog({
                     </Select>
                     {!hasOnlySingleProjectAccess && (
                       <FormDescription>
-                        This project role will override the default role for
-                        this current project ({project.name}).
+                        {t("projectRoleDescription")} ({project.name}).
                       </FormDescription>
                     )}
                     <FormMessage />

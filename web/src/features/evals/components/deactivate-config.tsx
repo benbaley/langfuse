@@ -7,6 +7,7 @@ import { ConfirmationDialogController } from "@/src/components/design-system/Con
 import { Switch } from "@/src/components/design-system/Switch/Switch";
 import { isLegacyEvalTarget } from "@/src/features/evals/utils/typeHelpers";
 import { useEvalCapabilities } from "@/src/features/evals/hooks/useEvalCapabilities";
+import { useTranslation } from "react-i18next";
 
 export function DeactivateEvalConfig({
   projectId,
@@ -18,6 +19,7 @@ export function DeactivateEvalConfig({
   /** Called when the user confirms an activate/deactivate toggle. */
   onStatusChange?: () => void;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const utils = api.useUtils();
   const hasAccess = useHasProjectAccess({
     projectId,
@@ -74,11 +76,17 @@ export function DeactivateEvalConfig({
 
   return (
     <ConfirmationDialogController
-      title={isActive ? "Deactivate evaluator?" : "Activate evaluator?"}
+      title={
+        isActive
+          ? tFeatures("ui.deactivateEvaluator")
+          : tFeatures("ui.activateEvaluator")
+      }
       text={
         isActive
           ? "This action will deactivate the evaluator. No more traces will be evaluated based on this evaluator."
-          : "This action will activate the evaluator. New traces will be evaluated based on this evaluator."
+          : tFeatures(
+              "ui.thisActionWillActivateTheEvaluatorNewTracesWillBeEvaluatedBasedOnThisEvaluator",
+            )
       }
       confirmLabel={isActive ? "Deactivate" : "Activate"}
       variant={isActive ? "destructive" : "default"}
@@ -98,8 +106,9 @@ export function DeactivateEvalConfig({
             color="green"
             onClick={openDialog}
             {...(reactivationBlocked && {
-              title:
-                "Deprecated evaluators cannot be reactivated. Migrate to the new evaluators instead.",
+              title: tFeatures(
+                "ui.deprecatedEvaluatorsCannotBeReactivatedMigrateToTheNewEvaluatorsInstead",
+              ),
             })}
           />
         </div>

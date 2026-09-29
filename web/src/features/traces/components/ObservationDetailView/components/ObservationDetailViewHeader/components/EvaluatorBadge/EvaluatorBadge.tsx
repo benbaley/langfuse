@@ -2,6 +2,7 @@ import { ExternalLinkIcon } from "lucide-react";
 import Link from "next/link";
 
 import { Badge } from "@/src/components/design-system/Badge/Badge";
+import { useTranslation } from "react-i18next";
 
 export function EvaluatorBadge({
   evaluatorId,
@@ -12,6 +13,7 @@ export function EvaluatorBadge({
   evaluatorName?: string | null;
   projectId: string;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   return (
     <Link
       href={`/project/${projectId}/evals/v2/${encodeURIComponent(evaluatorId)}`}
@@ -20,7 +22,11 @@ export function EvaluatorBadge({
       className="ph-no-capture inline-flex"
     >
       <Badge
-        text={evaluatorName ? `Evaluator: ${evaluatorName}` : "Evaluator"}
+        text={
+          evaluatorName
+            ? `Evaluator: ${evaluatorName}`
+            : tFeatures("ui.evaluator")
+        }
         trailingIcon={ExternalLinkIcon}
       />
     </Link>

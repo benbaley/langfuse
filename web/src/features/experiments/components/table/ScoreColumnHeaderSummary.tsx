@@ -9,10 +9,7 @@ import {
   TooltipTrigger,
 } from "@/src/components/ui/tooltip";
 import { DiffLabel } from "@/src/features/datasets";
-import {
-  getScoreDataTypeExplanation,
-  splitScoreDataTypeIcon,
-} from "@/src/features/scores";
+import { splitScoreDataTypeIcon } from "@/src/features/scores";
 import {
   type ScoreColumnDataType,
   type ScoreColumnSummary,
@@ -21,12 +18,7 @@ import {
   formatScoreColumnAggregate,
   formatScoreValue,
 } from "@/src/features/experiments/fns/formatScoreColumnAggregate";
-
-const DIFF_LABEL_TITLES: Record<ScoreColumnDataType, string> = {
-  NUMERIC: "average",
-  BOOLEAN: "true-rate",
-  CATEGORICAL: "modal value",
-};
+import { useTranslation } from "react-i18next";
 
 /** The type, quietly: the marker the column already had, now explained. */
 const ScoreDataTypeMarker = ({
@@ -35,18 +27,21 @@ const ScoreDataTypeMarker = ({
 }: {
   icon: string;
   dataType: ScoreColumnDataType;
-}) => (
-  <Tooltip>
-    <TooltipTrigger asChild>
-      <span className="text-muted-foreground shrink-0 cursor-default">
-        {icon}
-      </span>
-    </TooltipTrigger>
-    <TooltipContent className="max-w-[280px]">
-      {getScoreDataTypeExplanation(dataType)}
-    </TooltipContent>
-  </Tooltip>
-);
+}) => {
+  const { t: tMore } = useTranslation("coreMore");
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <span className="text-muted-foreground shrink-0 cursor-default">
+          {icon}
+        </span>
+      </TooltipTrigger>
+      <TooltipContent className="max-w-[280px]">
+        {tMore(`experiments.scoreType.${dataType}`)}
+      </TooltipContent>
+    </Tooltip>
+  );
+};
 
 const SummaryRow = ({
   label,
@@ -89,6 +84,8 @@ export const ScoreColumnHeaderSummary = ({
   /** The column's way into the score comparison filter, rendered beside the name. */
   filterMenu?: React.ReactNode;
 }) => {
+  const { t: tMore } = useTranslation("coreMore");
+  const { t: tFeatures } = useTranslation("features");
   const { baseline, comparison, delta, movement } = summary;
   const { icon, label: nameLabel } = splitScoreDataTypeIcon(label);
   // A zero delta says nothing a reader cannot see from the two aggregates, so
@@ -140,7 +137,7 @@ export const ScoreColumnHeaderSummary = ({
                   {formatScoreColumnAggregate(baseline)}
                 </span>
               ) : (
-                <span>no values</span>
+                <span>{tMore("experiments.noValues")}</span>
               )}
               {/* Independent of the baseline's own aggregate: a score the
                 comparison recorded and this run has not yet is exactly the
@@ -148,9 +145,13 @@ export const ScoreColumnHeaderSummary = ({
               {comparison && (
                 <span
                   className="min-w-0 truncate"
-                  title={`vs ${formatScoreColumnAggregate(comparison)}`}
+                  title={tMore("experiments.versus", {
+                    value: formatScoreColumnAggregate(comparison),
+                  })}
                 >
-                  vs {formatScoreColumnAggregate(comparison)}
+                  {tMore("experiments.versus", {
+                    value: formatScoreColumnAggregate(comparison),
+                  })}
                 </span>
               )}
             </span>
@@ -209,48 +210,75 @@ export const ScoreColumnHeaderSummary = ({
         >
           <span className="text-xs font-bold break-all">{label}</span>
           <span className="text-muted-foreground text-[10px]">
-            {getScoreDataTypeExplanation(dataType)}
+            {tMore(`experiments.scoreType.${dataType}`)}
           </span>
           <SummaryRow
-            label={`${
-              hasBaseline ? "Baseline experiment" : "This experiment"
-            } (${DIFF_LABEL_TITLES[dataType]})`}
+            label={
+              hasBaseline
+                ? tMore("experiments.baselineAggregate", {
+                    aggregate: tMore(`experiments.aggregate.${dataType}`),
+                  })
+                : tMore("experiments.currentAggregate", {
+                    aggregate: tMore(`experiments.aggregate.${dataType}`),
+                  })
+            }
             value={
-              baseline ? formatScoreColumnAggregate(baseline) : "no values"
+              baseline
+                ? formatScoreColumnAggregate(baseline)
+                : tMore("experiments.noValues")
             }
           />
-          <SummaryRow label="Items scored" value={baseline?.count ?? 0} />
+          <SummaryRow
+            label={tFeatures("ui.itemsScored")}
+            value={baseline?.count ?? 0}
+          />
           {movement && (
             <>
               <SummaryRow
-                label={comparisonName ? `vs ${comparisonName}` : "Comparison"}
+                label={
+                  comparisonName
+                    ? `vs ${comparisonName}`
+                    : tFeatures("ui.comparison")
+                }
                 value={
                   comparison
                     ? formatScoreColumnAggregate(comparison)
-                    : "no values"
+                    : tMore("experiments.noValues")
                 }
               />
               {delta !== null && (
                 <SummaryRow
-                  label="Change"
+                  label={tFeatures("ui.change")}
                   value={`${delta > 0 ? "+" : ""}${formatScoreValue(delta)}`}
                 />
               )}
               {dataType === "CATEGORICAL" ? (
-                <SummaryRow label="Changed value" value={movement.changed} />
+                <SummaryRow
+                  label={tFeatures("ui.changedValue")}
+                  value={movement.changed}
+                />
               ) : (
                 <>
-                  <SummaryRow label="Improved" value={movement.improved} />
-                  <SummaryRow label="Regressed" value={movement.regressed} />
+                  <SummaryRow
+                    label={tFeatures("ui.improved")}
+                    value={movement.improved}
+                  />
+                  <SummaryRow
+                    label={tFeatures("ui.regressed")}
+                    value={movement.regressed}
+                  />
                 </>
               )}
-              <SummaryRow label="Unchanged" value={movement.unchanged} />
-              <SummaryRow label="Not scored" value={movement.notComparable} />
+              <SummaryRow
+                label={tFeatures("ui.unchanged")}
+                value={movement.unchanged}
+              />
+              <SummaryRow
+                label={tFeatures("ui.notScored")}
+                value={movement.notComparable}
+              />
               <span className="text-muted-foreground text-[10px]">
-                Not scored: only one of the two experiments has a score for the
-                item — or, for a categorical score, the item has no single value
-                to compare — so it counts as neither an improvement nor a
-                regression.
+                {tMore("experiments.notComparable")}
               </span>
             </>
           )}

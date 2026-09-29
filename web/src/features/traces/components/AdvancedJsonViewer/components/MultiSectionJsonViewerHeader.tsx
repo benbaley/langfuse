@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { ChevronRight, ChevronDown, MessageSquare } from "lucide-react";
 import type { SectionContext } from "../types";
 import { type MediaReturnType } from "@/src/features/media";
@@ -27,6 +28,7 @@ export function MultiSectionJsonViewerHeader({
   media,
   commentCount,
 }: MultiSectionJsonViewerHeaderProps) {
+  const { t: tMore } = useTranslation("coreMore");
   return (
     <div
       style={{
@@ -64,7 +66,7 @@ export function MultiSectionJsonViewerHeader({
           fontSize: "0.65rem",
         }}
       >
-        {context.rowCount.toLocaleString()} keys
+        {tMore("io.keyCount", { total: context.rowCount.toLocaleString() })}
       </span>
       {commentCount !== undefined && commentCount > 0 && (
         <span

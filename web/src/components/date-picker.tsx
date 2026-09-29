@@ -2,6 +2,8 @@
 /* eslint-disable @repo/no-style-props, @repo/no-abstracted-overlay-trigger, @repo/no-margin-on-root-elements */
 "use client";
 
+import { useTranslation } from "react-i18next";
+import { enUS, zhCN } from "date-fns/locale";
 import * as React from "react";
 import { Calendar as CalendarIcon, X, ChevronDown } from "lucide-react";
 import { addMinutes, format } from "date-fns";
@@ -43,6 +45,10 @@ export function DatePicker({
   disabled?: boolean;
   includeTimePicker?: boolean;
 }) {
+const { t: tUi } = useTranslation("uiMore");
+
+  const { t, i18n } = useTranslation("common");
+  const locale = i18n.resolvedLanguage === "zh-CN" ? zhCN : enUS;
   return (
     <div className="flex flex-row gap-2 align-middle">
       <Popover>
@@ -58,9 +64,9 @@ export function DatePicker({
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
             {date ? (
-              format(date, includeTimePicker ? "PPP pp" : "PPP")
+              format(date, includeTimePicker ? "PPP pp" : "PPP", { locale })
             ) : (
-              <span>Pick a date</span>
+              <span>{t("pickDate")}</span>
             )}
           </Button>
         </PopoverTrigger>
@@ -81,7 +87,7 @@ export function DatePicker({
           variant="ghost"
           size="icon"
           onClick={() => onChange(undefined)}
-          title="reset date"
+          title={tUi("resetDate")}
         >
           <X size={14} />
         </Button>
@@ -140,6 +146,8 @@ export function DatePickerWithRange({
   setDateRangeAndOption,
   disabled,
 }: DatePickerWithRangeProps) {
+  const { t, i18n } = useTranslation("common");
+  const locale = i18n.resolvedLanguage === "zh-CN" ? zhCN : enUS;
   const [internalDateRange, setInternalDateRange] = useState<
     RDPDateRange | undefined
   >(dateRange);
@@ -239,14 +247,19 @@ export function DatePickerWithRange({
             {internalDateRange?.from ? (
               internalDateRange.to ? (
                 <>
-                  {format(internalDateRange.from, "LLL dd, yy : HH:mm")} -{" "}
-                  {format(internalDateRange.to, "LLL dd, yy : HH:mm")}
+                  {format(internalDateRange.from, "LLL dd, yy : HH:mm", {
+                    locale,
+                  })}{" "}
+                  -{" "}
+                  {format(internalDateRange.to, "LLL dd, yy : HH:mm", {
+                    locale,
+                  })}
                 </>
               ) : (
-                format(internalDateRange.from, "LLL dd, y")
+                format(internalDateRange.from, "LLL dd, y", { locale })
               )
             ) : (
-              <span>Pick a date</span>
+              <span>{t("pickDate")}</span>
             )}
           </Button>
         </PopoverTrigger>
@@ -274,9 +287,7 @@ export function DatePickerWithRange({
           {internalDateRange?.from && internalDateRange.to && (
             <div className="flex flex-col gap-2 border-t-2 py-1.5 sm:flex-row sm:gap-0">
               <div className="px-3">
-                <p className="px-1 text-sm font-bold">
-                  Start<span className="hidden sm:inline"> time</span>
-                </p>
+                <p className="px-1 text-sm font-bold">{t("startTime")}</p>
                 <TimePicker
                   date={internalDateRange?.from}
                   setDate={onStartTimeSelection}
@@ -284,9 +295,7 @@ export function DatePickerWithRange({
                 />
               </div>
               <div className="px-3">
-                <p className="px-1 text-sm font-bold">
-                  End<span className="hidden sm:inline"> time</span>
-                </p>
+                <p className="px-1 text-sm font-bold">{t("endTime")}</p>
                 <TimePicker
                   date={internalDateRange?.to}
                   setDate={onEndTimeSelection}
@@ -332,6 +341,8 @@ export function TimeRangePicker({
   disabled,
   maxRangeMs,
 }: TimeRangePickerProps) {
+  const { t, i18n } = useTranslation("common");
+  const locale = i18n.resolvedLanguage === "zh-CN" ? zhCN : enUS;
   // Determine the range type
   const rangeType: "named" | "custom" | null = timeRange
     ? "from" in timeRange
@@ -503,8 +514,8 @@ export function TimeRangePicker({
   const getDisplayContent = () => {
     if (rangeType === "custom") {
       const customLabel = dateRange
-        ? formatDateRange(dateRange.from, dateRange.to)
-        : "Select from calendar";
+        ? formatDateRange(dateRange.from, dateRange.to, locale)
+        : t("selectCalendar");
       // Compact: drop the icon and truncate, like the named branch — a custom
       // range's long formatted string would otherwise overflow the tight
       // mobile Filters header.
@@ -531,9 +542,15 @@ export function TimeRangePicker({
         return (
           <span
             className="min-w-0 truncate"
-            title={setting?.label || namedRangeValue || undefined}
+            title={
+              (setting
+                ? t(`timeRange_${namedRangeValue}`, setting.label)
+                : namedRangeValue) || undefined
+            }
           >
-            {setting?.label || namedRangeValue}
+            {setting
+              ? t(`timeRange_${namedRangeValue}`, setting.label)
+              : namedRangeValue}
           </span>
         );
       }
@@ -542,22 +559,26 @@ export function TimeRangePicker({
           <span className="bg-muted h-5 w-10 rounded px-1.5 text-center text-xs leading-5">
             {setting?.abbreviation || namedRangeValue}
           </span>
-          <span>{setting?.label || namedRangeValue}</span>
+          <span>
+            {setting
+              ? t(`timeRange_${namedRangeValue}`, setting.label)
+              : namedRangeValue}
+          </span>
         </div>
       );
     }
     // No time range selected
     if (compact) {
       return (
-        <span className="min-w-0 truncate" title="Select time range">
-          Select time range
+        <span className="min-w-0 truncate" title={t("selectTimeRange")}>
+          {t("selectTimeRange")}
         </span>
       );
     }
     return (
       <div className="flex items-center gap-2">
         <CalendarIcon className="h-4 w-4" />
-        <span>Select time range</span>
+        <span>{t("selectTimeRange")}</span>
       </div>
     );
   };
@@ -609,7 +630,7 @@ export function TimeRangePicker({
               {internalDateRange?.from && internalDateRange.to && (
                 <div className="flex flex-col gap-3 border-t p-3">
                   <div className="flex flex-col gap-1">
-                    <p className="px-1 text-sm font-bold">Start time</p>
+                    <p className="px-1 text-sm font-bold">{t("startTime")}</p>
                     <TimePicker
                       date={internalDateRange?.from}
                       setDate={onStartTimeSelection}
@@ -617,7 +638,7 @@ export function TimeRangePicker({
                     />
                   </div>
                   <div className="flex flex-col gap-1">
-                    <p className="px-1 text-sm font-bold">End time</p>
+                    <p className="px-1 text-sm font-bold">{t("endTime")}</p>
                     <TimePicker
                       date={internalDateRange?.to}
                       setDate={onEndTimeSelection}
@@ -645,7 +666,7 @@ export function TimeRangePicker({
                     <span className="bg-muted h-5 w-10 rounded px-1.5 text-center text-xs leading-5">
                       {setting.abbreviation}
                     </span>
-                    <span>{setting.label}</span>
+                    <span>{t(`timeRange_${presetKey}`, setting.label)}</span>
                   </div>
                 );
               })}
@@ -658,7 +679,7 @@ export function TimeRangePicker({
                 <span className="bg-muted flex h-5 w-10 items-center justify-center rounded px-1.5 text-center text-xs">
                   <CalendarIcon className="h-3 w-3" />
                 </span>
-                <span>Select from calendar</span>
+                <span>{t("selectCalendar")}</span>
               </div>
             </div>
           )}

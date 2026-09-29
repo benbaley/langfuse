@@ -5,6 +5,7 @@ import { Button } from "@/src/components/ui/button";
 import { Label } from "@/src/components/ui/label";
 import { Textarea } from "@/src/components/ui/textarea";
 import { cn } from "@/src/utils/tailwind";
+import { useTranslation } from "react-i18next";
 
 export type NoulCriteriaDraft = { true: string; false: string };
 
@@ -19,6 +20,7 @@ export function NoulCriteriaEditor({
   criteria: NoulCriteriaDraft;
   onChange: (criteria: NoulCriteriaDraft) => void;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const id = useId();
   const hasContent = Boolean(criteria.true.trim() || criteria.false.trim());
   const [open, setOpen] = useState(hasContent);
@@ -33,9 +35,9 @@ export function NoulCriteriaEditor({
         aria-expanded={open}
         onClick={() => setOpen((value) => !value)}
       >
-        Refine what yes and no mean
+        {tFeatures("ui.refineWhatYesAndNoMean")}
         <span className="text-muted-foreground ml-1 font-normal">
-          (optional)
+          {tFeatures("ui.optional")}
         </span>
         <ChevronDown
           className={cn(
@@ -47,26 +49,26 @@ export function NoulCriteriaEditor({
       {open ? (
         <div className="grid gap-3 @md:grid-cols-2">
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor={`${id}-true`}>Yes means</Label>
+            <Label htmlFor={`${id}-true`}>{tFeatures("ui.yesMeans")}</Label>
             <Textarea
               id={`${id}-true`}
               value={criteria.true}
               onChange={(event) =>
                 onChange({ ...criteria, true: event.target.value })
               }
-              placeholder="The user clearly asks for money back, a refund, or a chargeback."
+              placeholder={tFeatures("evalsMore:decision.yesCriteria")}
               rows={3}
             />
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor={`${id}-false`}>No means</Label>
+            <Label htmlFor={`${id}-false`}>{tFeatures("ui.noMeans")}</Label>
             <Textarea
               id={`${id}-false`}
               value={criteria.false}
               onChange={(event) =>
                 onChange({ ...criteria, false: event.target.value })
               }
-              placeholder="A complaint or question without asking for money back."
+              placeholder={tFeatures("evalsMore:decision.noCriteria")}
               rows={3}
             />
           </div>

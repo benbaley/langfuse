@@ -15,6 +15,7 @@ import {
 import { cn } from "@/src/utils/tailwind";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics";
 import { baselineChangedProps } from "@/src/features/experiments/lib/analytics";
+import { useTranslation } from "react-i18next";
 
 type ExperimentBaselineControlsProps = {
   projectId: string;
@@ -31,6 +32,7 @@ export function ExperimentBaselineControls({
   onBaselineChange,
   onBaselineClear,
 }: ExperimentBaselineControlsProps) {
+  const { t: tFeatures } = useTranslation("features");
   const { experimentNames, isLoading } = useExperimentNames({
     projectId,
   });
@@ -84,7 +86,9 @@ export function ExperimentBaselineControls({
             );
             onBaselineChange(id);
           }}
-          placeholder={baselineName ?? baselineId ?? "Select baseline..."}
+          placeholder={
+            baselineName ?? baselineId ?? tFeatures("ui.selectBaseline")
+          }
           emptyText="No experiments found"
           searchPlaceholder="Search experiments..."
           disabled={isLoading}
@@ -111,8 +115,8 @@ export function ExperimentBaselineControls({
             onBaselineClear();
           }}
           disabled={isLoading}
-          title="Clear baseline"
-          aria-label="Clear baseline"
+          title={tFeatures("ui.clearBaseline")}
+          aria-label={tFeatures("ui.clearBaseline")}
         >
           <X className="h-4 w-4" />
         </Button>

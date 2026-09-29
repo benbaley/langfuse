@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import {
   SplashScreen,
   type ValueProposition,
@@ -10,40 +11,38 @@ export function AnnotationQueuesOnboarding({
 }: {
   projectId: string;
 }) {
+  const { t: tFeatures } = useTranslation("features");
+
   const valuePropositions: ValueProposition[] = [
     {
-      title: "Manage scoring workflows",
-      description:
-        "Create and manage annotation queues to streamline your scoring workflows",
+      title: tFeatures("evalsMore:onboarding.queuesManage"),
+      description: tFeatures("evalsMore:onboarding.queuesManageHelp"),
       icon: ClipboardCheck,
     },
     {
-      title: "Collaborate with annotators",
-      description:
-        "Invite team members to annotate and evaluate your LLM outputs",
+      title: tFeatures("evalsMore:onboarding.queuesCollaborate"),
+      description: tFeatures("evalsMore:onboarding.queuesCollaborateHelp"),
       icon: Users,
     },
     {
-      title: "Track annotation metrics",
-      description:
-        "Monitor annotation progress and quality metrics across your team",
+      title: tFeatures("evalsMore:onboarding.queuesMetrics"),
+      description: tFeatures("evalsMore:onboarding.queuesMetricsHelp"),
       icon: BarChart4,
     },
     {
-      title: "Baseline evaluation efforts",
-      description:
-        "Use annotation data as a baseline to evaluate your other evaluation metrics",
+      title: tFeatures("evalsMore:onboarding.queuesBaseline"),
+      description: tFeatures("evalsMore:onboarding.queuesBaselineHelp"),
       icon: GitMerge,
     },
   ];
 
   return (
     <SplashScreen
-      title="Get Started with Annotation Queues"
-      description="Annotation queues help you manage manual annotation/labeling for your LLM projects. Create queues, define annotation metrics, and track progress."
+      title={tFeatures("evalsMore:onboarding.queuesTitle")}
+      description={tFeatures("evalsMore:onboarding.queuesDescription")}
       valuePropositions={valuePropositions}
       primaryAction={{
-        label: "Create Annotation Queue",
+        label: tFeatures("evalsMore:onboarding.queuesCreate"),
         component: (
           <CreateOrEditAnnotationQueueButton
             variant="default"
@@ -53,7 +52,7 @@ export function AnnotationQueuesOnboarding({
         ),
       }}
       secondaryAction={{
-        label: "Learn More",
+        label: tFeatures("evalsMore:onboarding.learnMore"),
         href: "https://langfuse.com/docs/scores/annotation",
       }}
       videoSrc="https://static.langfuse.com/prod-assets/onboarding/annotation-queue-overview-v1.mp4"

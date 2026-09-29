@@ -8,6 +8,7 @@ import React, { useEffect, useCallback, useRef } from "react";
 import { ItemBadge } from "@/src/components/ItemBadge";
 import { useSessionDetailStore } from "@/src/features/sessions/SessionDetailStoreProvider";
 import { SessionTraceActionButtons } from "@/src/features/sessions/SessionTraceActionButtons";
+import { useTranslation } from "react-i18next";
 
 const TraceSkeleton = () => {
   return (
@@ -51,6 +52,7 @@ const TraceRow = React.memo(
     traceCommentCounts: Map<string, number> | undefined;
     showCorrections: boolean;
   }) => {
+    const { t: tFeatures } = useTranslation("features");
     return (
       <Card className="border-border shadow-none">
         <div className="grid md:grid-cols-[1fr_1px_358px] lg:grid-cols-[1fr_1px_30rem]">
@@ -99,7 +101,7 @@ const TraceRow = React.memo(
               />
             </div>
             <div className="flex-1">
-              <p className="mb-1 font-bold">Scores</p>
+              <p className="mb-1 font-bold">{tFeatures("ui.scores")}</p>
               <div className="flex flex-wrap content-start items-start gap-1">
                 <GroupedScoreBadges scores={trace.scores} />
               </div>

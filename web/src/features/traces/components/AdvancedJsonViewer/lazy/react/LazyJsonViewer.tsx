@@ -26,6 +26,7 @@ import { TreeRowModel } from "../treeRowModel";
 import { sourceFromSerialized } from "../asyncJsonSource";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics";
 import { reportError } from "@/src/utils/reportError";
+import { useTranslation } from "react-i18next";
 
 // Provisional main-thread budgets (LFE-14419) — the telemetry exists to LEARN
 // the right thresholds from prod, so treat these as starting guesses. An index
@@ -107,6 +108,7 @@ export function LazyJsonViewer({
   serialized,
   className,
 }: LazyJsonViewerProps) {
+  const { t: tFeatures } = useTranslation("features");
   // Per-mount, view-scoped store (lazy init — created once, not per render).
   // In `serialized` mode, build the engine from the existing JSON string; the
   // document passed to init is that string (see below). `useState` reads props
@@ -155,7 +157,7 @@ export function LazyJsonViewer({
         </div>
       ) : status === "error" ? (
         <div className="text-destructive flex h-full items-center justify-center p-4 text-sm">
-          Failed to read JSON: {error}
+          {tFeatures("ui.failedToReadJson")} {error}
         </div>
       ) : (
         <LazyJsonList store={store} />

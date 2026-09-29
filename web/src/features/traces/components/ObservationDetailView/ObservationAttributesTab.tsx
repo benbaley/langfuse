@@ -10,6 +10,7 @@ import {
   JSON_VIEW_RENDER_CHAR_LIMIT,
   probeJsonField,
 } from "@/src/features/traces/components/IOPreview/fns/jsonViewSizeGate";
+import { useTranslation } from "react-i18next";
 
 const SECTION_CLASS =
   "[&_.io-message-content]:px-3 [&_.io-message-header]:px-3";
@@ -34,6 +35,7 @@ export function ObservationAttributesTab({
   projectId: string;
   currentView: "pretty" | "json";
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const metadataActions: MetadataFilterActions = {
     projectId,
     filterTarget: "observations",
@@ -53,7 +55,7 @@ export function ObservationAttributesTab({
         {hasAttributes ? (
           <div className={SECTION_CLASS}>
             <PrettyJsonView
-              title="Attributes"
+              title={tFeatures("ui.attributes")}
               json={attributes}
               currentView={currentView}
               rowActions={(row) => (
@@ -71,7 +73,7 @@ export function ObservationAttributesTab({
         {modelParameters ? (
           <div className={SECTION_CLASS}>
             <PrettyJsonView
-              title="Model parameters"
+              title={tFeatures("ui.modelParameters")}
               json={modelParameters}
               currentView={currentView}
             />
@@ -81,7 +83,7 @@ export function ObservationAttributesTab({
           <div className={SECTION_CLASS}>
             {metadataTooLarge ? (
               <LargeJsonFieldFallback
-                title="Metadata"
+                title={tFeatures("ui.metadata")}
                 serialized={metadataProbe.serialized}
                 isString={metadataProbe.isString}
                 charCount={metadataProbe.size}
@@ -89,7 +91,7 @@ export function ObservationAttributesTab({
               />
             ) : (
               <PrettyJsonView
-                title="Metadata"
+                title={tFeatures("ui.metadata")}
                 json={metadata}
                 parsedJson={parsedMetadata}
                 currentView={currentView}
@@ -100,7 +102,9 @@ export function ObservationAttributesTab({
         ) : null}
         {!hasAttributes && !modelParameters && !hasMetadata ? (
           <p className="text-muted-foreground px-3 text-sm">
-            No attributes, model parameters or metadata on this observation.
+            {tFeatures(
+              "ui.noAttributesModelParametersOrMetadataOnThisObservation",
+            )}
           </p>
         ) : null}
       </div>

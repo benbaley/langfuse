@@ -11,6 +11,7 @@ import { BarListChartArea } from "@/src/features/dashboard/components/cards/BarL
 import { traceViewQuery } from "@/src/features/dashboard/lib/dashboard-utils";
 import { useScheduledDashboardExecuteQuery } from "@/src/features/dashboard/hooks/useDashboardQueryScheduler";
 import { cn } from "@/src/utils/tailwind";
+import { useTranslation } from "react-i18next";
 
 // Cap on bars fetched and rendered; matches TracesBarListChart. The top list
 // scrolls within the tile when they don't all fit.
@@ -40,6 +41,7 @@ export const UserChart = ({
   metricsVersion: ViewVersion;
   schedulerId?: string;
 }) => {
+  const { t: tApp } = useTranslation("app");
   const userCostQuery: QueryType = {
     view: "observations",
     dimensions: [{ field: "userId" }],
@@ -186,7 +188,7 @@ export const UserChart = ({
       // the top list scrolls internally.
       className={cn(className, "h-full")}
       cardContentClassName="min-h-0"
-      title="User consumption"
+      title={tApp("ui.UserConsumption")}
       isLoading={isLoading || user.isPending}
     >
       <TabComponent
@@ -211,7 +213,9 @@ export const UserChart = ({
                 ) : (
                   <NoDataOrLoading
                     isLoading={isLoading || user.isPending}
-                    description="Consumption per user is tracked by passing their ids on traces."
+                    description={tApp(
+                      "ui.ConsumptionPerUserIsTrackedByPassingTheirIdsOnTraces",
+                    )}
                     href="https://langfuse.com/docs/observability/features/users"
                     className="h-auto grow"
                   />

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { useRouter } from "next/router";
 import { api } from "@/src/utils/api";
@@ -7,6 +8,7 @@ import { Switch } from "@/src/components/design-system/Switch/Switch";
 import { useHasProjectAccess } from "@/src/features/rbac";
 
 export function PersonalNotificationSettings() {
+  const { t } = useTranslation("settingsMore");
   const router = useRouter();
   const projectId = router.query.projectId as string;
   const [isSaving, setIsSaving] = useState(false);
@@ -45,9 +47,9 @@ export function PersonalNotificationSettings() {
   if (isLoading || !preferences) {
     return (
       <div>
-        <Header title="Personal Notifications" />
+        <Header title={t("notifications.personal")} />
         <p className="text-muted-foreground mt-4 text-sm">
-          Loading preferences...
+          {t("notifications.loadingPreferences")}
         </p>
       </div>
     );
@@ -59,23 +61,22 @@ export function PersonalNotificationSettings() {
 
   return (
     <div>
-      <Header title="Personal Notifications" />
+      <Header title={t("notifications.personal")} />
       <div className="flex flex-col gap-4">
         <div>
-          <h3 className="text-lg font-bold">Email Notifications</h3>
+          <h3 className="text-lg font-bold">{t("notifications.email")}</h3>
           <p className="text-muted-foreground text-sm">
-            Manage your personal email notification preferences for this
-            project.
+            {t("notifications.personalHint")}
           </p>
         </div>
 
         <div className="flex items-center justify-between rounded-lg border p-4">
           <div className="flex flex-col gap-0.5">
             <Label htmlFor="comment-mention" className="text-base">
-              Comment Mentions
+              {t("notifications.mentions")}
             </Label>
             <p className="text-muted-foreground text-sm">
-              Receive an email when someone mentions you in a comment
+              {t("notifications.mentionsHint")}
             </p>
           </div>
           <Switch
@@ -90,7 +91,7 @@ export function PersonalNotificationSettings() {
       {updatePreference.isError && (
         <div className="border-destructive bg-destructive/10 mt-4 rounded-lg border p-4">
           <p className="text-destructive text-sm">
-            Failed to update notification preference. Please try again.
+            {t("notifications.updateFailed")}
           </p>
         </div>
       )}

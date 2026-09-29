@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import Header from "@/src/components/layouts/header";
 import { Alert } from "@/src/components/design-system/Alert/Alert";
 import { type RouterOutputs } from "@/src/utils/api";
@@ -17,9 +18,10 @@ export const PostHogStatusSection = ({
 }: {
   config: PostHogIntegrationConfig;
 }) => {
+  const { t, i18n } = useTranslation("settingsMore");
   return (
     <>
-      <Header title="Status" className="mt-8" />
+      <Header title={t("common.status")} className="mt-8" />
       {config.lastError && (
         <div className="mb-4">
           <Alert variant="destructive">
@@ -28,8 +30,8 @@ export const PostHogStatusSection = ({
                             enabled integration — so only promise "disabled" when it is. */}
             <Alert.Title>
               {config.enabled
-                ? "Last export failed"
-                : "Export disabled – action required"}
+                ? t("integrations.lastExportFailed")
+                : t("integrations.exportDisabled")}
             </Alert.Title>
             <Alert.Description>
               {config.lastError}
@@ -37,7 +39,7 @@ export const PostHogStatusSection = ({
                 <>
                   <br />
                   <span className="text-xs opacity-70">
-                    {new Date(config.lastErrorAt).toLocaleString()}
+                    {new Date(config.lastErrorAt).toLocaleString(i18n.language)}
                   </span>
                 </>
               )}
@@ -46,10 +48,11 @@ export const PostHogStatusSection = ({
         </div>
       )}
       <p className="text-primary text-sm">
-        Data synced until:{" "}
-        {config.lastSyncAt
-          ? new Date(config.lastSyncAt).toLocaleString()
-          : "Never (pending)"}
+        {t("integrations.syncedUntil", {
+          date: config.lastSyncAt
+            ? new Date(config.lastSyncAt).toLocaleString(i18n.language)
+            : t("integrations.never"),
+        })}
       </p>
     </>
   );

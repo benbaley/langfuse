@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { IconButton } from "@/src/components/design-system/IconButton/IconButton";
 import { copyTextToClipboard } from "@/src/utils/clipboard";
 import { Check, Copy } from "lucide-react";
@@ -26,6 +27,8 @@ const CodeBlock: FC<Props> = memo(
     showLanguage = true,
     variant = "default",
   }) => {
+const { t: tUi } = useTranslation("uiMore");
+
     const [isCopied, setIsCopied] = useState(false);
     const { resolvedTheme } = useTheme();
     const appliedTheme = theme ?? resolvedTheme;
@@ -38,7 +41,7 @@ const CodeBlock: FC<Props> = memo(
     const copyButton = (
       <IconButton
         icon={isCopied ? Check : Copy}
-        label="Copy code"
+        label={tUi("copyCode")}
         size="xs"
         variant={variant === "read-only" ? "ghost" : "subtle"}
         onClick={handleCopy}

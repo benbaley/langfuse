@@ -19,6 +19,7 @@ import {
   type MediaDescriptor,
 } from "@/src/components/ui/media/mediaUtils";
 import { cn } from "@/src/utils/tailwind";
+import { useTranslation } from "react-i18next";
 
 const MAX_CONCRETE_ENTRIES = 5;
 const WILDCARD_SHAPE_SAMPLE = 10;
@@ -139,6 +140,7 @@ function TreeRow({
   onSelect: (columnId: string, segments: PathSegment[]) => void;
   currentKey: string | null;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const key = pathKey(columnId, segments);
   const isOpen = expanded.has(key);
   const isCurrent = currentKey === key;
@@ -220,9 +222,9 @@ function TreeRow({
         {partial ? (
           <span
             className="text-dark-yellow shrink-0 self-center rounded border px-1 py-px text-[10px]"
-            title="Not present in every entry of this list"
+            title={tFeatures("ui.notPresentInEveryEntryOfThisList")}
           >
-            not in every entry
+            {tFeatures("evalsMore:mapping.notEveryEntry")}
           </span>
         ) : null}
         <span className="text-muted-foreground shrink-0 self-center rounded border px-1 py-px text-[10px] group-focus-within/row:hidden group-hover/row:hidden">
@@ -233,7 +235,7 @@ function TreeRow({
             className="text-primary-accent bg-primary-accent/10 shrink-0 self-center rounded border border-transparent px-1.5 py-px text-[10px] font-bold"
             title={`${variableLabel} currently maps to here`}
           >
-            current
+            {tFeatures("evalsMore:mapping.current")}
           </span>
         ) : null}
         <button
@@ -243,7 +245,7 @@ function TreeRow({
           title={`Pull ${variableLabel} from here`}
           onClick={() => onSelect(columnId, segments)}
         >
-          Use
+          {tFeatures("ui.use")}
         </button>
       </div>
 

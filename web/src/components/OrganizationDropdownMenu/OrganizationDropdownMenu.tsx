@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { DropdownMenu } from "@/src/components/design-system/DropdownMenu/DropdownMenu";
 import { PlusIcon, Settings } from "lucide-react";
 import { type Session } from "next-auth";
@@ -20,6 +21,7 @@ type OrganizationDropdownMenuProps = {
 );
 
 export function OrganizationDropdownMenu(props: OrganizationDropdownMenuProps) {
+  const { t } = useTranslation("settingsMore");
   const { canCreateOrganizations, children, getOrgPath } = props;
   const organizations = props.state === "loaded" ? props.organizations : null;
 
@@ -45,7 +47,9 @@ export function OrganizationDropdownMenu(props: OrganizationDropdownMenuProps) {
                 href: getOrgPath(organization.id),
                 secondaryAction: {
                   href: `/organization/${organization.id}/settings`,
-                  ariaLabel: `Go to settings for ${organization.name}`,
+                  ariaLabel: t("navigation.settingsFor", {
+                    name: organization.name,
+                  }),
                   icon: Settings,
                 },
               },
@@ -57,18 +61,18 @@ export function OrganizationDropdownMenu(props: OrganizationDropdownMenuProps) {
             {
               type: "item" as const,
               id: "create",
-              title: "New Organization",
+              title: t("navigation.newOrganization"),
               href: createOrganizationRoute,
               icon: PlusIcon,
             },
           ]
         : []),
     ],
-    [canCreateOrganizations, getOrgPath, organizations],
+    [canCreateOrganizations, getOrgPath, organizations, t],
   );
 
   return (
-    <DropdownMenu title="Organizations" items={items}>
+    <DropdownMenu title={t("navigation.organizations")} items={items}>
       {children}
     </DropdownMenu>
   );

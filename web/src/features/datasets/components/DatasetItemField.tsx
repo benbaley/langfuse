@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+import { translateDatasetFormError } from "../utils/translateDatasetFormError";
 import { useCallback, useMemo, useRef } from "react";
 import { type ReactCodeMirrorRef } from "@uiw/react-codemirror";
 
@@ -62,6 +64,7 @@ export const DatasetItemField = ({
   isFormField = false,
   onUploadMedia,
 }: DatasetItemFieldProps) => {
+  const { t: tMore } = useTranslation("coreMore");
   const editorRef = useRef<ReactCodeMirrorRef>(null);
   const showMediaUpload = isFormField && editable && !!onUploadMedia;
 
@@ -147,7 +150,13 @@ export const DatasetItemField = ({
         />
       )}
       {mediaChipPortals}
-      {isFormField && <FormMessage />}
+      {isFormField && (
+        <FormMessage
+          translateError={(message) =>
+            translateDatasetFormError(message, tMore)
+          }
+        />
+      )}
       {showErrors && hasSchemas && errors.length > 0 && (
         <DatasetItemFieldSchemaErrors errors={errors} showDatasetName={false} />
       )}

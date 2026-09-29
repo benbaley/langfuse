@@ -1,4 +1,5 @@
 /* eslint-disable @repo/no-abstracted-overlay-trigger, @repo/no-null-render */
+import { useTranslation } from "react-i18next";
 import { PlusIcon } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
 import {
@@ -29,6 +30,7 @@ export function CreateLLMApiKeyDialog({
    */
   hideTrigger?: boolean;
 }) {
+  const { t } = useTranslation("settings");
   const projectId = useProjectIdFromURL();
   const hasAccess = useHasProjectAccess({
     projectId,
@@ -49,13 +51,13 @@ export function CreateLLMApiKeyDialog({
         <DialogTrigger asChild>
           <Button variant="secondary">
             <PlusIcon className="mr-1.5 -ml-0.5 h-5 w-5" aria-hidden="true" />
-            Add LLM Connection
+            {t("addLlmConnection")}
           </Button>
         </DialogTrigger>
       )}
       <DialogContent className="max-h-[90%] min-w-[40vw] overflow-auto">
         <DialogHeader>
-          <DialogTitle>New LLM Connection</DialogTitle>
+          <DialogTitle>{t("newLlmConnection")}</DialogTitle>
         </DialogHeader>
         {open && (
           <CreateLLMApiKeyForm

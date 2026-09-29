@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { showSuccessToast, showErrorToast } from "@/src/features/notifications";
 import { useMemo } from "react";
 import { Button } from "@/src/components/ui/button";
@@ -34,6 +35,7 @@ export const BlobStorageIntegrationContainer = ({
   projectId: string;
   writeMode: V4WriteMode;
 }) => {
+  const { t } = useTranslation("settingsMore");
   const capture = usePostHogClientCapture();
   const { isLangfuseCloud } = useLangfuseCloudRegion();
   const { project } = useQueryProject();
@@ -124,18 +126,18 @@ export const BlobStorageIntegrationContainer = ({
         variant="secondary"
         loading={mutValidate.isPending}
         disabled={!config}
-        title="Test your saved configuration by uploading a small test file to your storage"
+        title={t("blob.validateHint")}
         onClick={() => {
           mutValidate.mutate({ projectId });
         }}
       >
-        Validate
+        {t("blob.validate")}
       </Button>
       <Button
         variant="secondary"
         loading={mutRunNow.isPending}
         disabled={!config?.enabled}
-        title="Trigger an immediate export of all data since the last sync"
+        title={t("blob.runNowHint")}
         onClick={() => {
           if (
             confirm(
@@ -145,7 +147,7 @@ export const BlobStorageIntegrationContainer = ({
             mutRunNow.mutate({ projectId });
         }}
       >
-        Run Now
+        {t("blob.runNow")}
       </Button>
       <Button
         variant="ghost"
@@ -160,7 +162,7 @@ export const BlobStorageIntegrationContainer = ({
             mutDelete.mutate({ projectId });
         }}
       >
-        Reset
+        {t("common.reset")}
       </Button>
     </BlobStorageIntegrationForm>
   );

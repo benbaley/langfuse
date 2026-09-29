@@ -29,6 +29,7 @@ import {
   type DatasetSchema,
 } from "../utils/datasetItemUtils";
 import { isValidDatasetJson } from "../utils/parseDatasetJson";
+import { useTranslation } from "react-i18next";
 
 const formSchema = z.object({
   input: z.string().refine(
@@ -36,8 +37,7 @@ const formSchema = z.object({
       return isValidDatasetJson(value);
     },
     {
-      message:
-        "Invalid input. Please provide a JSON object or double-quoted string.",
+      message: "datasets.validation.json",
     },
   ),
   expectedOutput: z.string().refine(
@@ -45,8 +45,7 @@ const formSchema = z.object({
       return isValidDatasetJson(value);
     },
     {
-      message:
-        "Invalid input. Please provide a JSON object or double-quoted string.",
+      message: "datasets.validation.json",
     },
   ),
   metadata: z.string().refine(
@@ -54,8 +53,7 @@ const formSchema = z.object({
       return isValidDatasetJson(value);
     },
     {
-      message:
-        "Invalid input. Please provide a JSON object or double-quoted string.",
+      message: "datasets.validation.json",
     },
   ),
 });
@@ -75,6 +73,7 @@ export const EditDatasetItemDialog = ({
   datasetItem,
   dataset,
 }: EditDatasetItemDialogProps) => {
+  const { t: tFeatures } = useTranslation("features");
   const [formError, setFormError] = useState<string | null>(null);
   const hasAccess = useHasProjectAccess({
     projectId: projectId,
@@ -137,7 +136,7 @@ export const EditDatasetItemDialog = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent size="xl">
         <DialogHeader>
-          <DialogTitle>Edit Dataset Item</DialogTitle>
+          <DialogTitle>{tFeatures("ui.editDatasetItem")}</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form
@@ -147,7 +146,8 @@ export const EditDatasetItemDialog = ({
             <DialogBody>
               {formError ? (
                 <p className="text-destructive mb-4">
-                  <span className="font-bold">Error:</span> {formError}
+                  <span className="font-bold">{tFeatures("ui.error")}</span>{" "}
+                  {formError}
                 </p>
               ) : null}
               <DatasetItemFields
@@ -168,7 +168,7 @@ export const EditDatasetItemDialog = ({
                 onClick={() => onOpenChange(false)}
                 disabled={updateDatasetItemMutation.isPending}
               >
-                Cancel
+                {tFeatures("ui.cancel")}
               </Button>
               <SaveChangesButton
                 control={form.control}
@@ -204,6 +204,7 @@ const SaveChangesButton = ({
   isPending: boolean;
   pendingUploads: PendingMediaUpload[];
 }) => {
+  const { t: tFeatures } = useTranslation("features");
   const [input, expectedOutput] = useWatch({
     control,
     name: ["input", "expectedOutput"],
@@ -226,7 +227,7 @@ const SaveChangesButton = ({
         pendingUploads.length > 0
       }
     >
-      Save changes
+      {tFeatures("ui.saveChanges")}
     </Button>
   );
 };

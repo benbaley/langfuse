@@ -5,8 +5,10 @@ import { ActionButton } from "@/src/components/ActionButton";
 import { PlusIcon } from "lucide-react";
 import { ConnectedDashboardWidgetTable } from "@/src/features/widgets";
 import { getDashboardTabs, DASHBOARD_TABS } from "@/src/features/navigation";
+import { useTranslation } from "react-i18next";
 
 export default function WidgetsPage() {
+  const { t: tNavigation } = useTranslation("navigation");
   const router = useRouter();
   const { projectId } = router.query as { projectId: string };
   const hasCUDAccess = useHasProjectAccess({
@@ -23,7 +25,7 @@ export default function WidgetsPage() {
           href: "https://langfuse.com/docs/metrics/features/custom-dashboards",
         },
         tabsProps: {
-          tabs: getDashboardTabs(projectId),
+          tabs: getDashboardTabs(projectId, tNavigation),
           activeTab: DASHBOARD_TABS.WIDGETS,
         },
         actionButtonsRight: (

@@ -19,6 +19,7 @@ import {
 import { getFinalModelParams } from "@/src/utils/getFinalModelParams";
 import { Pencil } from "lucide-react";
 import { ConfirmationDialogController } from "@/src/components/design-system/ConfirmationDialogController/ConfirmationDialogController";
+import { useTranslation } from "react-i18next";
 
 type DefaultEvalModelSuccessMessage = {
   title: string;
@@ -105,10 +106,15 @@ function DefaultEvalModelFields({
   setup: ReturnType<typeof useDefaultEvalModelSetup>;
   errorClassName?: string;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   return (
     <>
       <ModelParameters
-        customHeader={<p className="leading-none font-bold">LLM connection</p>}
+        customHeader={
+          <p className="leading-none font-bold">
+            {tFeatures("ui.llmConnection")}
+          </p>
+        }
         modelParams={setup.modelParams}
         availableModels={setup.availableModels}
         providerModelCombinations={setup.providerModelCombinations}
@@ -118,11 +124,12 @@ function DefaultEvalModelFields({
         formDisabled={!setup.hasWriteAccess}
       />
       <p className="text-muted-foreground text-xs">
-        Select a model which supports function calling.
+        {tFeatures("ui.selectAModelWhichSupportsFunctionCalling")}
       </p>
       {setup.formError ? (
         <p className={errorClassName}>
-          <span className="font-bold">Error:</span> {setup.formError}
+          <span className="font-bold">{tFeatures("ui.error")}</span>{" "}
+          {setup.formError}
         </p>
       ) : null}
     </>
@@ -136,6 +143,7 @@ export function DefaultEvalModelSetup({
   projectId: string;
   onSuccess?: () => void;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const [isEditing, setIsEditing] = useState(false);
   const setup = useDefaultEvalModelSetup({
     projectId,
@@ -144,7 +152,7 @@ export function DefaultEvalModelSetup({
       onSuccess?.();
     },
     successMessage: {
-      title: "Default evaluation model updated",
+      title: tFeatures("ui.defaultEvaluationModelUpdated"),
       description: "All running evaluators will use the new model.",
     },
   });
@@ -158,22 +166,21 @@ export function DefaultEvalModelSetup({
       <Card className="mt-3 flex flex-col gap-6">
         <CardContent>
           <p className="my-2 text-lg font-bold">
-            Set up LLM connection to use for evaluations
+            {tFeatures("ui.setUpLlmConnectionToUseForEvaluations")}
           </p>
           <ManageDefaultEvalModel
             projectId={projectId}
             variant="color-coded"
             setUpMessage={
               <>
-                LLM-as-a-judge evaluations require an LLM connection for
-                scoring. You can also specify a custom model for each evaluator.{" "}
+                {tFeatures("evalsMore:model.connectionHelp")}{" "}
                 <a
                   href="https://langfuse.com/docs/evaluation/evaluation-methods/llm-as-a-judge#how-llm-as-a-judge-works"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="underline"
                 >
-                  Learn more.
+                  {tFeatures("ui.learnMore")}
                 </a>
               </>
             }
@@ -208,7 +215,9 @@ export function DefaultEvalModelSetup({
               }}
             >
               <Pencil className="mr-2 h-4 w-4" />
-              {setup.selectedModel ? "Edit" : "Set up"}
+              {setup.selectedModel
+                ? tFeatures("ui.edit")
+                : tFeatures("ui.setUp")}
             </Button>
           </DialogTrigger>
           <DialogContent className="px-3 py-10">
@@ -216,7 +225,7 @@ export function DefaultEvalModelSetup({
               <DefaultEvalModelFields setup={setup} />
               <div className="mt-2 flex justify-end gap-2">
                 <Button variant="outline" onClick={() => setIsEditing(false)}>
-                  Cancel
+                  {tFeatures("ui.cancel")}
                 </Button>
                 {setup.selectedModel ? (
                   <UpdateButton
@@ -232,7 +241,7 @@ export function DefaultEvalModelSetup({
                     }
                     onClick={setup.executeUpsertMutation}
                   >
-                    Save
+                    {tFeatures("ui.save")}
                   </Button>
                 )}
               </div>
@@ -253,11 +262,12 @@ export function InlineDefaultEvalModelSetup({
   onSuccess?: () => void;
   submitLabel?: string;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const setup = useDefaultEvalModelSetup({
     projectId,
     onSuccess,
     successMessage: {
-      title: "Default evaluation model set",
+      title: tFeatures("ui.defaultEvaluationModelSet"),
       description: "LLM-as-a-judge evaluators can now use this model.",
     },
   });
@@ -298,6 +308,7 @@ function UpdateButton({
   error?: string;
   executeUpsertMutation: () => Promise<void>;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const hasWriteAccess = useHasProjectAccess({
     projectId,
     scope: "evalDefaultModel:CUD",
@@ -305,7 +316,7 @@ function UpdateButton({
 
   return (
     <ConfirmationDialogController
-      title="Update default model?"
+      title={tFeatures("ui.updateDefaultModel")}
       text="Updating the default model will impact any currently running evaluators that use it. Please confirm that you want to proceed with this change."
       confirmationText="update"
       confirmLabel="Confirm"
@@ -322,7 +333,7 @@ function UpdateButton({
             openDialog();
           }}
         >
-          Update
+          {tFeatures("ui.update")}
         </Button>
       )}
     </ConfirmationDialogController>

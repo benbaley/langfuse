@@ -21,8 +21,10 @@ import { LangfuseIcon } from "@/src/components/design-system/LangfuseIcon/Langfu
 import { DeleteEvalTemplateDialog } from "@/src/features/evals/components/delete-eval-template-dialog";
 import { IconOnlyButton } from "@/src/components/IconOnlyButton";
 import { TrashIcon } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export const EvalTemplateDetail = () => {
+  const { t: tFeatures } = useTranslation("features");
   const router = useRouter();
   const projectId = router.query.projectId as string;
   const templateId = router.query.id as string;
@@ -112,8 +114,8 @@ export const EvalTemplateDetail = () => {
               <>
                 <IconOnlyButton
                   icon={<TrashIcon className="h-4 w-4" />}
-                  label="Delete"
-                  aria-label="delete"
+                  label={tFeatures("ui.delete")}
+                  aria-label={tFeatures("evalsMore:actions.delete")}
                   variant="outline"
                   size="icon"
                   disabledReason={
@@ -148,7 +150,7 @@ export const EvalTemplateDetail = () => {
       }}
     >
       {allTemplates.isLoading || !allTemplates.data || !template.data ? (
-        <div className="p-3">Loading...</div>
+        <div className="p-3">{tFeatures("ui.loading")}</div>
       ) : isEditing ? (
         <div className="overflow-y-auto p-3 pt-1">
           <EvalTemplateForm
@@ -173,7 +175,7 @@ export const EvalTemplateDetail = () => {
           <SidePanel mobileTitle="Change history" id="change-history">
             <SidePanelHeader>
               <SidePanelTitle className="text-base font-bold">
-                Change history
+                {tFeatures("ui.changeHistory")}
               </SidePanelTitle>
             </SidePanelHeader>
             <SidePanelContent>
@@ -230,6 +232,7 @@ function UpdateTemplate({
   setIsEditing: (isEditing: boolean) => void;
   isCustom: boolean;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const hasAccess = useHasProjectAccess({
     projectId,
     scope: "evaluator:CUD",
@@ -246,7 +249,7 @@ function UpdateTemplate({
       <div className="flex items-center gap-2">
         <LangfuseIcon size={16} />
         <span className="text-muted-foreground text-sm font-bold">
-          View only
+          {tFeatures("ui.viewOnly")}
         </span>
       </div>
     );
@@ -254,7 +257,7 @@ function UpdateTemplate({
 
   return (
     <div className="flex items-center gap-2">
-      <span className="text-sm font-bold">Edit mode</span>
+      <span className="text-sm font-bold">{tFeatures("ui.editMode")}</span>
       <Switch
         checked={isEditing}
         onCheckedChange={handlePromptEdit}

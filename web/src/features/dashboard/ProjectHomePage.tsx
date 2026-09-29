@@ -50,16 +50,18 @@ import { DashboardGrid } from "@/src/features/widgets/components/DashboardGrid";
 import { HomeDashboardSelect } from "@/src/features/dashboard/components/HomeDashboardSelect";
 import { useQueryProjectOrOrganization } from "@/src/features/projects";
 import { setupTracingRoute } from "@/src/features/setup";
+import { useTranslation } from "react-i18next";
 
 // Controller: no widget query may fire before the session resolves the v3/v4
 // read path — an unresolved session used to read as v3, fire a full wave of
 // legacy-table queries, then re-run the whole dashboard on v4 once the
 // session landed (via the scheduler reset key below).
 export default function ProjectHomePage() {
+  const { t: tApp } = useTranslation("app");
   const { readPath } = useReadPath();
   if (readPath === "unknown") {
     return (
-      <Page withPadding scrollable headerProps={{ title: "Home" }}>
+      <Page withPadding scrollable headerProps={{ title: tApp("ui.Home") }}>
         <NoDataOrLoading isLoading />
       </Page>
     );
@@ -68,6 +70,7 @@ export default function ProjectHomePage() {
 }
 
 function HomeDashboard({ readPath }: { readPath: ResolvedReadPath }) {
+  const { t: tApp } = useTranslation("app");
   const router = useRouter();
   const utils = api.useUtils();
   const capture = usePostHogClientCapture();
@@ -314,11 +317,11 @@ function HomeDashboard({ readPath }: { readPath: ResolvedReadPath }) {
         withPadding
         scrollable
         headerProps={{
-          title: "Home",
+          title: tApp("ui.Home"),
           actionButtonsLeft: (
             <>
               <MultiSelect
-                title="Environment"
+                title={tApp("ui.environment")}
                 label="Env"
                 values={selectedEnvironments}
                 onValueChange={useDebounce(setSelectedEnvironments)}
@@ -357,7 +360,9 @@ function HomeDashboard({ readPath }: { readPath: ResolvedReadPath }) {
                 <Button
                   variant="outline"
                   loading={setHomeDashboard.isPending}
-                  title="Show this dashboard on Home for everyone in this project"
+                  title={tApp(
+                    "ui.ShowThisDashboardOnHomeForEveryoneInThisProject",
+                  )}
                   onClick={() => {
                     capture("dashboard:home_dashboard_set_default", {
                       dashboard_id: dashboardId,
@@ -372,13 +377,13 @@ function HomeDashboard({ readPath }: { readPath: ResolvedReadPath }) {
                     });
                   }}
                 >
-                  Set default
+                  {tApp("ui.SetDefault")}
                 </Button>
               )}
               <Button
                 variant="outline"
                 size="icon"
-                title="Edit this dashboard in Dashboards"
+                title={tApp("ui.EditThisDashboardInDashboards")}
                 asChild
               >
                 <Link
@@ -392,7 +397,7 @@ function HomeDashboard({ readPath }: { readPath: ResolvedReadPath }) {
                 >
                   <PencilIcon className="h-4 w-4" />
                   <span className="sr-only">
-                    Edit this dashboard in Dashboards
+                    {tApp("ui.EditThisDashboardInDashboards")}
                   </span>
                 </Link>
               </Button>
@@ -401,7 +406,7 @@ function HomeDashboard({ readPath }: { readPath: ResolvedReadPath }) {
                 project &&
                 (hasSetupTracingAccess ? (
                   <Link href={setupTracingRoute(project.id)}>
-                    <Button>Configure Tracing</Button>
+                    <Button>{tApp("ui.ConfigureTracing")}</Button>
                   </Link>
                 ) : (
                   <Button disabled>
@@ -409,7 +414,7 @@ function HomeDashboard({ readPath }: { readPath: ResolvedReadPath }) {
                       className="mr-2 -ml-0.5 h-4 w-4"
                       aria-hidden="true"
                     />
-                    Configure Tracing
+                    {tApp("ui.ConfigureTracing")}
                   </Button>
                 ))}
             </>

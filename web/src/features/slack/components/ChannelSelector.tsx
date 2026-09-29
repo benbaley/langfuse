@@ -1,3 +1,4 @@
+import { Trans, useTranslation } from "react-i18next";
 import React, { useState, useMemo, useCallback, useEffect } from "react";
 import { RefreshCw, Search, Hash, Lock, AlertTriangle } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
@@ -134,11 +135,12 @@ export const ChannelSelector: React.FC<ChannelSelectorProps> = ({
   selectedChannel: selectedChannelProp,
   onChannelSelect,
   disabled = false,
-  placeholder = "Select a channel",
+  placeholder,
   memberOnly = false,
   filterChannels,
   showRefreshButton = true,
 }) => {
+  const { t } = useTranslation("settingsMore");
   const [open, setOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -277,7 +279,9 @@ export const ChannelSelector: React.FC<ChannelSelectorProps> = ({
               {selectedChannel ? (
                 renderChannelItem(selectedChannel)
               ) : (
-                <span className="text-muted-foreground">{placeholder}</span>
+                <span className="text-muted-foreground">
+                  {placeholder ?? t("slack.selectPlaceholder")}
+                </span>
               )}
               <Search className="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </Button>
@@ -285,7 +289,7 @@ export const ChannelSelector: React.FC<ChannelSelectorProps> = ({
           <PopoverContent className="w-full p-0" align="start">
             <Command shouldFilter={false}>
               <CommandInput
-                placeholder="Search channels..."
+                placeholder={t("slack.searchChannels")}
                 value={searchValue}
                 onValueChange={setSearchValue}
               />
@@ -300,9 +304,11 @@ export const ChannelSelector: React.FC<ChannelSelectorProps> = ({
                       <Hash className="text-muted-foreground h-4 w-4" />
                       <span
                         className="flex-1 truncate"
-                        title={`Use &quot; ${effectiveName} &quot;`}
+                        title={t("slack.useChannel", {
+                          channel: effectiveName,
+                        })}
                       >
-                        Use &quot;{effectiveName}&quot;
+                        {t("slack.useChannel", { channel: effectiveName })}
                       </span>
                     </CommandItem>
                   </CommandGroup>
@@ -310,7 +316,7 @@ export const ChannelSelector: React.FC<ChannelSelectorProps> = ({
                 {!isLoadingChannels &&
                   !canUseTypedName &&
                   filteredChannels.length === 0 && (
-                    <CommandEmpty>No channels available.</CommandEmpty>
+                    <CommandEmpty>{t("slack.noChannels")}</CommandEmpty>
                   )}
                 <CommandGroup
                   className="p-0"
@@ -350,10 +356,9 @@ export const ChannelSelector: React.FC<ChannelSelectorProps> = ({
                       <RefreshCw className="h-4 w-4 animate-spin" />
                       <span
                         className="flex-1 truncate"
-                        title="Loading Slack channels. This can take a while for large workspaces."
+                        title={t("slack.loadingChannels")}
                       >
-                        Loading Slack channels. This can take a while for large
-                        workspaces.
+                        {t("slack.loadingChannels")}
                       </span>
                     </CommandItem>
                   </CommandGroup>
@@ -368,6 +373,7 @@ export const ChannelSelector: React.FC<ChannelSelectorProps> = ({
             variant="outline"
             size="sm"
             onClick={handleRefresh}
+            aria-label={t("slack.refreshChannels")}
             disabled={disabled || isRefreshing || isLoadingChannels}
           >
             <RefreshCw
@@ -380,17 +386,16 @@ export const ChannelSelector: React.FC<ChannelSelectorProps> = ({
       {/* Channel stats */}
       {channelsData?.channels && !isLoadingChannels ? (
         <div className="text-muted-foreground text-xs">
-          {filteredChannels.length} of {channelsData.channels.length} channels
-          {memberOnly && " (member only)"}
+          {t(memberOnly ? "slack.memberChannelCount" : "slack.channelCount", {
+            visible: filteredChannels.length,
+            total: channelsData.channels.length,
+          })}
         </div>
       ) : null}
 
       {error && (
         <Alert>
-          <Alert.Description>
-            Failed to load channels. You can still enter a channel name
-            manually, or check your Slack connection and try again.
-          </Alert.Description>
+          <Alert.Description>{t("slack.channelsFailed")}</Alert.Description>
         </Alert>
       )}
 
@@ -398,21 +403,25 @@ export const ChannelSelector: React.FC<ChannelSelectorProps> = ({
       {channelsData && !channelsData.hasPrivateChannelAccess && (
         <Alert icon={AlertTriangle}>
           <Alert.Description>
-            Private channels are not visible. To access private channels,{" "}
-            <button
-              type="button"
-              className="font-bold underline"
-              onClick={() =>
-                window.open(
-                  `${env.NEXT_PUBLIC_BASE_PATH ?? ""}/api/public/slack/install?projectId=${projectId}`,
-                  "slack-reauth",
-                  "width=600,height=700",
-                )
-              }
-            >
-              re-authenticate your Slack integration
-            </button>{" "}
-            to grant the required permissions.
+            <Trans
+              t={t}
+              i18nKey="slack.privateAccess"
+              components={{
+                auth: (
+                  <button
+                    type="button"
+                    className="font-bold underline"
+                    onClick={() =>
+                      window.open(
+                        `${env.NEXT_PUBLIC_BASE_PATH ?? ""}/api/public/slack/install?projectId=${projectId}`,
+                        "slack-reauth",
+                        "width=600,height=700",
+                      )
+                    }
+                  />
+                ),
+              }}
+            />
           </Alert.Description>
         </Alert>
       )}

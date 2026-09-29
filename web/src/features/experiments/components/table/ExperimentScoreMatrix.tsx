@@ -37,6 +37,7 @@ import {
   type ExperimentItemsTableRow,
 } from "./types";
 import { cn } from "@/src/utils/tailwind";
+import { useTranslation } from "react-i18next";
 
 /**
  * The pagination instance never renders cells, only counts rows, so it needs
@@ -68,11 +69,16 @@ const MatrixCell = ({
   /** False for the baseline's own column, which has nothing to move against. */
   hasBaselineColumn: boolean;
 }) => {
+  const { t: tMore } = useTranslation("coreMore");
   const { baseline, delta, movement } = summary;
   const notComparable = movement?.notComparable ?? 0;
 
   if (!baseline)
-    return <span className="text-muted-foreground">not scored</span>;
+    return (
+      <span className="text-muted-foreground">
+        {tMore("experiments.notScored")}
+      </span>
+    );
 
   return (
     <span className="flex flex-wrap items-center gap-x-1 gap-y-0.5 tabular-nums">
@@ -95,7 +101,8 @@ const MatrixCell = ({
           hover to move the count into — the words are all the reader gets. */}
       {hasBaselineColumn && notComparable > 0 && (
         <span className="text-muted-foreground opacity-70">
-          {notComparable} not scored
+          {notComparable}
+          {tMore("experiments.notScored")}
         </span>
       )}
     </span>
@@ -133,6 +140,7 @@ export const ExperimentScoreMatrix = ({
     options?: number[];
   };
 }) => {
+  const { t: tFeatures } = useTranslation("features");
   const baselineExperimentId = experiments.find(
     (exp) => exp.isBaseline,
   )?.experimentId;
@@ -219,7 +227,7 @@ export const ExperimentScoreMatrix = ({
       <div className="flex min-h-0 flex-1 flex-col">
         <div className="flex flex-1 items-center justify-center p-4">
           <span className="text-muted-foreground text-sm">
-            No score columns are visible for the items in view.
+            {tFeatures("ui.noScoreColumnsAreVisibleForTheItemsInView")}
           </span>
         </div>
         <MatrixFooter
@@ -240,7 +248,7 @@ export const ExperimentScoreMatrix = ({
           <thead>
             <tr>
               <th className="bg-background text-muted-foreground sticky top-0 left-0 z-20 min-w-[220px] border-b p-2 text-left font-normal">
-                Score
+                {tFeatures("ui.score")}
               </th>
               {experiments.map((experiment) => {
                 // Same run, same colour as everywhere else — and no marker at
@@ -368,18 +376,22 @@ const MatrixFooter = ({
   paginationTable: TanStackTable<ExperimentItemsTableRow>;
   paginationOptions?: number[];
   isLoading: boolean;
-}) => (
-  <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-t px-2 py-1.5">
-    <span className="text-muted-foreground text-[10px]">
-      {scoreCount} score{scoreCount === 1 ? "" : "s"} × {experimentCount} run
-      {experimentCount === 1 ? "" : "s"}, aggregated over the {itemCount} item
-      {itemCount === 1 ? "" : "s"} on this page. Deltas are measured against the
-      baseline column.
-    </span>
-    <DataTablePagination
-      table={paginationTable}
-      isLoading={isLoading}
-      paginationOptions={paginationOptions}
-    />
-  </div>
-);
+}) => {
+  const { t: tMore } = useTranslation("coreMore");
+  return (
+    <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-t px-2 py-1.5">
+      <span className="text-muted-foreground text-[10px]">
+        {tMore("experiments.matrixScope", {
+          scores: scoreCount,
+          runs: experimentCount,
+          items: itemCount,
+        })}
+      </span>
+      <DataTablePagination
+        table={paginationTable}
+        isLoading={isLoading}
+        paginationOptions={paginationOptions}
+      />
+    </div>
+  );
+};

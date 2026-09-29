@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Input } from "@/src/components/ui/input";
 
 export type DateInputRange = {
@@ -10,8 +11,8 @@ export function DateRangeInput({
   onValueChange,
   min,
   max,
-  fromAriaLabel = "Start date",
-  toAriaLabel = "End date",
+  fromAriaLabel,
+  toAriaLabel,
   disabled,
 }: {
   value: DateInputRange;
@@ -22,10 +23,11 @@ export function DateRangeInput({
   toAriaLabel?: string;
   disabled?: boolean;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   return (
     <div className="grid w-fit max-w-full grid-cols-[minmax(0,7.5rem)_auto_minmax(0,7.5rem)] items-center gap-2">
       <Input
-        aria-label={fromAriaLabel}
+        aria-label={fromAriaLabel ?? tFeatures("evalsMore:date.start")}
         type="date"
         className="block min-w-0 [&::-webkit-calendar-picker-indicator]:translate-y-px"
         value={value.from}
@@ -41,7 +43,7 @@ export function DateRangeInput({
         →
       </span>
       <Input
-        aria-label={toAriaLabel}
+        aria-label={toAriaLabel ?? tFeatures("evalsMore:date.end")}
         type="date"
         className="block min-w-0 [&::-webkit-calendar-picker-indicator]:translate-y-px"
         value={value.to}

@@ -5,6 +5,7 @@ import {
   DialogBody,
   DialogFooter,
 } from "@/src/components/ui/dialog";
+import { useTranslation } from "react-i18next";
 
 export function V4IntroDialog({
   open,
@@ -15,11 +16,12 @@ export function V4IntroDialog({
   onConfirm: () => void;
   onDismiss: () => void;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onDismiss()}>
       <DialogContent
         className="[&>div:last-child]:hidden"
-        aria-label="Welcome to a faster Langfuse"
+        aria-label={tFeatures("ui.welcomeToAFasterLangfuse")}
       >
         <DialogBody>
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -31,7 +33,7 @@ export function V4IntroDialog({
           <ul className="flex flex-col gap-3">
             <li className="text-muted-foreground text-sm">
               <span className="text-foreground block font-bold">
-                Welcome to a faster Langfuse
+                {tFeatures("ui.welcomeToAFasterLangfuse")}
               </span>{" "}
               We&apos;ve rebuilt the data model around observations rather than
               traces, which means charts, filters, and APIs are dramatically
@@ -39,7 +41,7 @@ export function V4IntroDialog({
             </li>
             <li className="text-muted-foreground text-sm">
               <span className="text-foreground block font-bold">
-                New Observations table
+                {tFeatures("ui.newObservationsTable")}
               </span>{" "}
               Your traces are still here. The default view now shows all
               observations. To see a table with just your root traces, filter by{" "}
@@ -48,7 +50,7 @@ export function V4IntroDialog({
             </li>
             <li className="text-muted-foreground text-sm">
               <span className="text-foreground block font-bold">
-                New Saved Table Views
+                {tFeatures("ui.newSavedTableViews")}
               </span>{" "}
               Save your table filters as an org-wide saved view so your whole
               team starts from the same place.{" "}
@@ -64,7 +66,9 @@ export function V4IntroDialog({
           </ul>
           <div className="mt-3 rounded-md border border-yellow-300 bg-yellow-50 p-3 text-sm dark:border-yellow-700 dark:bg-yellow-950">
             <p className="text-yellow-900 dark:text-yellow-200">
-              <span className="font-bold">Want traces to appear live?</span>{" "}
+              <span className="font-bold">
+                {tFeatures("ui.wantTracesToAppearLive")}
+              </span>{" "}
               Upgrade your SDK to the latest version. Older SDKs still work but
               traces may take ~10 minutes to appear.{" "}
               <a

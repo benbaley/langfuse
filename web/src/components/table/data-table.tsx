@@ -1,6 +1,7 @@
 /* eslint-disable no-nested-ternary */
 /* eslint-disable @repo/no-style-props */
 "use client";
+import { useTranslation } from "react-i18next";
 import { type OrderByState } from "@langfuse/shared";
 import React, {
   useState,
@@ -869,6 +870,7 @@ function TableBodyComponent<TData>({
   cellPadding = "compact",
   tableSnapshot: _tableSnapshot,
 }: TableBodyComponentProps<TData>) {
+  const { t } = useTranslation("common");
   const visibleColumns = table.getVisibleLeafColumns();
   const rowModelRows = table.getRowModel().rows;
   const tableState = table.getState();
@@ -1036,7 +1038,7 @@ function TableBodyComponent<TData>({
             <div className="pointer-events-none absolute left-[50%] flex -translate-x-1/2 -translate-y-1/2 items-center justify-center text-center">
               {noResultsMessage ?? (
                 <>
-                  No results.{" "}
+                  {t("noResults")}{" "}
                   {help && (
                     <DocPopup description={help.description} href={help.href} />
                   )}

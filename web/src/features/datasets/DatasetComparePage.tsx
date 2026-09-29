@@ -29,8 +29,15 @@ import {
 import { SidePanel, SidePanelContent } from "@/src/components/ui/side-panel";
 import { AnnotationPanel } from "@/src/features/datasets/components/AnnotationPanel";
 import { Spinner } from "@/src/components/design-system/Spinner/Spinner";
+import {
+  useTranslation,
+  useTranslation as useNavigationTranslation,
+} from "react-i18next";
 
 function DatasetCompareLegacy() {
+  const { t: tNavigation } = useNavigationTranslation("navigation");
+  const { t: tFeatures } = useTranslation("features");
+  const { t: tCore } = useTranslation("core");
   const router = useRouter();
   const capture = usePostHogClientCapture();
   const projectId = router.query.projectId as string;
@@ -75,7 +82,9 @@ function DatasetCompareLegacy() {
   return (
     <Page
       headerProps={{
-        title: `Compare runs: ${dataset.data?.name ?? datasetId}`,
+        title: tCore("datasets.compareRuns", {
+          name: dataset.data?.name ?? datasetId,
+        }),
         breadcrumb: [
           {
             name: "Datasets",
@@ -91,10 +100,10 @@ function DatasetCompareLegacy() {
           },
         ],
         help: {
-          description: "Compare your dataset runs side by side",
+          description: tCore("datasets.compareHelp"),
         },
         tabsProps: {
-          tabs: getDatasetRunCompareTabs(projectId, datasetId),
+          tabs: getDatasetRunCompareTabs(projectId, datasetId, tNavigation),
           activeTab: DATASET_RUN_COMPARE_TABS.COMPARE,
         },
         actionButtonsRight: (
@@ -111,7 +120,9 @@ function DatasetCompareLegacy() {
                   onClick={() => capture("dataset_run:new_form_open")}
                 >
                   <FlaskConical className="h-4 w-4" />
-                  <span className="ml-2 hidden md:block">New experiment</span>
+                  <span className="ml-2 hidden md:block">
+                    {tFeatures("ui.newExperiment")}
+                  </span>
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-h-[90vh] overflow-y-auto">
@@ -129,9 +140,9 @@ function DatasetCompareLegacy() {
             </Dialog>
             <MultiSelectKeyValues
               key="select-runs"
-              title="Experiments"
+              title={tFeatures("ui.experiments")}
               showSelectedValueStrings={false}
-              placeholder="Select runs to compare"
+              placeholder={tFeatures("ui.selectRunsToCompare")}
               className="w-fit"
               variant="outline"
               hideClearButton
@@ -208,7 +219,7 @@ function DatasetCompareLegacy() {
             ) : (
               <div className="flex items-center justify-center p-4">
                 <span className="text-muted-foreground text-sm">
-                  Loading annotation data...
+                  {tFeatures("ui.loadingAnnotationData")}
                 </span>
               </div>
             )}

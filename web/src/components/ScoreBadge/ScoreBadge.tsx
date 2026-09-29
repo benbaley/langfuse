@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { type LastUserScore, type ScoreDomain } from "@langfuse/shared";
 import {
   BracesIcon,
@@ -39,6 +40,8 @@ const ExecutionTraceLink = ({
   executionTraceId: string;
   projectId: string;
 }) => {
+  const { t: tFeatures } = useTranslation("features");
+
   return (
     <Link
       href={`/project/${projectId}/traces/${encodeURIComponent(executionTraceId)}`}
@@ -46,7 +49,7 @@ const ExecutionTraceLink = ({
       target="_blank"
     >
       <ExternalLinkIcon className="h-3 w-3" />
-      View execution trace
+      {tFeatures("evalsMore:score.executionTrace")}
     </Link>
   );
 };
@@ -65,6 +68,8 @@ export const ScoreBadge = <
   /** Render this group's level tags when the selection mixes score levels. */
   showLevels?: boolean;
 }) => {
+  const { t: tFeatures } = useTranslation("features");
+
   const projectId = useProjectIdFromURL();
 
   const levels = showLevels
@@ -95,7 +100,10 @@ export const ScoreBadge = <
                 {score.comment && (
                   <HoverCard>
                     <HoverCardTrigger
-                      aria-label={`View comment for ${name}: ${value}`}
+                      aria-label={tFeatures("evalsMore:score.viewComment", {
+                        name,
+                        value,
+                      })}
                       className="inline-block shrink-0"
                     >
                       <MessageCircleMoreIcon className="mb-0.25 size-3!" />
@@ -118,7 +126,10 @@ export const ScoreBadge = <
                 {hasMetadata(score) && (
                   <HoverCard>
                     <HoverCardTrigger
-                      aria-label={`View metadata for ${name}: ${value}`}
+                      aria-label={tFeatures("evalsMore:score.viewMetadata", {
+                        name,
+                        value,
+                      })}
                       className="inline-block shrink-0"
                     >
                       <BracesIcon className="mb-0.25 size-3!" />

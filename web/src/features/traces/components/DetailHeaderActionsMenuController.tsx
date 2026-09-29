@@ -13,6 +13,7 @@ import {
 import { copyTextToClipboard } from "@/src/utils/clipboard";
 import { type ObservationType } from "@langfuse/shared";
 import { useWebCalloutAction } from "@/src/features/web-callouts";
+import { useTranslation } from "react-i18next";
 
 type IdItem = {
   name: string;
@@ -147,6 +148,8 @@ export function DetailHeaderActionsMenuController({
   renderMenu,
   webCalloutAction,
 }: DetailHeaderActionsMenuControllerProps) {
+  const { t: tMore } = useTranslation("coreMore");
+  const { t: tFeatures } = useTranslation("features");
   const router = useRouter();
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
@@ -187,7 +190,9 @@ export function DetailHeaderActionsMenuController({
           {
             type: "item" as const,
             id: "web-callout",
-            title: `Call ${webCalloutAction.endpointName}`,
+            title: tMore("action.call", {
+              name: webCalloutAction.endpointName,
+            }),
             icon: Webhook,
             disabled: webCalloutAction.isLoading
               ? { reason: "Web callout is running" }
@@ -204,7 +209,7 @@ export function DetailHeaderActionsMenuController({
           {
             type: "item" as const,
             id: "filter-by-name",
-            title: `Filter by name:${spanName}`,
+            title: tMore("action.filterName", { name: spanName }),
             onClick: () => {
               router.push(href).catch(() => undefined);
             },
@@ -216,7 +221,7 @@ export function DetailHeaderActionsMenuController({
           {
             type: "item" as const,
             id: "filter-by-type",
-            title: `Filter by ${filterTypeLabel}`,
+            title: tMore("action.filterType", { type: filterTypeLabel }),
             onClick: () => {
               router.push(typeHref).catch(() => undefined);
             },
@@ -229,7 +234,7 @@ export function DetailHeaderActionsMenuController({
     ...idItems.map((item) => ({
       type: "item" as const,
       id: `copy-${item.name}`,
-      title: `Copy ${item.name}`,
+      title: tMore("action.copy", { name: item.name }),
       icon: copiedId === item.id ? CheckIcon : CopyIcon,
       onClick: () => handleCopy(item.id),
     })),
@@ -238,7 +243,7 @@ export function DetailHeaderActionsMenuController({
           {
             type: "item" as const,
             id: "copy-clickhouse-query",
-            title: "Copy ClickHouse query",
+            title: tFeatures("ui.copyClickhouseQuery"),
             icon: copiedId === clickHouseQuery ? CheckIcon : CopyIcon,
             onClick: () => handleCopy(clickHouseQuery),
           },

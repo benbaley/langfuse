@@ -28,6 +28,7 @@ import { usePostHogClientCapture } from "@/src/features/posthog-analytics";
 import { isReservedPromptLabel } from "@/src/features/prompts/utils";
 import { TruncatedLabels } from "@/src/components/TruncatedLabels";
 import { cn } from "@/src/utils/tailwind";
+import { useTranslation } from "react-i18next";
 
 export function SetPromptVersionLabels({
   promptLabels,
@@ -46,6 +47,8 @@ export function SetPromptVersionLabels({
   showOnlyOnHover?: boolean;
   maxVisibleLabels?: number;
 }) {
+  const { t: tMore } = useTranslation("coreMore");
+  const { t: tFeatures } = useTranslation("features");
   const projectId = useProjectIdFromURL();
   const utils = api.useUtils();
   const capture = usePostHogClientCapture();
@@ -187,7 +190,7 @@ export function SetPromptVersionLabels({
           )}
           <Button
             variant="outline"
-            title="Add prompt label"
+            title={tFeatures("ui.addPromptLabel")}
             className={cn(
               "bg-muted-gray text-primary h-6 w-6",
               showOnlyOnHover && "opacity-0 group-hover:opacity-100",
@@ -208,16 +211,12 @@ export function SetPromptVersionLabels({
           onClick={(event) => event.stopPropagation()}
           className="flex flex-col"
         >
-          <h2 className="mb-3 font-bold">Prompt labels</h2>
-          <h2 className="mb-3 text-xs">
-            Use labels to fetch prompts via SDKs. The{" "}
-            <strong>production</strong> labeled prompt will be served by
-            default.
-          </h2>
+          <h2 className="mb-3 font-bold">{tFeatures("ui.promptLabels")}</h2>
+          <h2 className="mb-3 text-xs">{tMore("prompts.labelHelp")}</h2>
           <InputCommand className="mx-0 my-3 px-0">
             <InputCommandList className="max-h-full overflow-hidden">
               <InputCommandSeparator />
-              <InputCommandGroup heading="Promote to production?">
+              <InputCommandGroup heading={tMore("prompts.promoteProduction")}>
                 <LabelCommandItem
                   {...{
                     selectedLabels,
@@ -231,7 +230,7 @@ export function SetPromptVersionLabels({
                 {/* Search + create input */}
                 <div className="px-2 pt-1 pb-2">
                   <Input
-                    placeholder="Search or create label…"
+                    placeholder={tFeatures("ui.searchOrCreateLabel")}
                     value={searchValue}
                     onChange={(e) => setSearchValue(e.target.value)}
                     onKeyDown={(e) => {
@@ -260,7 +259,7 @@ export function SetPromptVersionLabels({
                     >
                       {filteredUnselectedCount > 0
                         ? `Select all ${filteredUnselectedCount}`
-                        : "Select all"}
+                        : tFeatures("ui.selectAll")}
                     </button>
                     <span className="text-muted-foreground text-xs">·</span>
                     <button
@@ -281,7 +280,7 @@ export function SetPromptVersionLabels({
                         )
                       }
                     >
-                      Clear
+                      {tFeatures("ui.clear")}
                     </button>
                   </div>
                 )}
@@ -313,9 +312,11 @@ export function SetPromptVersionLabels({
                     >
                       <span
                         className="truncate"
-                        title={`Create a new label: ${trimmedSearch}`}
+                        title={tMore("prompts.createLabel", {
+                          name: trimmedSearch,
+                        })}
                       >
-                        Create a new label:{" "}
+                        {tFeatures("ui.createANewLabel")}{" "}
                         <strong className="text-foreground">
                           {trimmedSearch}
                         </strong>
@@ -339,10 +340,10 @@ export function SetPromptVersionLabels({
             onClick={handleSubmitLabels}
           >
             {isPromotingToProduction
-              ? "Save and promote to production"
+              ? tFeatures("ui.saveAndPromoteToProduction")
               : isDemotingFromProduction
-                ? "Save and remove from production"
-                : "Save"}
+                ? tFeatures("ui.saveAndRemoveFromProduction")
+                : tFeatures("ui.save")}
           </Button>
         </div>
       </PopoverContent>

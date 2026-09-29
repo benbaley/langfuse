@@ -34,7 +34,7 @@ import type { ObservedOptions } from "./observed-options";
 
 type CompletionStage = "empty" | "field" | "value" | "operator" | "recent";
 
-export type CompletionOption =
+export type CompletionOption = (
   | {
       id: string;
       kind: "field";
@@ -78,9 +78,14 @@ export type CompletionOption =
       label: string;
       detail?: string;
       query: string;
-    };
+    }
+) & { detailKey?: string };
 
-type CompletionSection = { title: string; options: CompletionOption[] };
+type CompletionSection = {
+  title: string;
+  titleKey?: string;
+  options: CompletionOption[];
+};
 
 export type QueryPresetSection = {
   title: string;
@@ -132,6 +137,22 @@ const SECTION_KEYS = "Observed keys";
 const SECTION_SCORE_NAMES = "Score names";
 const SECTION_SEARCH_IN = "Full-text search";
 
+const sectionTranslationKeys: Record<string, string> = {
+  [SECTION_SUGGESTIONS]: "section.suggestions",
+  [SECTION_FIELDS]: "section.fields",
+  [SECTION_MATCHING_FILTERS]: "section.matching_filters",
+  [SECTION_VALUES]: "section.values",
+  [SECTION_OPERATORS]: "section.operators",
+  [SECTION_PATTERNS]: "section.patterns",
+  [SECTION_PRESENCE]: "section.presence",
+  [SECTION_RECENT]: "section.recent",
+  [SECTION_MATCH_OPS]: "section.match_ops",
+  [SECTION_COMPARE_OPS]: "section.compare_ops",
+  [SECTION_KEYS]: "section.keys",
+  [SECTION_SCORE_NAMES]: "section.score_names",
+  [SECTION_SEARCH_IN]: "section.search_in",
+};
+
 const MAX_RECENTS_SHOWN = 5;
 const MAX_PRESETS_SHOWN = 10;
 
@@ -150,6 +171,7 @@ const PATTERN_OPTIONS: CompletionOption[] = [
     kind: "pattern",
     label: "field:*value*",
     detail: "contains",
+    detailKey: "search.contains",
     insert: "name:*chat*",
   },
   {
@@ -157,6 +179,7 @@ const PATTERN_OPTIONS: CompletionOption[] = [
     kind: "pattern",
     label: "field:(a OR b)",
     detail: "any of",
+    detailKey: "search.any_of",
     insert: "level:(ERROR OR WARNING)",
   },
   {
@@ -164,6 +187,7 @@ const PATTERN_OPTIONS: CompletionOption[] = [
     kind: "pattern",
     label: "-field:value",
     detail: "negation (none of)",
+    detailKey: "search.negation_none_of",
     insert: "-environment:",
   },
   {
@@ -171,6 +195,7 @@ const PATTERN_OPTIONS: CompletionOption[] = [
     kind: "pattern",
     label: "latency:>2",
     detail: "numeric comparison (seconds)",
+    detailKey: "search.numeric_comparison_seconds",
     insert: "latency:>2",
   },
   {
@@ -178,6 +203,7 @@ const PATTERN_OPTIONS: CompletionOption[] = [
     kind: "pattern",
     label: "has:field",
     detail: "field has a value (-has: for missing)",
+    detailKey: "search.field_has_a_value_has_for_missing",
     insert: "has:",
   },
   {
@@ -185,6 +211,7 @@ const PATTERN_OPTIONS: CompletionOption[] = [
     kind: "pattern",
     label: "tags:(a AND b)",
     detail: "array all-of",
+    detailKey: "search.array_all_of",
     insert: "tags:(",
   },
 ];
@@ -212,6 +239,7 @@ function fieldOptions(
       kind: "field",
       label: f.id,
       detail: f.description,
+      detailKey: f.descriptionKey,
       fieldId: f.id,
     }));
   if (includeVirtual && registry.allowFreeText) {
@@ -221,6 +249,7 @@ function fieldOptions(
         kind: "field" as const,
         label: id,
         detail: scope.description,
+        detailKey: scope.descriptionKey,
         fieldId: id,
       })),
     );
@@ -231,6 +260,7 @@ function fieldOptions(
       kind: "field",
       label: "metadata.",
       detail: "metadata key path, e.g. metadata.region:eu",
+      detailKey: "search.metadata_key_path_e_g_metadata_region_eu",
       fieldId: "metadata.",
     });
   }
@@ -246,6 +276,8 @@ function fieldOptions(
         label: "scores.",
         detail:
           "score by name, e.g. scores.accuracy:>0.8 or scores.feedback:positive",
+        detailKey:
+          "search.score_by_name_e_g_scores_accuracy_0_8_or_scores_feedback_positive",
         fieldId: "scores.",
       },
     );
@@ -383,6 +415,7 @@ function matchingFilterOptions(
           kind: "pattern",
           label: insert,
           detail: f.description,
+          detailKey: f.descriptionKey,
           insert,
           replaceSpan: span,
         },
@@ -513,15 +546,26 @@ function queryPresetSections(
       remaining--;
       if (remaining === 0) break;
     }
-    return section(presetSection.title, options);
+    return section(presetSection.title, options, false);
   });
 }
 
 function section(
   title: string,
   options: CompletionOption[],
+  translateTitle = true,
 ): CompletionSection[] {
-  return options.length > 0 ? [{ title, options }] : [];
+  return options.length > 0
+    ? [
+        {
+          title,
+          options,
+          ...(translateTitle
+            ? { titleKey: sectionTranslationKeys[title] }
+            : {}),
+        },
+      ]
+    : [];
 }
 
 // ---- per-kind operator menus ----
@@ -605,6 +649,7 @@ function matchOperatorOptions(
     kind: "pattern",
     label: `*${v}*`,
     detail: "contains (same as the bare value)",
+    detailKey: "search.contains_same_as_the_bare_value",
     insert: `*${v}*`,
   };
   const exact: CompletionOption = {
@@ -626,6 +671,7 @@ function matchOperatorOptions(
       kind: "pattern",
       label: `${v}*`,
       detail: "starts with",
+      detailKey: "search.starts_with",
       insert: `${v}*`,
     },
     {
@@ -633,6 +679,7 @@ function matchOperatorOptions(
       kind: "pattern",
       label: `*${v}`,
       detail: "ends with",
+      detailKey: "search.ends_with",
       insert: `*${v}`,
     },
     exact,
@@ -684,7 +731,7 @@ function keyPathOptions(
   kind: PathKind,
   typedKey: string,
   observed: ObservedOptions | undefined,
-): { title: string; options: CompletionOption[] } {
+): CompletionSection {
   // Observed names with grammar chars (a colon, space, …) are offered with the
   // segment QUOTED so they re-lex as one token (`scores."Rouge Score"`):
   // `fieldId` is the inserted text (quoted), while `label` stays the bare,
@@ -708,6 +755,7 @@ function keyPathOptions(
     }));
     return {
       title: SECTION_KEYS,
+      titleKey: sectionTranslationKeys[SECTION_KEYS],
       options: rankFilter(options, `metadata.${rankKey}`),
     };
   }
@@ -773,6 +821,7 @@ function keyPathOptions(
   }));
   return {
     title: SECTION_SCORE_NAMES,
+    titleKey: sectionTranslationKeys[SECTION_SCORE_NAMES],
     options: rankFilter(options, `${kind.canonical}${rankKey}`),
   };
 }
@@ -845,6 +894,7 @@ function valueStageSections(input: ValueStageInput): {
         kind: "value" as const,
         label: f.id,
         detail: f.description,
+        detailKey: f.descriptionKey,
         value: f.id,
       }));
       return {
@@ -1233,21 +1283,29 @@ function scopeSwitchOptions(
   opts?: { keepCurrentFirst?: boolean },
 ): CompletionOption[] {
   const v = serializeValue(value);
-  const allDefs: { scope: FullTextScope; insert: string; detail: string }[] = [
+  const allDefs: {
+    scope: FullTextScope;
+    insert: string;
+    detail: string;
+    detailKey?: string;
+  }[] = [
     ...suggestedSearchScopes(registry).map(([scope, definition]) => ({
       scope,
       insert: `${scope}:${v}`,
       detail: definition.description,
+      detailKey: definition.descriptionKey,
     })),
     {
       scope: "input",
       insert: `input:${v}`,
       detail: "search only the input payload",
+      detailKey: "search.search_only_the_input_payload",
     },
     {
       scope: "output",
       insert: `output:${v}`,
       detail: "search only the output payload",
+      detailKey: "search.search_only_the_output_payload",
     },
     {
       scope: "default",
@@ -1274,6 +1332,7 @@ function scopeSwitchOptions(
     kind: "pattern" as const,
     label: d.insert,
     detail: d.detail,
+    detailKey: d.detailKey,
     insert: d.insert,
     replaceSpan: span,
   }));

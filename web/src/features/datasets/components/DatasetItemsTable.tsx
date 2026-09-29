@@ -39,6 +39,7 @@ import { useFullTextSearch, TableSearchBar } from "@/src/features/search-bar";
 import { DATASET_ITEMS_FIELD_REGISTRY } from "../constants/datasetItemsSearchRegistry";
 import { useDatasetVersion } from "../hooks/useDatasetVersion";
 import { EditDatasetItemDialog } from "./EditDatasetItemDialog";
+import { useTranslation } from "react-i18next";
 
 type RowData = {
   id: string;
@@ -67,6 +68,8 @@ export function DatasetItemsTable({
   datasetId: string;
   menuItems?: React.ReactNode;
 }) {
+  const { t: tMore } = useTranslation("coreMore");
+  const { t: tFeatures } = useTranslation("features");
   const { setDetailPageList } = useDetailPageLists();
   const utils = api.useUtils();
   const capture = usePostHogClientCapture();
@@ -155,7 +158,7 @@ export function DatasetItemsTable({
   const columns: LangfuseColumnDef<RowData>[] = [
     createLinkTableColumn<RowData>({
       accessorKey: "id",
-      header: "Item id",
+      header: tFeatures("ui.itemId"),
       size: 90,
       isFixedPosition: true,
       getCell: (id) => {
@@ -175,10 +178,9 @@ export function DatasetItemsTable({
     }),
     createLinkTableColumn<RowData, RowData["source"]>({
       accessorKey: "source",
-      header: "Source",
+      header: tFeatures("ui.source"),
       headerTooltip: {
-        description:
-          "Link to the source trace based on which this item was added",
+        description: tMore("datasets.sourceTraceHelp"),
       },
       size: 90,
       getCell: (source) => {
@@ -205,7 +207,7 @@ export function DatasetItemsTable({
     }),
     createStatusTableColumn<RowData, DatasetStatus>({
       accessorKey: "status",
-      header: "Status",
+      header: tFeatures("ui.status"),
       getStatus: (status) =>
         status ? datasetStatusToStatus[status] : undefined,
       size: 80,
@@ -213,20 +215,20 @@ export function DatasetItemsTable({
     }),
     createDateTableColumn<RowData>({
       accessorKey: "createdAt",
-      header: "Created At",
+      header: tFeatures("ui.createdAt"),
       size: 150,
       enableHiding: true,
     }),
     createIOTableColumn<RowData>({
       accessorKey: "input",
-      header: "Input",
+      header: tFeatures("ui.input"),
       size: 200,
       enableHiding: true,
       singleLine: rowHeight === "s",
     }),
     createIOTableColumn<RowData>({
       accessorKey: "expectedOutput",
-      header: "Expected Output",
+      header: tFeatures("ui.expectedOutput"),
       size: 200,
       enableHiding: true,
       singleLine: rowHeight === "s",
@@ -234,7 +236,7 @@ export function DatasetItemsTable({
     }),
     createIOTableColumn<RowData>({
       accessorKey: "metadata",
-      header: "Metadata",
+      header: tFeatures("ui.metadata"),
       size: 200,
       enableHiding: true,
       singleLine: rowHeight === "s",
@@ -242,14 +244,14 @@ export function DatasetItemsTable({
     createDropdownTableColumn<RowData, string>({
       id: "actions",
       accessorFn: (row) => row.id,
-      header: "Actions",
+      header: tFeatures("ui.actions"),
       size: 70,
       renderMenu: (id, { row }) => {
         if (!id) return null;
         const status = row.original.status;
         return (
           <>
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <DropdownMenuLabel>{tFeatures("ui.actions")}</DropdownMenuLabel>
             <DropdownMenuItem
               disabled={!hasAccess || !!selectedVersion}
               onClick={() => {
@@ -258,7 +260,7 @@ export function DatasetItemsTable({
               }}
             >
               <Edit className="mr-2 h-4 w-4" />
-              Edit
+              {tFeatures("ui.edit")}
             </DropdownMenuItem>
             <DropdownMenuItem
               disabled={!hasAccess || !!selectedVersion}
@@ -281,7 +283,9 @@ export function DatasetItemsTable({
               }}
             >
               <Archive className="mr-2 h-4 w-4" />
-              {status === DatasetStatus.ARCHIVED ? "Unarchive" : "Archive"}
+              {status === DatasetStatus.ARCHIVED
+                ? tFeatures("ui.unarchive")
+                : tFeatures("ui.archive")}
             </DropdownMenuItem>
             <DropdownMenuItem
               disabled={!hasAccess || !!selectedVersion}
@@ -302,7 +306,7 @@ export function DatasetItemsTable({
               }}
             >
               <Trash2 className="mr-2 h-4 w-4" />
-              Delete
+              {tFeatures("ui.delete")}
             </DropdownMenuItem>
           </>
         );

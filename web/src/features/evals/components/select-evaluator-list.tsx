@@ -35,6 +35,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/src/components/ui/breadcrumb";
+import { useTranslation } from "react-i18next";
 
 type SelectEvaluatorListProps = {
   projectId: string;
@@ -43,6 +44,7 @@ type SelectEvaluatorListProps = {
 type CreateEvaluatorStep = "connection" | "define";
 
 export function SelectEvaluatorList({ projectId }: SelectEvaluatorListProps) {
+  const { t: tFeatures } = useTranslation("features");
   const router = useRouter();
   const createDialogSessionRef = useRef(0);
   const [isCreateTemplateOpen, setIsCreateTemplateOpen] = useState(false);
@@ -122,7 +124,9 @@ export function SelectEvaluatorList({ projectId }: SelectEvaluatorListProps) {
     <>
       <div className="mb-4 flex max-h-full min-h-0 flex-col gap-5">
         <div className="shrink-0 space-y-2">
-          <h2 className="text-base font-bold">Create from scratch</h2>
+          <h2 className="text-base font-bold">
+            {tFeatures("ui.createFromScratch")}
+          </h2>
           <div className="flex flex-wrap gap-3">
             {isCodeEvalEnabled ? (
               <Button
@@ -133,9 +137,11 @@ export function SelectEvaluatorList({ projectId }: SelectEvaluatorListProps) {
               >
                 <Code2 className="h-5 w-5 shrink-0" />
                 <span className="flex flex-col gap-1">
-                  <span className="font-bold">Code evaluator</span>
+                  <span className="font-bold">
+                    {tFeatures("evalsMore:evaluator.code")}
+                  </span>
                   <span className="text-muted-foreground text-sm font-normal">
-                    Use code to create Langfuse scores.
+                    {tFeatures("ui.useCodeToCreateLangfuseScores")}
                   </span>
                 </span>
               </Button>
@@ -150,9 +156,13 @@ export function SelectEvaluatorList({ projectId }: SelectEvaluatorListProps) {
             >
               <Bot className="h-5 w-5 shrink-0" />
               <span className="flex flex-col gap-1">
-                <span className="font-bold">LLM as a judge evaluator</span>
+                <span className="font-bold">
+                  {tFeatures("ui.llmAsAJudgeEvaluator")}
+                </span>
                 <span className="text-muted-foreground text-sm font-normal">
-                  Use a prompt and model to score traces or observations.
+                  {tFeatures(
+                    "ui.useAPromptAndModelToScoreTracesOrObservations",
+                  )}
                 </span>
               </span>
             </Button>
@@ -160,18 +170,22 @@ export function SelectEvaluatorList({ projectId }: SelectEvaluatorListProps) {
         </div>
 
         <div className="flex max-h-full min-h-0 flex-col gap-2">
-          <h2 className="shrink-0 text-base font-bold">Use existing</h2>
+          <h2 className="shrink-0 text-base font-bold">
+            {tFeatures("ui.useExisting")}
+          </h2>
           <Card className="grid max-h-full min-h-0 grid-rows-[minmax(0,1fr)_auto] overflow-y-auto p-3">
             <div className="flex min-h-0 flex-col overflow-hidden">
               {templates.isLoading ? (
                 <Skeleton className="h-full w-full" />
               ) : templates.isError ? (
                 <div className="text-destructive py-8 text-center">
-                  Error: {templates.error.message}
+                  {tFeatures("ui.error")} {templates.error.message}
                 </div>
               ) : templates.data?.templates.length === 0 ? (
                 <div className="text-muted-foreground py-8 text-center">
-                  No evaluators found. Create a new evaluator to get started.
+                  {tFeatures(
+                    "ui.noEvaluatorsFoundCreateANewEvaluatorToGetStarted",
+                  )}
                 </div>
               ) : (
                 <div className="flex-1 overflow-hidden">
@@ -212,10 +226,12 @@ export function SelectEvaluatorList({ projectId }: SelectEvaluatorListProps) {
           }
         >
           <DialogHeader>
-            <DialogTitle>Create new evaluator</DialogTitle>
+            <DialogTitle>{tFeatures("ui.createNewEvaluator")}</DialogTitle>
             {useLlmCreateWizard ? (
               <DialogDescription>
-                Set up an LLM connection first, then define the evaluator.
+                {tFeatures(
+                  "ui.setUpAnLlmConnectionFirstThenDefineTheEvaluator",
+                )}
               </DialogDescription>
             ) : null}
           </DialogHeader>
@@ -296,9 +312,10 @@ function CreateLlmEvaluatorWizard({
   onProviderConfigured: () => void;
   renderEvalTemplateForm: (shouldUseDefaultModel: boolean) => ReactNode;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const steps: Array<{ id: CreateEvaluatorStep; label: string }> = [
-    { id: "connection", label: "Set up LLM connection" },
-    { id: "define", label: "Define evaluator" },
+    { id: "connection", label: tFeatures("ui.setUpLlmConnection") },
+    { id: "define", label: tFeatures("ui.defineEvaluator") },
   ];
   const shouldUseDefaultModel = hasDefaultEvalModel;
 
@@ -349,8 +366,7 @@ function CreateLlmEvaluatorWizard({
         className={cn("space-y-4", activeStep !== "connection" && "hidden")}
       >
         <p className="text-muted-foreground text-sm">
-          LLM-as-a-judge evaluators need an LLM connection for scoring. Set a
-          project default connection now to continue defining the evaluator.
+          {tFeatures("evalsMore:model.setupDefault")}
         </p>
         <InlineDefaultEvalModelSetup
           projectId={projectId}
@@ -378,6 +394,7 @@ function CreateEvaluatorTemplateForm({
   shouldUseDefaultModel?: boolean;
   onSuccess: (newTemplate?: EvalTemplate) => void;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   return (
     <EvalTemplateForm
       projectId={projectId}
@@ -408,7 +425,7 @@ function CreateEvaluatorTemplateForm({
       onFormSuccess={(newTemplate) => {
         onSuccess(newTemplate);
         showSuccessToast({
-          title: "Evaluator created successfully",
+          title: tFeatures("ui.evaluatorCreatedSuccessfully"),
           description: "You can now use this evaluator.",
         });
       }}

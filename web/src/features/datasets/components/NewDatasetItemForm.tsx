@@ -1,3 +1,4 @@
+import { translateDatasetFormError } from "../utils/translateDatasetFormError";
 /* eslint-disable @repo/no-style-props, @repo/no-null-render */
 import { Button } from "@/src/components/ui/button";
 import { Button as DesignSystemButton } from "@/src/components/design-system/Button/Button";
@@ -54,16 +55,16 @@ import {
 } from "../utils/parseDatasetJson";
 import { DatasetForm } from "./DatasetForm";
 import { submitDatasetItems } from "./submitDatasetItems";
+import { useTranslation } from "react-i18next";
 
 const formSchema = z.object({
-  datasetIds: z.array(z.string()).min(1, "Select at least one dataset"),
+  datasetIds: z.array(z.string()).min(1, "datasets.validation.select"),
   input: z.string().refine(
     (value) => {
       return isValidDatasetJson(value);
     },
     {
-      message:
-        "Invalid input. Please provide a JSON object or double-quoted string.",
+      message: "datasets.validation.json",
     },
   ),
   expectedOutput: z.string().refine(
@@ -71,8 +72,7 @@ const formSchema = z.object({
       return isValidDatasetJson(value);
     },
     {
-      message:
-        "Invalid input. Please provide a JSON object or double-quoted string.",
+      message: "datasets.validation.json",
     },
   ),
   metadata: z.string().refine(
@@ -80,8 +80,7 @@ const formSchema = z.object({
       return isValidDatasetJson(value);
     },
     {
-      message:
-        "Invalid input. Please provide a JSON object or double-quoted string.",
+      message: "datasets.validation.json",
     },
   ),
 });
@@ -176,6 +175,7 @@ async function prepareInitialValues(
 }
 
 export function NewDatasetItemForm(props: NewDatasetItemFormProps) {
+  const { t: tFeatures } = useTranslation("features");
   const [source] = useState(props);
   const formId = useId();
   const datasets = api.datasets.allDatasetMeta.useQuery({
@@ -194,13 +194,13 @@ export function NewDatasetItemForm(props: NewDatasetItemFormProps) {
   if (datasets.isError && !datasets.data) {
     return (
       <div className="flex flex-col items-start gap-2">
-        <p>Datasets could not be loaded.</p>
+        <p>{tFeatures("ui.datasetsCouldNotBeLoaded")}</p>
         <Button
           type="button"
           variant="outline"
           onClick={() => datasets.refetch()}
         >
-          Try again
+          {tFeatures("ui.tryAgain")}
         </Button>
       </div>
     );
@@ -224,6 +224,8 @@ function InitializedNewDatasetItemForm({
   initialValues: NewDatasetItemFormValues;
   datasets: DatasetWithSchema[];
 }) {
+  const { t: tMore } = useTranslation("coreMore");
+  const { t: tFeatures } = useTranslation("features");
   const [formError, setFormError] = useState<string | null>(null);
   const [screen, setScreen] = useState<"item" | "create">("item");
   const [createdDatasets, setCreatedDatasets] = useState<DatasetWithSchema[]>(
@@ -440,10 +442,10 @@ function InitializedNewDatasetItemForm({
                   name="datasetIds"
                   render={({ field }) => (
                     <FormItem className="flex min-w-0 flex-1 flex-col">
-                      <FormLabel>Target datasets</FormLabel>
+                      <FormLabel>{tFeatures("ui.targetDatasets")}</FormLabel>
                       <FormControl>
                         <MultiSelectTagInput
-                          aria-label="Target datasets"
+                          aria-label={tFeatures("ui.targetDatasets")}
                           disabled={isPending}
                           value={field.value}
                           options={datasets.map((dataset) => ({
@@ -458,17 +460,21 @@ function InitializedNewDatasetItemForm({
                             field.onChange(datasetIds);
                             selectDatasets(datasetIds);
                           }}
-                          placeholder="Select datasets"
+                          placeholder={tFeatures("ui.selectDatasets")}
                           searchPlaceholder="Search datasets..."
-                          emptyMessage="No datasets found."
+                          emptyMessage={tFeatures("ui.noDatasetsFound")}
                         />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage
+                        translateError={(message) =>
+                          translateDatasetFormError(message, tMore)
+                        }
+                      />
                     </FormItem>
                   )}
                 />
                 <DesignSystemButton
-                  text="Create dataset"
+                  text={tFeatures("ui.createDataset")}
                   icon={Plus}
                   variant="secondary"
                   disabled={isPending || pendingUploads.length > 0}
@@ -483,7 +489,7 @@ function InitializedNewDatasetItemForm({
                 render={({ field }) => (
                   <FormItem className="flex flex-col gap-2">
                     <div className="flex items-center gap-2">
-                      <FormLabel>Input</FormLabel>
+                      <FormLabel>{tFeatures("ui.input")}</FormLabel>
                       {hasInputSchema &&
                         selectedDatasets
                           .filter((d) => d.inputSchema)
@@ -518,7 +524,11 @@ function InitializedNewDatasetItemForm({
 }`}
                       />
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage
+                      translateError={(message) =>
+                        translateDatasetFormError(message, tMore)
+                      }
+                    />
                     <FieldSchemaErrors
                       field="input"
                       value={field.value}
@@ -534,7 +544,9 @@ function InitializedNewDatasetItemForm({
                 render={({ field }) => (
                   <FormItem className="flex flex-col gap-2">
                     <div className="flex items-center gap-2">
-                      <FormLabel>Expected output</FormLabel>
+                      <FormLabel>
+                        {tFeatures("ui.expectedOutputTitle")}
+                      </FormLabel>
                       {hasOutputSchema &&
                         selectedDatasets
                           .filter((d) => d.expectedOutputSchema)
@@ -569,7 +581,11 @@ function InitializedNewDatasetItemForm({
 }`}
                       />
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage
+                      translateError={(message) =>
+                        translateDatasetFormError(message, tMore)
+                      }
+                    />
                     <FieldSchemaErrors
                       field="expectedOutput"
                       value={field.value}
@@ -587,7 +603,7 @@ function InitializedNewDatasetItemForm({
                 render={({ field }) => (
                   <FormItem className="flex flex-col gap-2">
                     <div className="flex items-center gap-2">
-                      <FormLabel>Metadata</FormLabel>
+                      <FormLabel>{tFeatures("ui.metadata")}</FormLabel>
                       <DatasetItemFieldToolbar
                         copyValue={field.value}
                         disabled={isPending}
@@ -605,7 +621,11 @@ function InitializedNewDatasetItemForm({
                         extensions={mediaDropPasteExtensions}
                       />
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage
+                      translateError={(message) =>
+                        translateDatasetFormError(message, tMore)
+                      }
+                    />
                   </FormItem>
                 )}
               />
@@ -627,7 +647,8 @@ function InitializedNewDatasetItemForm({
             />
             {formError ? (
               <p className="mt-2 text-center">
-                <span className="font-bold">Error:</span> {formError}
+                <span className="font-bold">{tFeatures("ui.error")}</span>{" "}
+                {formError}
               </p>
             ) : null}
           </div>
@@ -713,6 +734,7 @@ const AddItemsButton = ({
   isPending: boolean;
   pendingUploads: PendingMediaUpload[];
 }) => {
+  const { t: tFeatures } = useTranslation("features");
   const [input, expectedOutput] = useWatch({
     control,
     name: ["input", "expectedOutput"],
@@ -733,7 +755,7 @@ const AddItemsButton = ({
         pendingUploads.length > 0
       }
     >
-      Add
+      {tFeatures("ui.add")}
       {selectedDatasetCount > 1
         ? ` to ${selectedDatasetCount} datasets`
         : " to dataset"}

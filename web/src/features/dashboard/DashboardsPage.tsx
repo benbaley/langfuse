@@ -5,8 +5,11 @@ import { ActionButton } from "@/src/components/ActionButton";
 import { PlusIcon } from "lucide-react";
 import { useHasProjectAccess } from "@/src/features/rbac";
 import { getDashboardTabs, DASHBOARD_TABS } from "@/src/features/navigation";
+import { useTranslation, useTranslation as useNavigationTranslation } from "react-i18next";
 
 export default function DashboardsPage() {
+  const { t: tNavigation } = useNavigationTranslation("navigation");
+  const { t: tApp } = useTranslation("app");
   const router = useRouter();
   const { projectId } = router.query as { projectId: string };
   const hasCUDAccess = useHasProjectAccess({
@@ -17,13 +20,13 @@ export default function DashboardsPage() {
   return (
     <Page
       headerProps={{
-        title: "Dashboards",
+        title: tApp("ui.Dashboards"),
         help: {
           description: "Manage and create dashboards for your project.",
           href: "https://langfuse.com/docs/metrics/features/custom-dashboards",
         },
         tabsProps: {
-          tabs: getDashboardTabs(projectId),
+          tabs: getDashboardTabs(projectId, tNavigation),
           activeTab: DASHBOARD_TABS.DASHBOARDS,
         },
         actionButtonsRight: (
@@ -34,7 +37,7 @@ export default function DashboardsPage() {
             trackingEventName="dashboard:new_dashboard_form_open"
             variant="default"
           >
-            New dashboard
+            {tApp("ui.NewDashboard")}
           </ActionButton>
         ),
       }}

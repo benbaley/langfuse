@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import { Input } from "@/src/components/ui/input";
 import { cn } from "@/src/utils/tailwind";
+import { useTranslation } from "react-i18next";
 
 /**
  * Inline editor for a state key in a mapping card header. Enter or blur
@@ -18,6 +19,7 @@ export function StateKeyNameInput({
   onCommit: (next: string) => void;
   onCancel: () => void;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const [draft, setDraft] = useState(value);
   const trimmed = draft.trim();
   const error = trimmed === value ? null : validate(trimmed);
@@ -48,7 +50,7 @@ export function StateKeyNameInput({
             onCancel();
           }
         }}
-        aria-label="Field name"
+        aria-label={tFeatures("ui.fieldName")}
         aria-invalid={Boolean(error)}
         placeholder="field_name"
         className={cn(
@@ -62,7 +64,7 @@ export function StateKeyNameInput({
         </span>
       ) : (
         <span className="text-muted-foreground shrink-0 text-xs">
-          Enter to save, Esc to cancel
+          {tFeatures("ui.enterToSaveEscToCancel")}
         </span>
       )}
     </span>

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import {
   captureUnderscoreErrorException,
   isEnabled as isSentryEnabled,
@@ -26,20 +27,25 @@ const ErrorPage = ({
   statusCode,
   title,
 }: LangfuseErrorPageProps) => {
+  const { t } = useTranslation("settingsMore");
+  const statusKeys: Record<number, string> = {
+    400: "error.badRequest",
+    404: "error.notFound",
+    405: "error.methodNotAllowed",
+    500: "error.internal",
+  };
   const resolvedTitle =
-    title ??
-    (statusCode ? statusTitles[statusCode] : undefined) ??
-    "An unexpected error has occurred";
-
+    title && title !== statusTitles[statusCode]
+      ? title
+      : t(statusKeys[statusCode] ?? "error.unexpectedPage");
   const description = statusCode
-    ? `${resolvedTitle}.`
-    : `Application error: a client-side exception has occurred${
-        hostname ? ` while loading ${hostname}` : ""
-      } (see the browser console for more information).`;
-
+    ? t("error.statusDescription", { title: resolvedTitle })
+    : hostname
+      ? t("error.clientHostDescription", { hostname })
+      : t("error.clientDescription");
   const documentTitle = statusCode
     ? `${statusCode}: ${resolvedTitle}`
-    : "Application error: a client-side exception has occurred";
+    : t("error.clientTitle");
 
   return (
     <>

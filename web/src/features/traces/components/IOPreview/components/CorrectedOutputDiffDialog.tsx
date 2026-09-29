@@ -11,6 +11,7 @@ import {
   DialogTitle,
 } from "@/src/components/ui/dialog";
 import DiffViewer from "@/src/components/DiffViewer";
+import { useTranslation } from "react-i18next";
 
 type CorrectedOutputDiffDialogProps = {
   isOpen: boolean;
@@ -69,6 +70,8 @@ export const CorrectedOutputDiffDialog: React.FC<
   strictJsonMode,
   actualOutputTooLarge = false,
 }) => {
+  const { t: tMore } = useTranslation("coreMore");
+  const { t: tFeatures } = useTranslation("features");
   // Format both outputs for comparison
   const formattedActualOutput = formatOutputForDiff(
     actualOutput,
@@ -90,9 +93,9 @@ export const CorrectedOutputDiffDialog: React.FC<
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent size="xl">
         <DialogHeader>
-          <DialogTitle>Output Correction Diff</DialogTitle>
+          <DialogTitle>{tFeatures("ui.outputCorrectionDiff")}</DialogTitle>
           <DialogDescription>
-            Compare the original output with the corrected version
+            {tFeatures("ui.compareTheOriginalOutputWithTheCorrectedVersion")}
           </DialogDescription>
         </DialogHeader>
 
@@ -101,16 +104,14 @@ export const CorrectedOutputDiffDialog: React.FC<
             <div className="space-y-4">
               <div className="text-muted-foreground rounded-md border border-dashed p-4 text-sm">
                 <p className="text-foreground font-bold">
-                  Original output too large to diff
+                  {tFeatures("ui.originalOutputTooLargeToDiff")}
                 </p>
-                <p className="mt-1">
-                  The original output is too large to load here, so it cannot be
-                  compared side by side. Your correction is shown below and will
-                  be saved as-is.
-                </p>
+                <p className="mt-1">{tMore("io.correctionTooLarge")}</p>
               </div>
               <div>
-                <p className="mb-1 text-sm font-bold">Corrected Output</p>
+                <p className="mb-1 text-sm font-bold">
+                  {tFeatures("ui.correctedOutput")}
+                </p>
                 <pre className="ph-no-capture bg-muted/30 max-h-[50vh] overflow-auto rounded-md border p-3 text-xs break-words whitespace-pre-wrap">
                   {formattedCorrectedOutput}
                 </pre>
@@ -119,9 +120,13 @@ export const CorrectedOutputDiffDialog: React.FC<
           ) : hasNoOriginalOutput ? (
             <div className="flex flex-col items-center justify-center p-8 text-center">
               <div className="text-muted-foreground">
-                <p className="text-lg font-bold">No original output</p>
+                <p className="text-lg font-bold">
+                  {tFeatures("ui.noOriginalOutput")}
+                </p>
                 <p className="mt-2 text-sm">
-                  There is no original output to compare with the correction.
+                  {tFeatures(
+                    "ui.thereIsNoOriginalOutputToCompareWithTheCorrection",
+                  )}
                 </p>
               </div>
             </div>
@@ -138,7 +143,9 @@ export const CorrectedOutputDiffDialog: React.FC<
         </DialogBody>
 
         <DialogFooter>
-          <Button onClick={() => setIsOpen(false)}>Close</Button>
+          <Button onClick={() => setIsOpen(false)}>
+            {tFeatures("ui.close")}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

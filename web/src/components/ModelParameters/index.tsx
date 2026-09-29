@@ -1,5 +1,6 @@
 /* eslint-disable no-nested-ternary */
 /* eslint-disable @repo/no-null-render */
+import { Trans, useTranslation } from "react-i18next";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
@@ -69,6 +70,7 @@ export const ModelParameters: React.FC<ModelParamsContext> = ({
   layout = "vertical",
   isEmbedded = false,
 }) => {
+  const { t } = useTranslation("settingsMore");
   const projectId = useProjectIdFromURL();
   const [modelSettingsOpen, setModelSettingsOpen] = useState(false);
   const [modelSettingsUsed, setModelSettingsUsed] = useState(false);
@@ -104,7 +106,7 @@ export const ModelParameters: React.FC<ModelParamsContext> = ({
           customHeader
         ) : (
           <div className="flex items-center justify-between">
-            <p className="font-bold">Model</p>
+            <p className="font-bold">{t("model.title")}</p>
           </div>
         )}
         <CreateLLMApiKeyDialog
@@ -125,7 +127,7 @@ export const ModelParameters: React.FC<ModelParamsContext> = ({
           className="relative h-7 w-7"
           disabled={formDisabled}
         >
-          <Settings2 size={14} />
+          <Settings2 size={14} aria-label={t("model.advanced")} />
           {modelSettingsUsed && (
             <div className="bg-primary absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full" />
           )}
@@ -137,9 +139,9 @@ export const ModelParameters: React.FC<ModelParamsContext> = ({
         sideOffset={5}
       >
         <div className="mb-3">
-          <h4 className="mb-1 text-sm font-bold">Model Advanced Settings</h4>
+          <h4 className="mb-1 text-sm font-bold">{t("model.advanced")}</h4>
           <p className="text-muted-foreground text-xs">
-            Configure advanced parameters for your model.
+            {t("model.advancedHint")}
           </p>
         </div>
         <ModelParameterSettings
@@ -218,16 +220,20 @@ export const ModelParameters: React.FC<ModelParamsContext> = ({
 
         {modelParams.model.value?.startsWith("o1-") ? (
           <p className="text-dark-yellow mt-1 text-xs">
-            For {modelParams.model.value}, the system message and the
-            temperature, max_tokens and top_p setting are not supported while it
-            is in beta.{" "}
-            <a
-              href="https://platform.openai.com/docs/guides/reasoning/beta-limitations"
-              target="_blank"
-              rel="noreferrer noopener"
-            >
-              More info ↗
-            </a>
+            <Trans
+              t={t}
+              i18nKey="model.betaWarning"
+              values={{ model: modelParams.model.value }}
+              components={{
+                link: (
+                  <a
+                    href="https://platform.openai.com/docs/guides/reasoning/beta-limitations"
+                    target="_blank"
+                    rel="noreferrer noopener"
+                  />
+                ),
+              }}
+            />
           </p>
         ) : null}
       </div>
@@ -241,7 +247,11 @@ export const ModelParameters: React.FC<ModelParamsContext> = ({
     >
       {!isEmbedded ? (
         <div className="flex items-center justify-between">
-          {customHeader ? customHeader : <p className="font-bold">Model</p>}
+          {customHeader ? (
+            customHeader
+          ) : (
+            <p className="font-bold">{t("model.title")}</p>
+          )}
           {SettingsButton}
         </div>
       ) : customHeader ? (
@@ -256,7 +266,7 @@ export const ModelParameters: React.FC<ModelParamsContext> = ({
       <div className="space-y-4">
         <div className="space-y-3">
           <ModelParamsSelect
-            title="Provider"
+            title={t("common.provider")}
             modelParamsKey="provider"
             disabled={formDisabled}
             value={modelParams.provider.value}
@@ -265,7 +275,7 @@ export const ModelParameters: React.FC<ModelParamsContext> = ({
             layout="vertical"
           />
           <ModelParamsSelect
-            title="Model name"
+            title={t("model.name")}
             modelParamsKey="model"
             disabled={formDisabled}
             value={modelParams.model.value}
@@ -292,73 +302,76 @@ export const ModelParameterSettings = ({
   | "updateModelParamValue"
   | "setModelParamEnabled"
   | "formDisabled"
-> & { projectId: string }) => (
-  <div className="space-y-4">
-    <ModelParamsSlider
-      title="Temperature"
-      modelParamsKey="temperature"
-      formDisabled={formDisabled}
-      enabled={modelParams.temperature.enabled}
-      setModelParamEnabled={setModelParamEnabled}
-      value={modelParams.temperature.value}
-      min={0}
-      max={modelParams.maxTemperature.value}
-      step={0.01}
-      tooltip="The sampling temperature. Higher values will make the output more random, while lower values will make it more focused and deterministic."
-      updateModelParam={updateModelParamValue}
-    />
-    <ModelParamsSlider
-      title="Output token limit"
-      modelParamsKey="max_tokens"
-      formDisabled={formDisabled}
-      enabled={modelParams.max_tokens.enabled}
-      setModelParamEnabled={setModelParamEnabled}
-      value={modelParams.max_tokens.value}
-      min={1}
-      max={65535}
-      step={1}
-      tooltip="The maximum number of tokens that can be generated in the chat completion."
-      updateModelParam={updateModelParamValue}
-    />
-    <ModelParamsSlider
-      title="Top P"
-      modelParamsKey="top_p"
-      formDisabled={formDisabled}
-      enabled={modelParams.top_p.enabled}
-      setModelParamEnabled={setModelParamEnabled}
-      value={modelParams.top_p.value}
-      min={0}
-      max={1}
-      step={0.01}
-      tooltip="An alternative to sampling with temperature, called nucleus sampling, where the model considers the results of the tokens with top_p probability mass. So 0.1 means only the tokens comprising the top 10% probability mass are considered. We generally recommend altering this or temperature but not both."
-      updateModelParam={updateModelParamValue}
-    />
-    {modelParams.adapter.value === LLMAdapter.VertexAI &&
-      modelParams.maxReasoningTokens && (
-        <ModelParamsSlider
-          title="Max. Reasoning Tokens"
-          modelParamsKey="maxReasoningTokens"
-          formDisabled={formDisabled}
-          enabled={modelParams.maxReasoningTokens.enabled}
-          setModelParamEnabled={setModelParamEnabled}
-          value={modelParams.maxReasoningTokens.value}
-          min={-1}
-          max={24576}
-          step={1}
-          tooltip="Maximum tokens for model thinking/reasoning. Set to -1 for default (auto) thinking, 0 to disable. Only supported on Gemini 2.5+ models."
-          updateModelParam={updateModelParamValue}
-        />
-      )}
-    <ProviderOptionsInput
-      value={modelParams.providerOptions.value}
-      formDisabled={formDisabled}
-      enabled={modelParams.providerOptions.enabled}
-      setModelParamEnabled={setModelParamEnabled}
-      updateModelParam={updateModelParamValue}
-    />
-    <LLMApiKeyComponent projectId={projectId} modelParams={modelParams} />
-  </div>
-);
+> & { projectId: string }) => {
+  const { t } = useTranslation("settingsMore");
+  return (
+    <div className="space-y-4">
+      <ModelParamsSlider
+        title={t("model.temperature")}
+        modelParamsKey="temperature"
+        formDisabled={formDisabled}
+        enabled={modelParams.temperature.enabled}
+        setModelParamEnabled={setModelParamEnabled}
+        value={modelParams.temperature.value}
+        min={0}
+        max={modelParams.maxTemperature.value}
+        step={0.01}
+        tooltip={t("model.temperatureHint")}
+        updateModelParam={updateModelParamValue}
+      />
+      <ModelParamsSlider
+        title={t("model.outputLimit")}
+        modelParamsKey="max_tokens"
+        formDisabled={formDisabled}
+        enabled={modelParams.max_tokens.enabled}
+        setModelParamEnabled={setModelParamEnabled}
+        value={modelParams.max_tokens.value}
+        min={1}
+        max={65535}
+        step={1}
+        tooltip={t("model.outputLimitHint")}
+        updateModelParam={updateModelParamValue}
+      />
+      <ModelParamsSlider
+        title={t("model.topP")}
+        modelParamsKey="top_p"
+        formDisabled={formDisabled}
+        enabled={modelParams.top_p.enabled}
+        setModelParamEnabled={setModelParamEnabled}
+        value={modelParams.top_p.value}
+        min={0}
+        max={1}
+        step={0.01}
+        tooltip={t("model.topPHint")}
+        updateModelParam={updateModelParamValue}
+      />
+      {modelParams.adapter.value === LLMAdapter.VertexAI &&
+        modelParams.maxReasoningTokens && (
+          <ModelParamsSlider
+            title={t("model.reasoningLimit")}
+            modelParamsKey="maxReasoningTokens"
+            formDisabled={formDisabled}
+            enabled={modelParams.maxReasoningTokens.enabled}
+            setModelParamEnabled={setModelParamEnabled}
+            value={modelParams.maxReasoningTokens.value}
+            min={-1}
+            max={24576}
+            step={1}
+            tooltip={t("model.reasoningLimitHint")}
+            updateModelParam={updateModelParamValue}
+          />
+        )}
+      <ProviderOptionsInput
+        value={modelParams.providerOptions.value}
+        formDisabled={formDisabled}
+        enabled={modelParams.providerOptions.enabled}
+        setModelParamEnabled={setModelParamEnabled}
+        updateModelParam={updateModelParamValue}
+      />
+      <LLMApiKeyComponent projectId={projectId} modelParams={modelParams} />
+    </div>
+  );
+};
 
 type ModelParamsSelectProps = {
   title: string;
@@ -507,6 +520,7 @@ const ModelParamsSlider = ({
   enabled,
   formDisabled,
 }: ModelParamsSliderProps) => {
+  const { t } = useTranslation("settingsMore");
   return (
     <div className="space-y-3" title={tooltip}>
       <div className="flex flex-row">
@@ -536,7 +550,7 @@ const ModelParamsSlider = ({
           />
           {setModelParamEnabled ? (
             <Switch
-              title={`Control sending the ${title} parameter`}
+              title={t("model.sendParameter", { parameter: title })}
               disabled={formDisabled}
               checked={enabled}
               onCheckedChange={(checked) => {
@@ -575,6 +589,7 @@ const ProviderOptionsInput = ({
   enabled,
   formDisabled,
 }: ProviderOptionsInputProps) => {
+  const { t } = useTranslation("settingsMore");
   const [inputValue, setInputValue] = useState<string>(
     value ? JSON.stringify(value, null, 2) : "{}",
   );
@@ -590,22 +605,21 @@ const ProviderOptionsInput = ({
               (!enabled || formDisabled) && "text-muted-foreground",
             )}
           >
-            Additional options
+            {t("model.additionalOptions")}
           </span>
           <Tooltip>
             <TooltipTrigger>
               <InfoIcon className="text-muted-foreground size-3" />
             </TooltipTrigger>
             <TooltipContent className="max-w-[200px] p-2">
-              Additional options to pass to the invocation. Please check your
-              provider&apos;s API reference for supported values.
+              {t("model.additionalOptionsHint")}
             </TooltipContent>
           </Tooltip>
         </div>
         <div className="flex flex-row space-x-3">
           {setModelParamEnabled ? (
             <Switch
-              title="Control sending the additional options parameter"
+              title={t("model.sendOptions")}
               disabled={formDisabled}
               checked={enabled}
               onCheckedChange={(checked) => {
@@ -637,7 +651,9 @@ const ProviderOptionsInput = ({
           />
           {error && (
             <span className="pt-6">
-              <p className="text-[12px] text-red-500">{error}</p>
+              <p className="text-[12px] text-red-500">
+                {t("model.invalidJson")}
+              </p>
             </span>
           )}
         </div>
@@ -702,6 +718,7 @@ function useAddLlmConnectionSelect() {
  * off to the coordinator, which closes the dropdown before opening the dialog.
  */
 function AddLlmConnectionSelectAction({ onOpen }: { onOpen: () => void }) {
+  const { t } = useTranslation("settingsMore");
   const projectId = useProjectIdFromURL();
   const hasAccess = useHasProjectAccess({
     projectId,
@@ -715,7 +732,8 @@ function AddLlmConnectionSelectAction({ onOpen }: { onOpen: () => void }) {
       <SelectSeparator />
       <Button type="button" variant="secondary" onClick={onOpen}>
         <PlusIcon className="mr-1.5 -ml-0.5 h-5 w-5" aria-hidden="true" />
-        Add LLM Connection
+
+        {t("model.addConnection")}
       </Button>
     </>
   );

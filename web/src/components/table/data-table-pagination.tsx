@@ -1,4 +1,5 @@
 /* eslint-disable no-nested-ternary */
+import { useTranslation } from "react-i18next";
 import {
   ChevronLeft,
   ChevronRight,
@@ -53,6 +54,7 @@ export function DataTablePagination<TData>({
   approxTotalCountIsPartialScope = false,
   hasNextPage,
 }: DataTablePaginationProps<TData>) {
+  const { t, i18n } = useTranslation("common");
   const capture = usePostHogClientCapture();
 
   // Last page shows the exact loaded-row total; multi-page shows "Total ≈ X".
@@ -124,16 +126,25 @@ export function DataTablePagination<TData>({
         {showExactTotal ? (
           // Result fits on the loaded page(s) — the total is exact, no estimate.
           <span className={totalCountClassName}>
-            Total&nbsp;{compactNumberFormatter(exactTotal)}
+            {t("total")}&nbsp;
+            {compactNumberFormatter(
+              exactTotal,
+              undefined,
+              i18n.resolvedLanguage,
+            )}
           </span>
         ) : showApproxTotal ? (
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
                 <span className={totalCountClassName}>
-                  Total&nbsp;≈&nbsp;
+                  {t("total")}&nbsp;≈&nbsp;
                   {approxTotalCount != null ? (
-                    compactNumberFormatter(approxTotalCount)
+                    compactNumberFormatter(
+                      approxTotalCount,
+                      undefined,
+                      i18n.resolvedLanguage,
+                    )
                   ) : (
                     <span className="inline-flex align-middle">
                       <Spinner size="xxs" variant="muted" display="inline" />
@@ -150,18 +161,9 @@ export function DataTablePagination<TData>({
               </TooltipTrigger>
               <TooltipContent className="max-w-xs font-normal">
                 {approxTotalCountIsPartialScope ? (
-                  <>
-                    Approximate count over the active column filters and time
-                    range only. It excludes full-text search, score, and comment
-                    filters, so it can be noticeably higher than the number of
-                    matching rows.
-                  </>
+                  <>{t("partialCountHelp")}</>
                 ) : (
-                  <>
-                    Approximate number of matching rows for the active filters
-                    and time range, estimated with ClickHouse&apos;s HyperLogLog
-                    (typically within a few percent of the true count).
-                  </>
+                  <>{t("approxCountHelp")}</>
                 )}
               </TooltipContent>
             </Tooltip>
@@ -169,10 +171,10 @@ export function DataTablePagination<TData>({
         ) : null}
         <div className="flex shrink-0 items-center gap-2">
           <p className="text-sm font-bold whitespace-nowrap @min-[440px]/pagination:hidden">
-            Rows
+            {t("rows")}
           </p>
           <p className="hidden text-sm font-bold whitespace-nowrap @min-[440px]/pagination:block">
-            Rows per page
+            {t("rowsPerPage")}
           </p>
           <Select
             value={`${table.getState().pagination.pageSize}`}
@@ -199,7 +201,7 @@ export function DataTablePagination<TData>({
           <div className="flex items-center justify-center gap-1 text-sm font-bold whitespace-nowrap">
             {table.getPageCount() !== -1 ? (
               <>
-                Page
+                {t("page")}
                 {canJumpPages && (
                   <Input
                     type="number"
@@ -227,15 +229,21 @@ export function DataTablePagination<TData>({
                 {!canJumpPages && <span>{currentPage}</span>}
               </>
             ) : (
-              `Page ${currentPage}`
+              t("currentPage", {
+                page: currentPage,
+              })
             )}
             {!hideTotalCount && (
               <>
                 {pageCount !== -1 ? (
-                  <span>of {pageCount}</span>
+                  <span>
+                    {t("pageCount", {
+                      count: pageCount,
+                    })}
+                  </span>
                 ) : (
                   <span>
-                    of{" "}
+                    {t("of")}
                     {isLoading ? (
                       <span className="ml-1 inline-flex align-middle">
                         <Spinner size="xxs" variant="muted" display="inline" />
@@ -262,7 +270,7 @@ export function DataTablePagination<TData>({
                 }}
                 disabled={!table.getCanPreviousPage()}
               >
-                <span className="sr-only">Go to first page</span>
+                <span className="sr-only">{t("firstPage")}</span>
                 <ChevronsLeft className="h-4 w-4" />
               </Button>
             )}
@@ -277,7 +285,7 @@ export function DataTablePagination<TData>({
               }}
               disabled={!table.getCanPreviousPage()}
             >
-              <span className="sr-only">Go to previous page</span>
+              <span className="sr-only">{t("previousPage")}</span>
               <ChevronLeft className="h-4 w-4" />
             </Button>
             <Button
@@ -291,7 +299,7 @@ export function DataTablePagination<TData>({
               }}
               disabled={!table.getCanNextPage() || pageCount === -1}
             >
-              <span className="sr-only">Go to next page</span>
+              <span className="sr-only">{t("nextPage")}</span>
               <ChevronRight className="h-4 w-4" />
             </Button>
             {canJumpPages && (
@@ -306,7 +314,7 @@ export function DataTablePagination<TData>({
                 }}
                 disabled={!table.getCanNextPage() || pageCount === -1}
               >
-                <span className="sr-only">Go to last page</span>
+                <span className="sr-only">{t("lastPage")}</span>
                 <ChevronsRight className="h-4 w-4" />
               </Button>
             )}

@@ -10,6 +10,7 @@ import {
 } from "@/src/components/ui/popover";
 import { type ScoreOutputChoice } from "@/src/features/evals/v2/scoreOutputTypes";
 import { cn } from "@/src/utils/tailwind";
+import { useTranslation } from "react-i18next";
 
 /** Edits one categorical score option inside a controlled popover. */
 export function CategoryEditorPopover({
@@ -33,6 +34,7 @@ export function CategoryEditorPopover({
   onDelete: (() => void) | null;
   onDone: () => void;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   return (
     <Popover open={open} onOpenChange={onOpenChange}>
       {children}
@@ -41,13 +43,13 @@ export function CategoryEditorPopover({
           <div>
             <p className="text-sm font-bold">{title}</p>
             <p className="text-muted-foreground text-xs">
-              Set the returned label.
+              {tFeatures("ui.setTheReturnedLabel")}
             </p>
           </div>
           <Input
             id={`score-output-category-${idSuffix}`}
-            aria-label="Category label"
-            placeholder="Category label"
+            aria-label={tFeatures("evalsMore:score.categoryLabel")}
+            placeholder={tFeatures("evalsMore:score.categoryLabel")}
             value={choice.label}
             onChange={(event) => onChange({ label: event.target.value })}
             onKeyDown={(event) => {
@@ -70,17 +72,17 @@ export function CategoryEditorPopover({
                   variant="ghost"
                   size="sm"
                   className="text-destructive hover:text-destructive"
-                  aria-label="Delete category"
+                  aria-label={tFeatures("ui.deleteCategory")}
                   onClick={onDelete}
                 >
                   <Trash2 className="mr-1.5 h-4 w-4" />
-                  Delete
+                  {tFeatures("ui.delete")}
                 </Button>
               </PopoverClose>
             ) : null}
             <PopoverClose asChild>
               <Button type="button" size="sm" onClick={onDone}>
-                Done
+                {tFeatures("ui.done")}
               </Button>
             </PopoverClose>
           </div>

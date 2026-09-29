@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { type ReactNode, useState } from "react";
 import {
   type ColumnDefinition,
@@ -16,7 +17,10 @@ import {
   type ModernSessionFilterDialogViewActions,
 } from "@/src/features/sessions/ModernSessionFilterDialogContent";
 import { ModernSessionSaveViewDialogContent } from "@/src/features/sessions/ModernSessionSaveViewDialogContent";
-import { SESSION_DETAIL_SYSTEM_PRESETS } from "@/src/features/sessions/session-detail-presets";
+import {
+  SESSION_DETAIL_SYSTEM_PRESETS,
+  translateSessionDetailPreset,
+} from "@/src/features/sessions/session-detail-presets";
 import { type ModernSessionSidebarFilterControls } from "@/src/features/sessions/ModernSessionSidebar";
 import {
   TableViewPresetsDrawerContent,
@@ -74,6 +78,7 @@ export function ModernSessionFilterControls({
   currentViewState,
   children,
 }: ModernSessionFilterControlsProps) {
+  const { t: tMore } = useTranslation("coreMore");
   const capture = usePostHogClientCapture();
   const [filterDialogOpen, setFilterDialogOpen] = useState(false);
   const [saveViewDialogOpen, setSaveViewDialogOpen] = useState(false);
@@ -104,7 +109,9 @@ export function ModernSessionFilterControls({
   const updateView = TableViewPresetsList?.find(
     (view) => view.id === updateViewId && !view.isSystem,
   );
-  const activeViewName = matchingSystemPreset?.name ?? matchingSavedView?.name;
+  const activeViewName = matchingSystemPreset
+    ? translateSessionDetailPreset(matchingSystemPreset, tMore).name
+    : matchingSavedView?.name;
 
   const openFilterDialog = () => {
     setFilterDialogOpen(true);
@@ -335,7 +342,9 @@ export function ModernSessionFilterControls({
             controllers: viewControllers,
           }}
           currentState={currentViewState}
-          systemFilterPresets={SESSION_DETAIL_SYSTEM_PRESETS}
+          systemFilterPresets={SESSION_DETAIL_SYSTEM_PRESETS.map((preset) =>
+            translateSessionDetailPreset(preset, tMore),
+          )}
         />
       </TableViewPresetsDrawerRoot>
     </>

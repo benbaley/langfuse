@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 /* eslint-disable no-nested-ternary */
 /* eslint-disable @repo/no-null-render */
 import { api } from "@/src/utils/api";
@@ -164,6 +165,7 @@ function FileViewer({
   contentType: MediaContentType;
   defaultExpanded?: boolean;
 }) {
+  const { t: tMore } = useTranslation("coreMore");
   const mimeType = String(contentType);
   const fileType = mimeType.split("/")[0];
   const isImage = fileType === "image";
@@ -239,8 +241,8 @@ function FileViewer({
             variant="outline"
             size="icon"
             onClick={openInNewTab}
-            aria-label={`Open ${fileName} in new tab`}
-            title={`Open ${fileName} in new tab`}
+            aria-label={tMore("io.openFile", { name: fileName })}
+            title={tMore("io.openFile", { name: fileName })}
             className="shrink-0"
           >
             <ExternalLink className="h-4 w-4" />
@@ -258,23 +260,25 @@ function FileViewer({
 }
 
 function AudioPlayer({ src }: { src?: string }) {
+  const { t: tMore } = useTranslation("coreMore");
   if (!src) return null;
 
   return (
     <audio controls className="w-full" preload="metadata">
       <source src={src} />
-      Your browser does not support the audio element.
+      {tMore("io.audioUnsupported")}
     </audio>
   );
 }
 
 function VideoPlayer({ src }: { src?: string }) {
+  const { t: tMore } = useTranslation("coreMore");
   if (!src) return null;
 
   return (
     <video controls className="w-full" preload="metadata" playsInline>
       <source src={src} />
-      Your browser does not support the video element.
+      {tMore("io.videoUnsupported")}
     </video>
   );
 }

@@ -62,6 +62,7 @@ import { cn } from "@/src/utils/tailwind";
 import { resolveEvaluatorIdMetadata } from "@/src/features/traces/fns/resolveEvaluatorIdMetadata";
 import { api } from "@/src/utils/api";
 import { buildLocalIsoDatePresentation } from "@/src/utils/dates";
+import { useTranslation } from "react-i18next";
 
 export interface ObservationDetailViewHeaderProps {
   observation: ObservationReturnTypeWithMetadata;
@@ -99,6 +100,7 @@ export const ObservationDetailViewHeader = memo(
     subtreeMetrics,
     treeNodeTotalCost,
   }: ObservationDetailViewHeaderProps) {
+    const { t: tFeatures } = useTranslation("features");
     const { isAnnotationMode } = useViewPreferences();
     const isMobile = useIsMobile();
     const mobileActionsTriggerRef = useRef<HTMLButtonElement>(null);
@@ -236,7 +238,7 @@ export const ObservationDetailViewHeader = memo(
                                     {
                                       type: "item" as const,
                                       id: "annotate",
-                                      title: "Annotate",
+                                      title: tFeatures("ui.annotate"),
                                       icon: annotationDisabled
                                         ? LockIcon
                                         : SquarePen,
@@ -303,7 +305,7 @@ export const ObservationDetailViewHeader = memo(
                                     {
                                       type: "submenu" as const,
                                       id: "add-to",
-                                      title: "Add to",
+                                      title: tFeatures("ui.addTo"),
                                       icon: PlusIcon,
                                       items: addToItems,
                                     },
@@ -320,7 +322,7 @@ export const ObservationDetailViewHeader = memo(
                               <Button
                                 variant="outline"
                                 size="icon"
-                                aria-label="More actions"
+                                aria-label={tFeatures("ui.moreActions")}
                                 className="ml-auto shrink-0"
                                 {...getTriggerProps({
                                   ref: mobileActionsTriggerRef,
@@ -366,7 +368,7 @@ export const ObservationDetailViewHeader = memo(
                       {...getTriggerProps()}
                     >
                       <PlusIcon className="h-3.5 w-3.5" />
-                      <span>Add to</span>
+                      <span>{tFeatures("ui.addTo")}</span>
                       <ChevronDown className="h-3 w-3" />
                     </Button>
                   )}
@@ -411,7 +413,7 @@ export const ObservationDetailViewHeader = memo(
                       ) : (
                         <SquarePen className="mr-1.5 h-3.5 w-3.5" />
                       )}
-                      <span>Annotate</span>
+                      <span>{tFeatures("ui.annotate")}</span>
                     </Button>
                   )}
                 </AnnotateDrawerController>
@@ -461,10 +463,10 @@ export const ObservationDetailViewHeader = memo(
               >
                 {({ getTriggerProps }) => (
                   <Button
-                    aria-label="Options"
+                    aria-label={tFeatures("ui.options")}
                     className="shrink-0"
                     size="icon-sm"
-                    title="Options"
+                    title={tFeatures("ui.options")}
                     variant="secondary"
                     {...getTriggerProps()}
                   >

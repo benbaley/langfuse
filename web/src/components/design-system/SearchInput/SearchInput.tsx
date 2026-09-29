@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 /* eslint-disable boundaries/dependencies */
 "use client";
 
@@ -55,11 +56,12 @@ export const SearchInput = React.forwardRef<HTMLInputElement, SearchInputProps>(
       dropdown,
     },
     ref,
-  ) => (
-    <div className={searchInputVariants({ size })}>
+  ) =>{
+const { t: tUi } = useTranslation("uiMore");
+return (<div className={searchInputVariants({ size })}>
       <button
         type="button"
-        aria-label="Search"
+        aria-label={tUi("search")}
         disabled={disabled}
         onClick={() => onSubmit(value)}
         className="text-foreground-tertiary hover:bg-accent hover:text-accent-foreground flex aspect-square shrink-0 items-center justify-center disabled:cursor-not-allowed disabled:opacity-50"
@@ -110,8 +112,8 @@ export const SearchInput = React.forwardRef<HTMLInputElement, SearchInputProps>(
           </DropdownMenuContent>
         </DropdownMenu>
       )}
-    </div>
-  ),
+    </div>);
+},
 );
 
 SearchInput.displayName = "SearchInput";

@@ -1,6 +1,8 @@
 /* eslint-disable @repo/no-style-props, @repo/no-abstracted-overlay-trigger */
 "use client";
 
+import { useTranslation } from "react-i18next";
+import { LanguageSelector } from "@/src/features/i18n";
 import Link from "next/link";
 import type { Session } from "next-auth";
 import { signOutCleanly } from "@/src/features/auth/lib/signOut";
@@ -29,6 +31,7 @@ export const TopbarAccount = ({
   user: NonNullable<Session["user"]>;
   className?: string;
 }) => {
+  const { t } = useTranslation("navigation");
   const showV4Migration = useV4UpgradeUiFlag();
 
   const name = user.name ?? "";
@@ -41,12 +44,12 @@ export const TopbarAccount = ({
           "focus-visible:ring-ring rounded-full focus-visible:ring-2 focus-visible:outline-hidden",
           className,
         )}
-        aria-label="Account menu"
+        aria-label={t("accountMenu")}
       >
         <Avatar
           size="lg"
           src={user.image ?? undefined}
-          displayName={name || email || "User"}
+          displayName={name || email || t("user")}
         />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" sideOffset={4} className="min-w-56">
@@ -65,11 +68,11 @@ export const TopbarAccount = ({
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
-          <Link href="/account/settings">Account settings</Link>
+          <Link href="/account/settings">{t("accountSettings")}</Link>
         </DropdownMenuItem>
         {showV4Migration ? (
           <DropdownMenuItem asChild>
-            <Link href="/v4-migration">v4 Migration</Link>
+            <Link href="/v4-migration">{t("v4Migration")}</Link>
           </DropdownMenuItem>
         ) : null}
         {/* ThemeToggle stops propagation itself; keep the row from closing the
@@ -77,13 +80,16 @@ export const TopbarAccount = ({
         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
           <ThemeToggle />
         </DropdownMenuItem>
+        <DropdownMenuItem onSelect={(event) => event.preventDefault()}>
+          <LanguageSelector />
+        </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
           onClick={() => {
             signOutCleanly().catch(() => {});
           }}
         >
-          Sign out
+          {t("signOut")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

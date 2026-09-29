@@ -2,10 +2,12 @@
 
 // @vitest-environment jsdom
 
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import {
   formatCompactRelativeTime,
   formatIntervalSeconds,
+  getRelativeTimestampFromNow,
+  formatApproximateDuration,
 } from "@/src/utils/dates";
 
 describe("formatCompactRelativeTime", () => {
@@ -43,5 +45,23 @@ describe("formatIntervalSeconds", () => {
     expect(formatIntervalSeconds(1200)).toBe("20m 00s");
     expect(formatIntervalSeconds(3903)).toBe("1h 05m 03s");
     expect(formatIntervalSeconds(9945)).toBe("2h 45m 45s");
+  });
+});
+
+describe("explicit relative-time locale", () => {
+  it("localizes the same timestamp without changing it or the English default", () => {
+    vi.useFakeTimers();
+    try {
+      vi.setSystemTime(new Date("2026-09-24T10:00:00Z"));
+      const timestamp = new Date("2026-09-24T07:00:00Z");
+      expect(formatCompactRelativeTime(timestamp, "zh-CN")).toBe("3小时前");
+      expect(formatCompactRelativeTime(timestamp)).toBe("3h ago");
+      expect(getRelativeTimestampFromNow(timestamp, "zh-CN")).toBe("3小时前");
+      expect(getRelativeTimestampFromNow(timestamp)).toBe("3 hours ago");
+      expect(timestamp.toISOString()).toBe("2026-09-24T07:00:00.000Z");
+      expect(formatApproximateDuration(61, "zh-CN")).toBe("2分钟");
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });

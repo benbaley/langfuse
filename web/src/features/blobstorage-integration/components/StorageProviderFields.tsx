@@ -1,4 +1,5 @@
 /* eslint-disable no-nested-ternary */
+import { useTranslation } from "react-i18next";
 import { useWatch } from "react-hook-form";
 import {
   FormControl,
@@ -24,6 +25,7 @@ export const StorageProviderFields = ({
 }: {
   control: BlobStorageFormControl;
 }) => {
+  const { t } = useTranslation("settingsMore");
   const { isLangfuseCloud } = useLangfuseCloudRegion();
   // Check if this is a self-hosted instance (no cloud region set)
   const isSelfHosted = !isLangfuseCloud;
@@ -37,17 +39,17 @@ export const StorageProviderFields = ({
         name="type"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Storage Provider</FormLabel>
+            <FormLabel>{t("blob.provider")}</FormLabel>
             <FormControl>
               <SelectInput
                 value={field.value}
                 onValueChange={field.onChange}
-                placeholder="Select provider"
+                placeholder={t("blob.selectProvider")}
                 options={[
                   { value: BlobStorageIntegrationType.S3, label: "AWS S3" },
                   {
                     value: BlobStorageIntegrationType.S3_COMPATIBLE,
-                    label: "S3 Compatible Storage",
+                    label: t("blob.s3Compatible"),
                   },
                   {
                     value: BlobStorageIntegrationType.AZURE_BLOB_STORAGE,
@@ -56,9 +58,7 @@ export const StorageProviderFields = ({
                 ]}
               />
             </FormControl>
-            <FormDescription>
-              Choose your cloud storage provider
-            </FormDescription>
+            <FormDescription>{t("blob.providerHint")}</FormDescription>
             <FormMessage />
           </FormItem>
         )}
@@ -71,16 +71,16 @@ export const StorageProviderFields = ({
           <FormItem>
             <FormLabel>
               {integrationType === "AZURE_BLOB_STORAGE"
-                ? "Container Name"
-                : "Bucket Name"}
+                ? t("blob.containerName")
+                : t("blob.bucketName")}
             </FormLabel>
             <FormControl>
               <Input {...field} />
             </FormControl>
             <FormDescription>
               {integrationType === "AZURE_BLOB_STORAGE"
-                ? "Azure container name (3-63 chars, lowercase letters, numbers, and hyphens only)"
-                : "The S3 bucket name"}
+                ? t("blob.containerHint")
+                : t("blob.bucketHint")}
             </FormDescription>
             <FormMessage />
           </FormItem>
@@ -94,14 +94,14 @@ export const StorageProviderFields = ({
           name="endpoint"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Endpoint URL</FormLabel>
+              <FormLabel>{t("blob.endpoint")}</FormLabel>
               <FormControl>
                 <Input {...field} value={field.value || ""} />
               </FormControl>
               <FormDescription>
                 {integrationType === "AZURE_BLOB_STORAGE"
-                  ? "Azure Blob Storage endpoint URL (e.g., https://accountname.blob.core.windows.net)"
-                  : "S3 compatible endpoint URL (e.g., https://play.min.io)"}
+                  ? t("blob.azureEndpointHint")
+                  : t("blob.s3EndpointHint")}
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -116,14 +116,14 @@ export const StorageProviderFields = ({
           name="region"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Region</FormLabel>
+              <FormLabel>{t("blob.region")}</FormLabel>
               <FormControl>
                 <Input {...field} />
               </FormControl>
               <FormDescription>
                 {integrationType === "S3"
-                  ? "AWS region (e.g., us-east-1)"
-                  : "S3 compatible storage region (e.g. europe-west1, auto)"}
+                  ? t("blob.awsRegionHint")
+                  : t("blob.s3RegionHint")}
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -138,7 +138,7 @@ export const StorageProviderFields = ({
           name="forcePathStyle"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Force Path Style</FormLabel>
+              <FormLabel>{t("blob.forcePathStyle")}</FormLabel>
               <FormControl>
                 <div className="mt-1 ml-4">
                   <Switch
@@ -147,9 +147,7 @@ export const StorageProviderFields = ({
                   />
                 </div>
               </FormControl>
-              <FormDescription>
-                Enable for MinIO and some other S3 compatible providers
-              </FormDescription>
+              <FormDescription>{t("blob.forcePathHint")}</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -163,13 +161,16 @@ export const StorageProviderFields = ({
           <FormItem>
             <FormLabel>
               {integrationType === "AZURE_BLOB_STORAGE"
-                ? "Storage Account Name"
+                ? t("blob.accountName")
                 : integrationType === "S3"
-                  ? "AWS Access Key ID"
-                  : "Access Key ID"}
+                  ? t("llm.awsAccessKeyId")
+                  : t("blob.accessKeyId")}
               {/* Show optional indicator for S3 types on self-hosted instances with entitlement */}
               {isSelfHosted && integrationType === "S3" && (
-                <span className="text-muted-foreground"> (optional)</span>
+                <span className="text-muted-foreground">
+                  {" "}
+                  {t("common.optional")}
+                </span>
               )}
             </FormLabel>
             <FormControl>
@@ -177,12 +178,12 @@ export const StorageProviderFields = ({
             </FormControl>
             <FormDescription>
               {integrationType === "AZURE_BLOB_STORAGE"
-                ? "Your Azure storage account name"
+                ? t("blob.accountNameHint")
                 : integrationType === "S3"
                   ? isSelfHosted
-                    ? "Your AWS IAM user access key ID. Leave empty to use host credentials (IAM roles, instance profiles, etc.)"
-                    : "Your AWS IAM user access key ID"
-                  : "Access key for your S3-compatible storage"}
+                    ? t("blob.awsKeyOptional")
+                    : t("blob.awsKeyHint")
+                  : t("blob.s3KeyHint")}
             </FormDescription>
             <FormMessage />
           </FormItem>
@@ -196,13 +197,16 @@ export const StorageProviderFields = ({
           <FormItem>
             <FormLabel>
               {integrationType === "AZURE_BLOB_STORAGE"
-                ? "Storage Account Key"
+                ? t("blob.accountKey")
                 : integrationType === "S3"
-                  ? "AWS Secret Access Key"
-                  : "Secret Access Key"}
+                  ? t("llm.awsSecretKey")
+                  : t("blob.secretKey")}
               {/* Show optional indicator for S3 types on self-hosted instances with entitlement */}
               {isSelfHosted && integrationType === "S3" && (
-                <span className="text-muted-foreground"> (optional)</span>
+                <span className="text-muted-foreground">
+                  {" "}
+                  {t("common.optional")}
+                </span>
               )}
             </FormLabel>
             <FormControl>
@@ -214,12 +218,12 @@ export const StorageProviderFields = ({
             </FormControl>
             <FormDescription>
               {integrationType === "AZURE_BLOB_STORAGE"
-                ? "Your Azure storage account access key"
+                ? t("blob.azureKeyHint")
                 : integrationType === "S3"
                   ? isSelfHosted
-                    ? "Your AWS IAM user secret access key. Leave empty to use host credentials (IAM roles, instance profiles, etc.)"
-                    : "Your AWS IAM user secret access key"
-                  : "Secret key for your S3-compatible storage"}
+                    ? t("blob.awsSecretOptional")
+                    : t("blob.awsSecretHint")
+                  : t("blob.s3SecretHint")}
             </FormDescription>
             <FormMessage />
           </FormItem>
@@ -231,16 +235,16 @@ export const StorageProviderFields = ({
         name="prefix"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Export Prefix</FormLabel>
+            <FormLabel>{t("blob.prefix")}</FormLabel>
             <FormControl>
               <Input {...field} />
             </FormControl>
             <FormDescription>
               {integrationType === "AZURE_BLOB_STORAGE"
-                ? 'Optional prefix path for exported files in your Azure container (e.g., "langfuse-exports/")'
+                ? t("blob.azurePrefixHint")
                 : integrationType === "S3"
-                  ? 'Optional prefix path for exported files in your S3 bucket (e.g., "langfuse-exports/")'
-                  : 'Optional prefix path for exported files (e.g., "langfuse-exports/")'}
+                  ? t("blob.s3PrefixHint")
+                  : t("blob.prefixHint")}
             </FormDescription>
             <FormMessage />
           </FormItem>

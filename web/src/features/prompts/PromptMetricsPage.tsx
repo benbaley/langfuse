@@ -33,6 +33,10 @@ import { useTableDateRange } from "@/src/hooks/useTableDateRange";
 import { toAbsoluteTimeRange } from "@/src/utils/date-range-utils";
 import { useMemo } from "react";
 import { TableHeaderControls } from "@/src/components/table/table-header-controls";
+import {
+  useTranslation,
+  useTranslation as useNavigationTranslation,
+} from "react-i18next";
 
 export type PromptVersionTableRow = {
   version: number;
@@ -93,6 +97,9 @@ export default function PromptMetricsPage({
   // a `Page` ancestor, to fall back to the toolbar.
   showControlsInPageHeader = true,
 }: { promptName?: string; showControlsInPageHeader?: boolean } = {}) {
+  const { t: tNavigation } = useNavigationTranslation("navigation");
+  const { t: tFeatures } = useTranslation("features");
+  const { t: tCore } = useTranslation("core");
   const router = useRouter();
   const projectId = useProjectIdFromURL() ?? "";
   const promptNameFromQuery = router.query.promptName;
@@ -174,7 +181,7 @@ export default function PromptMetricsPage({
   const columns: LangfuseColumnDef<PromptVersionTableRow>[] = [
     createLinkTableColumn<PromptVersionTableRow, number>({
       accessorKey: "version",
-      header: "Version",
+      header: tFeatures("ui.version"),
       isPinnedLeft: true,
       size: 80,
       getCell: (version) => {
@@ -192,7 +199,7 @@ export default function PromptMetricsPage({
     {
       accessorKey: "labels",
       id: "labels",
-      header: "Labels",
+      header: tFeatures("ui.labels"),
       isPinnedLeft: true,
       size: 160,
       cell: ({ row }) => {
@@ -213,7 +220,7 @@ export default function PromptMetricsPage({
     },
     createNumberTableColumn<PromptVersionTableRow>({
       accessorKey: "medianLatency",
-      header: "Median latency",
+      header: tFeatures("ui.medianLatency"),
       size: 140,
       formatter: (value) => formatIntervalSeconds(value / 1000, 3),
       getValue: (value) => {
@@ -226,7 +233,7 @@ export default function PromptMetricsPage({
     }),
     createNumberTableColumn<PromptVersionTableRow>({
       accessorKey: "medianInputTokens",
-      header: "Median input tokens",
+      header: tFeatures("ui.medianInputTokens"),
       size: 160,
       enableHiding: true,
       formatter: (value) => String(value),
@@ -239,7 +246,7 @@ export default function PromptMetricsPage({
     }),
     createNumberTableColumn<PromptVersionTableRow>({
       accessorKey: "medianOutputTokens",
-      header: "Median output tokens",
+      header: tFeatures("ui.medianOutputTokens"),
       size: 170,
       enableHiding: true,
       formatter: (value) => String(value),
@@ -252,7 +259,7 @@ export default function PromptMetricsPage({
     }),
     createNumberTableColumn<PromptVersionTableRow>({
       accessorKey: "medianCost",
-      header: "Median cost",
+      header: tFeatures("ui.medianCost"),
       size: 120,
       formatter: (value) => usdFormatter(value),
       getValue: (value) => {
@@ -265,7 +272,7 @@ export default function PromptMetricsPage({
     }),
     createNumberTableColumn<PromptVersionTableRow, bigint>({
       accessorKey: "generationCount",
-      header: "Generations count",
+      header: tFeatures("ui.generationsCount"),
       size: 150,
       enableHiding: true,
       formatter: (value) => numberFormatter(value, 0),
@@ -274,7 +281,7 @@ export default function PromptMetricsPage({
     }),
     {
       accessorKey: "traceScores",
-      header: "Trace Scores",
+      header: tFeatures("ui.traceScores"),
       id: "traceScores",
       enableHiding: true,
       columns: traceScoreColumns,
@@ -286,7 +293,7 @@ export default function PromptMetricsPage({
     },
     {
       accessorKey: "generationScores",
-      header: "Generation Scores",
+      header: tFeatures("ui.generationScores"),
       id: "generationScores",
       enableHiding: true,
       columns: generationScoreColumns,
@@ -298,24 +305,22 @@ export default function PromptMetricsPage({
     },
     createTextTableColumn<PromptVersionTableRow>({
       accessorKey: "lastUsed",
-      header: "Last used",
+      header: tFeatures("ui.lastUsed"),
       enableHiding: true,
       size: 150,
       headerTooltip: {
-        description:
-          "This is calculated based on the selected date range, not the full usage history.",
+        description: tCore("prompts.metricsRangeHelp"),
       },
       mapValue: (value) =>
         promptMetrics.isSuccess ? (value ?? undefined) : { type: "loading" },
     }),
     createTextTableColumn<PromptVersionTableRow>({
       accessorKey: "firstUsed",
-      header: "First used",
+      header: tFeatures("ui.firstUsed"),
       size: 150,
       enableHiding: true,
       headerTooltip: {
-        description:
-          "This is calculated based on the selected date range, not the full usage history.",
+        description: tCore("prompts.metricsRangeHelp"),
       },
       mapValue: (value) =>
         promptMetrics.isSuccess ? (value ?? undefined) : { type: "loading" },
@@ -373,8 +378,7 @@ export default function PromptMetricsPage({
         title: promptName,
         itemType: "PROMPT",
         help: {
-          description:
-            "You can use this prompt within your application through the Langfuse SDKs and integrations. Refer to the documentation for more information.",
+          description: tCore("prompts.integrateHelp"),
           href: "https://langfuse.com/docs/prompt-management/get-started",
         },
         breadcrumb: [
@@ -397,7 +401,7 @@ export default function PromptMetricsPage({
           />
         ),
         tabsProps: {
-          tabs: getPromptTabs(projectId, promptName),
+          tabs: getPromptTabs(projectId, promptName, tNavigation),
           activeTab: PROMPT_TABS.METRICS,
         },
       }}

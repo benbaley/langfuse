@@ -1,4 +1,5 @@
 /* eslint-disable no-nested-ternary */
+import { useTranslation } from "react-i18next";
 import { SiSlack } from "react-icons/si";
 import { Webhook, Plus, Pencil, Trash2 } from "lucide-react";
 
@@ -39,10 +40,13 @@ export function ProjectNotificationChannelsList({
   onEdit,
   onDelete,
 }: ProjectNotificationChannelsListProps) {
+  const { t } = useTranslation("settingsMore");
   return (
     <div className="flex flex-col gap-4">
       {isLoading ? (
-        <p className="text-muted-foreground text-sm">Loading channels...</p>
+        <p className="text-muted-foreground text-sm">
+          {t("notifications.loadingChannels")}
+        </p>
       ) : !channels || channels.length === 0 ? null : (
         <div className="flex flex-col gap-3">
           {channels.map((channel) => (
@@ -68,7 +72,7 @@ export function ProjectNotificationChannelsList({
                   variant="ghost"
                   size="icon"
                   onClick={() => onEdit(channel)}
-                  title="Edit channel"
+                  title={t("notifications.editChannel")}
                 >
                   <Pencil className="h-4 w-4" />
                 </Button>
@@ -77,7 +81,7 @@ export function ProjectNotificationChannelsList({
                   size="icon"
                   disabled={isDeleting}
                   onClick={() => onDelete(channel.id)}
-                  title="Delete channel"
+                  title={t("notifications.deleteChannel")}
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>
@@ -92,7 +96,8 @@ export function ProjectNotificationChannelsList({
         <div>
           <Button variant="secondary" onClick={onAdd}>
             <Plus className="mr-2 h-4 w-4" />
-            Add channel
+
+            {t("notifications.addChannel")}
           </Button>
         </div>
       )}

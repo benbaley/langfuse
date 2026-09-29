@@ -1,3 +1,5 @@
+import { I18nextProvider } from "react-i18next";
+import { createUiI18n } from "@/src/features/i18n/instance";
 import {
   act,
   fireEvent,
@@ -105,6 +107,28 @@ const TEST_OPTIONS = {
 };
 
 describe("numeric conditions restored from the URL", () => {
+  it("switches facet language without rewriting URL filters or observed values", async () => {
+    queryParamStore.clear();
+    deferredQueryParams.clear();
+    const filters: FilterState = [{ column: "name", type: "stringOptions", operator: "any of", value: ["Name"] }];
+    const encoded = encodeFiltersGeneric(filters);
+    queryParamStore.set("filter", encoded);
+    const instance = createUiI18n("en");
+    const config = getScoreFilterConfig();
+    const { result } = renderHook(
+      () => useSidebarFilterState(config, { name: ["Name", "quality"] }, { stateLocation: "url" }),
+      { wrapper: ({ children }) => <I18nextProvider i18n={instance}>{children}</I18nextProvider> },
+    );
+    const before = result.current.explicitFilterState;
+    expect(result.current.filters.find((facet) => facet.column === "name")?.label).toBe("Name");
+    await act(async () => { await instance.changeLanguage("zh-CN"); });
+    const nameFacet = result.current.filters.find((facet) => facet.column === "name");
+    expect(nameFacet?.label).toBe("名称");
+    expect(nameFacet?.value).toEqual(["Name"]);
+    expect(result.current.explicitFilterState).toEqual(before);
+    expect(queryParamStore.get("filter")).toBe(encoded);
+  });
+
   it("keeps strict bounds visible and removes only the selected condition", () => {
     const filters: FilterState = [
       { column: "value", type: "number", operator: ">", value: 0.2 },

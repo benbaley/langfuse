@@ -1,4 +1,5 @@
 /* eslint-disable @repo/no-abstracted-overlay-trigger */
+import { useTranslation } from "react-i18next";
 import { Button } from "@/src/components/ui/button";
 import {
   DropdownMenu,
@@ -71,17 +72,18 @@ export const DataTableRowHeightSwitch = ({
   tableName?: string;
   isV4?: boolean;
 }) => {
+  const { t } = useTranslation("common");
   const capture = usePostHogClientCapture();
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="icon" title="Row height">
+        <Button variant="outline" size="icon" title={t("rowHeight")}>
           <Rows3 className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuPortal>
         <DropdownMenuContent>
-          <DropdownMenuLabel>Row height</DropdownMenuLabel>
+          <DropdownMenuLabel>{t("rowHeight")}</DropdownMenuLabel>
           <DropdownMenuSeparator />
           {ROW_HEIGHT_OPTIONS.map(({ id, label }) => (
             <DropdownMenuCheckboxItem
@@ -98,7 +100,7 @@ export const DataTableRowHeightSwitch = ({
                 setRowHeight(id);
               }}
             >
-              {label}
+              {t(`rowHeight_${id}`, label)}
             </DropdownMenuCheckboxItem>
           ))}
         </DropdownMenuContent>

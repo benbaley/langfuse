@@ -11,6 +11,7 @@ import {
 import { useModelParams } from "@/src/features/playground";
 import { getFinalModelParams } from "@/src/utils/getFinalModelParams";
 import type { ProjectDefaultModelConfig } from "@/src/features/evals/v2/types/ProjectDefaultModelConfig";
+import { useTranslation } from "react-i18next";
 
 export function JudgeModelConfigurationDialog({
   open,
@@ -54,6 +55,7 @@ function JudgeModelConfigurationDialogContent({
   onCancel: () => void;
   onSave: (model: ProjectDefaultModelConfig) => void;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const { modelParams, updateModelParamValue, setModelParamEnabled } =
     useModelParams(undefined, {
       initialModel: {
@@ -67,11 +69,13 @@ function JudgeModelConfigurationDialogContent({
   return (
     <DialogContent>
       <DialogHeader>
-        <DialogTitle>Model configuration</DialogTitle>
+        <DialogTitle>{tFeatures("evalsMore:model.configuration")}</DialogTitle>
       </DialogHeader>
       <DialogBody>
         <div className="flex items-center gap-4 border-b pb-4 text-sm">
-          <span className="text-muted-foreground w-24 shrink-0">Model</span>
+          <span className="text-muted-foreground w-24 shrink-0">
+            {tFeatures("ui.model")}
+          </span>
           <span className="font-mono">
             {initialModel.provider} / {initialModel.model}
           </span>
@@ -86,7 +90,7 @@ function JudgeModelConfigurationDialogContent({
       </DialogBody>
       <DialogFooter>
         <Button type="button" variant="outline" onClick={onCancel}>
-          Cancel
+          {tFeatures("ui.cancel")}
         </Button>
         <Button
           type="button"
@@ -96,7 +100,7 @@ function JudgeModelConfigurationDialogContent({
             onSave({ provider, adapter, model, modelParams: modelConfig });
           }}
         >
-          Save
+          {tFeatures("ui.save")}
         </Button>
       </DialogFooter>
     </DialogContent>

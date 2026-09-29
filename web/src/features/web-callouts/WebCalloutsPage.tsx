@@ -1,9 +1,11 @@
+import { useTranslation } from "react-i18next";
 import ContainerPage from "@/src/components/layouts/container-page";
 import { WebCalloutSettingsPage } from "@/src/features/web-callouts/components/WebCalloutSettingsPage";
 import { RouteParamsPendingFallback } from "@/src/hooks/useReadyRouteParams";
 import { useRouter } from "next/router";
 
 export default function WebCalloutsPage() {
+  const { t } = useTranslation("settingsMore");
   const router = useRouter();
   const projectId = router.query.projectId as string | undefined;
 
@@ -14,9 +16,12 @@ export default function WebCalloutsPage() {
   return (
     <ContainerPage
       headerProps={{
-        title: "Web Callouts",
+        title: t("callout.title"),
         breadcrumb: [
-          { name: "Settings", href: `/project/${projectId}/settings` },
+          {
+            name: t("common.settings"),
+            href: `/project/${projectId}/settings`,
+          },
         ],
       }}
     >

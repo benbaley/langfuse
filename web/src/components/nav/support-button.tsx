@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { LifeBuoy } from "lucide-react";
 import { SidebarMenuButton, useSidebar } from "@/src/components/ui/sidebar";
 import { useSupportDrawer } from "@/src/features/support-chat";
@@ -5,6 +6,7 @@ import { useV4MigrationPanel } from "@/src/features/v4-migration/V4MigrationPane
 import { useInAppAiAgent } from "@/src/features/in-app-agent";
 
 export const SupportButton = () => {
+  const { t } = useTranslation("navigation");
   const { setOpen: setSupportDrawerOpen } = useSupportDrawer();
   const { setOpen: setMigrationPanelOpen } = useV4MigrationPanel();
   const { setOpen: setAiAgentOpen } = useInAppAiAgent();
@@ -25,7 +27,7 @@ export const SupportButton = () => {
       }}
     >
       <LifeBuoy className="h-4 w-4" />
-      Support
+      {t("support")}
     </SidebarMenuButton>
   );
 };

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ChevronRight } from "lucide-react";
 import { cn } from "@/src/utils/tailwind";
+import { useTranslation } from "react-i18next";
 
 interface ThinkingBlockProps {
   content: string;
@@ -13,6 +14,7 @@ export function ThinkingBlock({
   summary,
   defaultExpanded = false,
 }: ThinkingBlockProps) {
+  const { t: tFeatures } = useTranslation("features");
   const [expanded, setExpanded] = useState(defaultExpanded);
   const displayContent = summary || content;
 
@@ -30,7 +32,7 @@ export function ThinkingBlock({
             expanded && "rotate-90",
           )}
         />
-        <span className="text-xs font-bold">Thinking</span>
+        <span className="text-xs font-bold">{tFeatures("ui.thinking")}</span>
         {!expanded && (
           <span className="ph-no-capture line-clamp-1 text-xs italic">
             {displayContent}
@@ -57,6 +59,8 @@ export function RedactedThinkingBlock({
   data,
   defaultExpanded = false,
 }: RedactedThinkingBlockProps) {
+  const { t: tMore } = useTranslation("coreMore");
+  const { t: tFeatures } = useTranslation("features");
   const [expanded, setExpanded] = useState(defaultExpanded);
 
   return (
@@ -73,9 +77,13 @@ export function RedactedThinkingBlock({
             expanded && "rotate-90",
           )}
         />
-        <span className="text-xs font-bold">Thinking (redacted)</span>
+        <span className="text-xs font-bold">
+          {tFeatures("ui.thinkingRedacted")}
+        </span>
         {!expanded && (
-          <span className="text-xs italic">[Encrypted thinking data]</span>
+          <span className="text-xs italic">
+            {tMore("traces.encryptedThinking")}
+          </span>
         )}
       </button>
 

@@ -13,6 +13,7 @@ import { isCategoricalDataType } from "@/src/features/scores/lib/helpers";
 import { getAddCategoryActionLabel } from "@/src/features/scores/lib/annotationFormHelpers";
 import { AddScoreCategoryDialog } from "@/src/features/scores/components/AddScoreCategoryDialog";
 import { type AnnotationAnalyticsContext } from "@/src/features/scores/lib/annotationAnalytics";
+import { useTranslation } from "react-i18next";
 
 const CHAR_CUTOFF = 6;
 const DIGIT_SHORTCUTS = ["1", "2", "3", "4", "5", "6", "7", "8", "9"] as const;
@@ -52,6 +53,7 @@ export function CategoricalScoreInput({
   onValueChange: (value: string, numericValue?: number) => void;
   isActive?: boolean;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const hasConfigCudAccess = useHasProjectAccess({
     projectId,
     scope: "scoreConfigs:CUD",
@@ -92,9 +94,9 @@ export function CategoricalScoreInput({
             value: category.label,
             disabled: category.isOutdated,
           }))}
-          placeholder="Select category"
-          searchPlaceholder="Search categories..."
-          emptyText="No category found."
+          placeholder={tFeatures("ui.selectCategory")}
+          searchPlaceholder={tFeatures("evalsMore:score.searchCategories")}
+          emptyText={tFeatures("evalsMore:score.noCategory")}
           footer={
             canAddCategory
               ? ({ search, close }) => addCategoryButton(search, close)
@@ -159,7 +161,7 @@ export function CategoricalScoreInput({
               type="button"
               variant="ghost"
               size="icon-xs"
-              title="Add new category"
+              title={tFeatures("ui.addNewCategory")}
               onClick={() => setPendingLabel("")}
             >
               <Plus className="h-3.5 w-3.5" />

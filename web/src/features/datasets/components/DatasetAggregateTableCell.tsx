@@ -27,6 +27,7 @@ import { DiffLabel } from "@/src/features/datasets/components/DiffLabel";
 import { useResourceMetricsDiff } from "@/src/features/datasets/hooks/useResourceMetricsDiff";
 import { NotFoundCard } from "@/src/features/datasets/components/NotFoundCard";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics";
+import { useTranslation } from "react-i18next";
 
 const DatasetAggregateCellContent = ({
   projectId,
@@ -43,6 +44,7 @@ const DatasetAggregateCellContent = ({
   scoreDiffs?: Record<string, BaselineDiff>;
   baselineRunValue?: EnrichedDatasetRunItem;
 }) => {
+  const { t: tFeatures } = useTranslation("features");
   const router = useRouter();
   const capture = usePostHogClientCapture();
   const silentHttpCodes = [404];
@@ -214,7 +216,9 @@ const DatasetAggregateCellContent = ({
                 />
               ))
             ) : (
-              <span className="text-muted-foreground text-xs">No scores</span>
+              <span className="text-muted-foreground text-xs">
+                {tFeatures("ui.noScores")}
+              </span>
             )}
           </div>
         </div>
@@ -267,14 +271,14 @@ const DatasetAggregateCellContent = ({
                 className="h-6 px-1 text-xs"
                 onClick={handleOpenReview}
               >
-                Annotate
+                {tFeatures("ui.annotate")}
               </Button>
               {/* Triggers peek view */}
               <Button
                 variant="outline"
                 size="icon"
                 className="h-6 w-6 p-0"
-                title="View trace/observation"
+                title={tFeatures("ui.viewTraceObservation")}
                 onClick={handleOpenPeek}
               >
                 <ListTree className="h-3 w-3" />

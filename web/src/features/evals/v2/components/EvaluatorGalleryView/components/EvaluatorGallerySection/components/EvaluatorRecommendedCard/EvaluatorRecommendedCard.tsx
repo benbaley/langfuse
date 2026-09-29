@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import type { ReactNode } from "react";
 import type { EvalTemplateType } from "@langfuse/shared";
 
@@ -85,7 +86,14 @@ export function EvaluatorRecommendedCard({
   template: GalleryTemplate;
   onSelect: (template: GalleryTemplate) => void;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const { description, type } = getGalleryTemplatePresentation(template);
+  const displayDescription =
+    template.source === "managed"
+      ? tFeatures(`evalsMore:gallery.template.${template.key}.description`, {
+          defaultValue: description ?? "",
+        })
+      : description;
   const categoryKey = getGalleryTemplateCategoryKey(template);
 
   return (
@@ -96,8 +104,14 @@ export function EvaluatorRecommendedCard({
     >
       <EvaluatorRecommendedCardSurface>
         <EvaluatorRecommendedTemplateCardContent
-          title={template.name}
-          description={description}
+          title={
+            template.source === "managed"
+              ? tFeatures(`evalsMore:gallery.template.${template.key}.name`, {
+                  defaultValue: template.name,
+                })
+              : template.name
+          }
+          description={displayDescription}
           type={type}
           categoryKey={categoryKey}
         />

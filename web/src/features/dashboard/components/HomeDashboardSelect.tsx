@@ -5,6 +5,7 @@ import { Combobox } from "@/src/components/ui/combobox";
 import { LangfuseIcon } from "@/src/components/design-system/LangfuseIcon/LangfuseIcon";
 import { Button } from "@/src/components/ui/button";
 import { useHasProjectAccess } from "@/src/features/rbac";
+import { useTranslation } from "react-i18next";
 
 /**
  * Home's dashboard picker: selecting immediately shows ("peeks") the chosen
@@ -27,6 +28,7 @@ export function HomeDashboardSelect({
   onValueChange: (dashboardId: string) => void;
   currentDashboardName: string;
 }) {
+  const { t: tApp } = useTranslation("app");
   const hasCUDAccess = useHasProjectAccess({
     projectId,
     scope: "dashboards:CUD",
@@ -73,7 +75,7 @@ export function HomeDashboardSelect({
       <Button
         variant="ghost"
         disabled
-        title="The dashboard shown on this project's home page"
+        title={tApp("ui.TheDashboardShownOnThisProjectSHomePage")}
         className="text-muted-foreground my-0"
       >
         <LayoutDashboard className="mr-1 h-4 w-4" />

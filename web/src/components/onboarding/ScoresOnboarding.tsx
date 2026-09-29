@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import {
   SplashScreen,
   type ValueProposition,
@@ -5,40 +6,38 @@ import {
 import { ThumbsUp, Star, LineChart, Code } from "lucide-react";
 
 export function ScoresOnboarding() {
+  const { t: tFeatures } = useTranslation("features");
+
   const valuePropositions: ValueProposition[] = [
     {
-      title: "Collect user feedback",
-      description:
-        "Gather thumbs up/down feedback from users to identify high and low quality outputs",
+      title: tFeatures("evalsMore:onboarding.scoresFeedback"),
+      description: tFeatures("evalsMore:onboarding.scoresFeedbackHelp"),
       icon: ThumbsUp,
     },
     {
-      title: "Run model-based evaluations",
-      description:
-        "Use LLMs to automatically evaluate your application's outputs",
+      title: tFeatures("evalsMore:onboarding.scoresModels"),
+      description: tFeatures("evalsMore:onboarding.scoresModelsHelp"),
       icon: Star,
     },
     {
-      title: "Track quality metrics",
-      description:
-        "Monitor quality metrics over time to identify trends and issues",
+      title: tFeatures("evalsMore:onboarding.scoresMetrics"),
+      description: tFeatures("evalsMore:onboarding.scoresMetricsHelp"),
       icon: LineChart,
     },
     {
-      title: "Use custom metrics",
-      description:
-        "Langfuse's scores are flexible and can be used to track any metric that's associated with an LLM application",
+      title: tFeatures("evalsMore:onboarding.scoresCustom"),
+      description: tFeatures("evalsMore:onboarding.scoresCustomHelp"),
       icon: Code,
     },
   ];
 
   return (
     <SplashScreen
-      title="Get Started with Scores"
-      description="Scores allow you to evaluate the quality/safety of your LLM application through user feedback, model-based evaluations, or manual review. Scores can be used programmatically via the API and SDKs to track custom metrics."
+      title={tFeatures("evalsMore:onboarding.scoresTitle")}
+      description={tFeatures("evalsMore:onboarding.scoresDescription")}
       valuePropositions={valuePropositions}
       secondaryAction={{
-        label: "Learn More",
+        label: tFeatures("evalsMore:onboarding.learnMore"),
         href: "https://langfuse.com/docs/evaluation/evaluation-methods/custom-scores",
       }}
       videoSrc="https://static.langfuse.com/prod-assets/onboarding/scores-overview-v1.mp4"

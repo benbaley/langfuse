@@ -1,6 +1,8 @@
 /* eslint-disable @repo/no-style-props */
 "use client";
 
+import { useTranslation } from "react-i18next";
+import { enUS, zhCN } from "react-day-picker/locale";
 import * as React from "react";
 import {
   ChevronLeft,
@@ -22,8 +24,10 @@ function Calendar({
   disabled,
   ...props
 }: CalendarProps) {
+  const { i18n } = useTranslation("common");
   return (
     <DayPicker
+      locale={i18n.resolvedLanguage === "zh-CN" ? zhCN : enUS}
       showOutsideDays={showOutsideDays}
       className={cn("p-3", className)}
       disabled={disabled}

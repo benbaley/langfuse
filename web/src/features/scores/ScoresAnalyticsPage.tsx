@@ -19,6 +19,7 @@ import {
 import { BarChart3 } from "lucide-react";
 import { api } from "@/src/utils/api";
 import { Spinner } from "@/src/components/design-system/Spinner/Spinner";
+import { useTranslation, useTranslation as useNavigationTranslation } from "react-i18next";
 
 /**
  * Score Analytics V2 - Refactored Architecture
@@ -35,6 +36,8 @@ import { Spinner } from "@/src/components/design-system/Spinner/Spinner";
  *
  */
 export default function ScoresAnalyticsPage() {
+  const { t: tNavigation } = useNavigationTranslation("navigation");
+  const { t: tFeatures } = useTranslation("features");
   const router = useRouter();
   const projectId = router.query.projectId as string;
 
@@ -188,7 +191,7 @@ export default function ScoresAnalyticsPage() {
   return (
     <Page
       headerProps={{
-        title: "Scores",
+        title: tFeatures("ui.scores"),
         breadcrumb: [{ name: "Scores", href: `/project/${projectId}/scores` }],
         help: {
           description:
@@ -196,7 +199,7 @@ export default function ScoresAnalyticsPage() {
           href: "https://langfuse.com/docs/evaluation/overview",
         },
         tabsProps: {
-          tabs: getScoresTabs(projectId),
+          tabs: getScoresTabs(projectId, tNavigation),
           activeTab: SCORES_TABS.ANALYTICS,
         },
       }}
@@ -218,9 +221,13 @@ export default function ScoresAnalyticsPage() {
             <div className="bg-destructive/10 flex flex-col items-center justify-center gap-4 rounded-lg border p-12">
               <BarChart3 className="text-destructive h-12 w-12" />
               <div className="text-center">
-                <h3 className="text-lg font-bold">Error Loading Scores</h3>
+                <h3 className="text-lg font-bold">
+                  {tFeatures("ui.errorLoadingScores")}
+                </h3>
                 <p className="text-muted-foreground mt-2 text-sm">
-                  Failed to load score data. Please try refreshing the page.
+                  {tFeatures(
+                    "ui.failedToLoadScoreDataPleaseTryRefreshingThePage",
+                  )}
                 </p>
               </div>
             </div>
@@ -228,10 +235,13 @@ export default function ScoresAnalyticsPage() {
             <div className="bg-muted/20 flex flex-col items-center justify-center gap-4 rounded-lg border p-12">
               <BarChart3 className="text-muted-foreground h-12 w-12" />
               <div className="text-center">
-                <h3 className="text-lg font-bold">No Scores Available</h3>
+                <h3 className="text-lg font-bold">
+                  {tFeatures("ui.noScoresAvailable")}
+                </h3>
                 <p className="text-muted-foreground mt-2 text-sm">
-                  Create scores by adding evaluations to your traces and
-                  observations.
+                  {tFeatures(
+                    "ui.createScoresByAddingEvaluationsToYourTracesAndObservations",
+                  )}
                 </p>
               </div>
             </div>
@@ -239,25 +249,29 @@ export default function ScoresAnalyticsPage() {
             <div className="bg-muted/20 flex flex-col items-center justify-center gap-6 rounded-lg border p-12">
               <BarChart3 className="text-muted-foreground h-16 w-16" />
               <div className="max-w-2xl text-center">
-                <h3 className="text-2xl font-bold">Select a Score</h3>
+                <h3 className="text-2xl font-bold">
+                  {tFeatures("ui.selectAScore")}
+                </h3>
                 <p className="text-muted-foreground mt-3 text-base">
-                  Choose one or two scores from the dropdowns above to view
-                  analytics
+                  {tFeatures(
+                    "ui.chooseOneOrTwoScoresFromTheDropdownsAboveToViewAnalytics",
+                  )}
                 </p>
                 <div className="text-muted-foreground mt-6 space-y-3 text-sm">
                   <div className="bg-background/50 rounded-lg p-4">
                     <p className="text-foreground mb-1 font-bold">
-                      Single score selected:
+                      {tFeatures("ui.singleScoreSelected")}
                     </p>
-                    <p>View distribution and trends over time</p>
+                    <p>{tFeatures("ui.viewDistributionAndTrendsOverTime")}</p>
                   </div>
                   <div className="bg-background/50 rounded-lg p-4">
                     <p className="text-foreground mb-1 font-bold">
-                      Two scores selected:
+                      {tFeatures("ui.twoScoresSelected")}
                     </p>
                     <p>
-                      Compare scores with heatmaps, correlation analysis, and
-                      statistical metrics
+                      {tFeatures(
+                        "ui.compareScoresWithHeatmapsCorrelationAnalysisAndStatisticalMetrics",
+                      )}
                     </p>
                   </div>
                 </div>
@@ -271,7 +285,7 @@ export default function ScoresAnalyticsPage() {
             <div className="flex flex-col items-center justify-center gap-4 rounded-lg border p-12">
               <Spinner size="xxl" variant="muted" />
               <p className="text-muted-foreground text-sm">
-                Loading analytics data...
+                {tFeatures("ui.loadingAnalyticsData")}
               </p>
             </div>
           )}

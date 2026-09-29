@@ -51,6 +51,7 @@ import {
 } from "@/src/features/table";
 import { showSuccessToast } from "@/src/features/notifications";
 import { Pen, Trash } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 type DatasetTableRow = {
   id: string;
@@ -116,6 +117,8 @@ function DatasetsMultiSelectActionMenu({
   searchQuery: string | null;
   store: DatasetsTableStore;
 }) {
+  const { t: tMore } = useTranslation("coreMore");
+  const { t: tFeatures } = useTranslation("features");
   const selectAll = useStore(store, (state) => state.selectAll);
   const selectedCount = useStore(
     store,
@@ -134,9 +137,8 @@ function DatasetsMultiSelectActionMenu({
   const deleteManyMutation = api.datasets.deleteMany.useMutation({
     onSuccess: () => {
       showSuccessToast({
-        title: "Datasets deleted",
-        description:
-          "Selected datasets will be deleted. Associated run items and media links are cleaned up asynchronously.",
+        title: tFeatures("ui.datasetsDeleted"),
+        description: tMore("datasets.deleted"),
       });
     },
     onSettled: () => {
@@ -150,9 +152,8 @@ function DatasetsMultiSelectActionMenu({
     {
       id: ActionId.DatasetDelete,
       type: BatchActionType.Delete,
-      label: "Delete",
-      description:
-        "This action cannot be undone. Selected folders delete all datasets contained in them.",
+      label: tFeatures("ui.delete"),
+      description: tMore("datasets.deleteFolders"),
       accessCheck: {
         scope: "datasets:CUD",
       },
@@ -269,6 +270,8 @@ function DatasetsTableToolbar({
 }
 
 export function DatasetsTable(props: { projectId: string }) {
+  const { t: tMore } = useTranslation("coreMore");
+  const { t: tFeatures } = useTranslation("features");
   const { setDetailPageList } = useDetailPageLists();
   const [rowHeight, setRowHeight] = useRowHeightLocalStorage("datasets", "s");
   const [datasetsTableStore] = useState(() => createDatasetsTableStore());
@@ -332,7 +335,7 @@ export function DatasetsTable(props: { projectId: string }) {
     selectActionColumn,
     createFolderKeyTableColumn<DatasetTableRow, DatasetTableRow["key"]>({
       accessorKey: "key",
-      header: "Name",
+      header: tFeatures("ui.name"),
       size: 150,
       isFixedPosition: true,
       getCell: (key, { row }) => {
@@ -358,39 +361,39 @@ export function DatasetsTable(props: { projectId: string }) {
     }),
     createTextTableColumn<DatasetTableRow>({
       accessorKey: "description",
-      header: "Description",
+      header: tFeatures("ui.description"),
       enableHiding: true,
       size: 200,
     }),
     createNumberTableColumn<DatasetTableRow>({
       accessorKey: "countItems",
-      header: "Items",
+      header: tFeatures("ui.items"),
       enableHiding: true,
       size: 60,
       formatter: (value) => String(value),
     }),
     createNumberTableColumn<DatasetTableRow>({
       accessorKey: "countRuns",
-      header: "Experiments",
+      header: tFeatures("ui.experiments"),
       enableHiding: true,
       size: 60,
       formatter: (value) => String(value),
     }),
     createDateTableColumn<DatasetTableRow>({
       accessorKey: "createdAt",
-      header: "Created",
+      header: tFeatures("ui.created"),
       enableHiding: true,
       size: 150,
     }),
     createDateTableColumn<DatasetTableRow>({
       accessorKey: "lastRunAt",
-      header: "Last Run",
+      header: tFeatures("ui.lastRun"),
       enableHiding: true,
       size: 150,
     }),
     {
       accessorKey: "inputSchema",
-      header: "Input Schema",
+      header: tFeatures("ui.inputSchemaTitle"),
       id: "inputSchema",
       enableHiding: true,
       size: 80,
@@ -407,7 +410,7 @@ export function DatasetsTable(props: { projectId: string }) {
     },
     {
       accessorKey: "expectedOutputSchema",
-      header: "Expected Output Schema",
+      header: tFeatures("ui.expectedOutputSchemaTitle"),
       id: "expectedOutputSchema",
       enableHiding: true,
       size: 90,
@@ -427,7 +430,7 @@ export function DatasetsTable(props: { projectId: string }) {
     },
     createIOTableColumn<DatasetTableRow>({
       accessorKey: "metadata",
-      header: "Metadata",
+      header: tFeatures("ui.metadata"),
       enableHiding: true,
       size: 300,
       getCell: (value) => value || undefined,
@@ -436,7 +439,7 @@ export function DatasetsTable(props: { projectId: string }) {
     {
       id: "actions",
       accessorKey: "actions",
-      header: "Actions",
+      header: tFeatures("ui.actions"),
       size: 70,
       cell: ({ row }) => {
         const key: DatasetTableRow["key"] = row.getValue("key");
@@ -462,8 +465,8 @@ export function DatasetsTable(props: { projectId: string }) {
               {({ disabled, openDialog }) => (
                 <IconOnlyButton
                   icon={<Pen className="h-4 w-4" />}
-                  label="Edit"
-                  aria-label="edit"
+                  label={tFeatures("ui.edit")}
+                  aria-label={tMore("action.edit")}
                   disabledReason={disabled?.reason}
                   variant="ghost"
                   size="icon-xs"
@@ -483,8 +486,8 @@ export function DatasetsTable(props: { projectId: string }) {
               {({ disabled, openDialog }) => (
                 <IconOnlyButton
                   icon={<Trash className="h-4 w-4" />}
-                  label="Delete"
-                  aria-label="delete"
+                  label={tFeatures("ui.delete")}
+                  aria-label={tMore("action.delete")}
                   disabledReason={disabled?.reason}
                   variant="ghost"
                   size="icon-xs"

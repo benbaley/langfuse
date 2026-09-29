@@ -33,6 +33,10 @@ import { Skeleton } from "@/src/components/ui/skeleton";
 import { EditDatasetItemDialog } from "@/src/features/datasets/components/EditDatasetItemDialog";
 import { useDatasetVersion } from "@/src/features/datasets/hooks/useDatasetVersion";
 import { toDatasetSchema } from "@/src/features/datasets/utils/datasetItemUtils";
+import {
+  useTranslation,
+  useTranslation as useNavigationTranslation,
+} from "react-i18next";
 
 export const DatasetItemDetailPage = ({
   activeTab,
@@ -43,6 +47,9 @@ export const DatasetItemDetailPage = ({
   withPadding?: boolean;
   children: ReactNode;
 }) => {
+  const { t: tMore } = useTranslation("coreMore");
+  const { t: tNavigation } = useNavigationTranslation("navigation");
+  const { t: tFeatures } = useTranslation("features");
   const router = useRouter();
   const projectId = router.query.projectId as string;
   const datasetId = router.query.datasetId as string;
@@ -58,7 +65,12 @@ export const DatasetItemDetailPage = ({
   // The per-item "Experiments" (runs) tab reads legacy dataset_run_items and
   // has no events-backed equivalent, so hide it for fast-preview (v4) users.
   const { isExperimentsBetaActive } = useExperimentAccess();
-  const tabs = getDatasetItemTabs({ projectId, datasetId, itemId }).filter(
+  const tabs = getDatasetItemTabs({
+    projectId,
+    datasetId,
+    itemId,
+    t: tNavigation,
+  }).filter(
     (tab) => !isExperimentsBetaActive || tab.value !== DATASET_ITEM_TABS.RUNS,
   );
 
@@ -182,13 +194,17 @@ export const DatasetItemDetailPage = ({
                     <div className="space-y-2">
                       <h4 className="leading-none font-bold">
                         {item.data.status === DatasetStatus.ACTIVE
-                          ? "Archive this item?"
-                          : "Unarchive this item?"}
+                          ? tFeatures("ui.archiveThisItem")
+                          : tFeatures("ui.unarchiveThisItem")}
                       </h4>
                       <p className="text-muted-foreground text-sm">
                         {item.data.status === DatasetStatus.ACTIVE
-                          ? "Archiving an item will exclude it from new dataset runs."
-                          : "Unarchiving an item will include it back in new dataset runs."}
+                          ? tFeatures(
+                              "ui.archivingAnItemWillExcludeItFromNewDatasetRuns",
+                            )
+                          : tFeatures(
+                              "ui.unarchivingAnItemWillIncludeItBackInNewDatasetRuns",
+                            )}
                       </p>
                     </div>
                     <Button
@@ -202,10 +218,10 @@ export const DatasetItemDetailPage = ({
                       size="sm"
                     >
                       {mutUpdate.isPending
-                        ? "Processing..."
+                        ? tFeatures("ui.processing")
                         : item.data.status === DatasetStatus.ACTIVE
-                          ? "Archive"
-                          : "Unarchive"}
+                          ? tFeatures("ui.archive")
+                          : tFeatures("ui.unarchive")}
                     </Button>
                   </div>
                 </PopoverContent>
@@ -215,7 +231,11 @@ export const DatasetItemDetailPage = ({
               <Button variant="ghost" size="icon-xs" asChild>
                 <Link
                   href={`/project/${projectId}/traces/${item.data.sourceTraceId}`}
-                  title={`View source ${item.data.sourceObservationId ? "observation" : "trace"}`}
+                  title={tMore("datasets.viewSource", {
+                    type: item.data.sourceObservationId
+                      ? tFeatures("ui.observation")
+                      : tFeatures("ui.trace"),
+                  })}
                 >
                   <ListTree className="h-4 w-4" />
                 </Link>
@@ -241,8 +261,8 @@ export const DatasetItemDetailPage = ({
                     variant="outline"
                     size="icon"
                     hasAccess={hasAccess}
-                    title="Copy item"
-                    aria-label="Copy item"
+                    title={tFeatures("ui.copyItem")}
+                    aria-label={tFeatures("ui.copyItem")}
                     onClick={() => openDialog(datasetItemDialogPayload)}
                   >
                     <CopyIcon className="size-3" />
@@ -266,7 +286,7 @@ export const DatasetItemDetailPage = ({
                   disabled={!hasAccess || isViewingOldVersion || !item.data}
                 >
                   <Pencil className="mr-2 h-4 w-4" />
-                  Edit
+                  {tFeatures("ui.edit")}
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={handleDelete}
@@ -279,7 +299,9 @@ export const DatasetItemDetailPage = ({
                   className="text-destructive"
                 >
                   <Trash2 className="mr-2 h-4 w-4" />
-                  {mutDelete.isPending ? "Deleting..." : "Delete"}
+                  {mutDelete.isPending
+                    ? tFeatures("ui.deleting")
+                    : tFeatures("ui.delete")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

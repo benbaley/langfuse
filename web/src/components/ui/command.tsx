@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 /* eslint-disable @repo/no-style-props, @repo/no-margin-on-root-elements */
 "use client";
 
@@ -42,6 +43,8 @@ const CommandDialog = ({
 }: DialogProps & {
   filter?: React.ComponentProps<typeof CommandPrimitive>["filter"];
 }) => {
+const { t: tUi } = useTranslation("uiMore");
+
   return (
     <Dialog {...props}>
       <DialogContent
@@ -56,7 +59,7 @@ const CommandDialog = ({
         overlayMode="invisible"
       >
         <DialogHeader className="sr-only p-0">
-          <DialogTitle>Search</DialogTitle>
+          <DialogTitle>{tUi("search")}</DialogTitle>
         </DialogHeader>
         <DialogBody className="p-0">
           <Command

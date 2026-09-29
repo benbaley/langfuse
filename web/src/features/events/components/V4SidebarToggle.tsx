@@ -29,6 +29,7 @@ import {
   V4_PREVIEW_LABEL,
   V4_PREVIEW_DESCRIPTION,
 } from "@/src/features/events/lib/v4PreviewLabel";
+import { useTranslation } from "react-i18next";
 
 function asSingleValue(value: string | string[] | undefined) {
   return Array.isArray(value) ? value[0] : value;
@@ -163,6 +164,7 @@ function useV4PreviewToggle(source: "sidebar" | "migration_panel") {
 }
 
 export function V4SidebarToggle() {
+  const { t: tFeatures } = useTranslation("features");
   const {
     isChecked,
     isLoading,
@@ -198,7 +200,7 @@ export function V4SidebarToggle() {
                   checked={isChecked}
                   onCheckedChange={handleToggle}
                   disabled={isLoading}
-                  aria-label="Toggle V4 Preview"
+                  aria-label={tFeatures("ui.toggleV4Preview")}
                   aria-describedby="v4-preview-sidebar-description"
                 />
               </div>
@@ -226,6 +228,7 @@ export function V4SidebarToggle() {
 // project's traces page (the panel stays open across the navigation) so users
 // see the switched experience immediately.
 export function V4PreviewToggleRow({ projectId }: { projectId?: string }) {
+  const { t: tFeatures } = useTranslation("features");
   const router = useRouter();
   // Panel and modal can render this row at the same time, so ids must be
   // instance-scoped for the label/description associations to hold.
@@ -257,7 +260,7 @@ export function V4PreviewToggleRow({ projectId }: { projectId?: string }) {
           checked={isChecked}
           onCheckedChange={handlePanelToggle}
           disabled={isLoading}
-          aria-label="Toggle V4 Preview"
+          aria-label={tFeatures("ui.toggleV4Preview")}
           aria-describedby={descriptionId}
         />
         <Label

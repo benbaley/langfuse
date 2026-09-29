@@ -21,21 +21,9 @@ import {
 } from "@/src/components/ui/tooltip";
 import { cn } from "@/src/utils/tailwind";
 import styles from "./EvaluatorSavedDialog.module.css";
+import { useTranslation } from "react-i18next";
 
 export type EvaluatorSavedMode = "test-filters" | "different-scope";
-
-const modeOptions = [
-  {
-    value: "test-filters",
-    title: "Reuse the configured filters",
-    description: "Creates a rule from the sample observation filters.",
-  },
-  {
-    value: "different-scope",
-    title: "Run on a different scope",
-    description: "Attach to a rule you already have, or create a new one.",
-  },
-] as const;
 
 export function EvaluatorSavedDialog({
   open,
@@ -68,6 +56,19 @@ export function EvaluatorSavedDialog({
   onOpenAutoFocus?: () => void;
   onCloseAnimationEnd?: () => void;
 }) {
+  const { t: tFeatures } = useTranslation("features");
+  const modeOptions = [
+    {
+      value: "test-filters",
+      title: tFeatures("evalsMore:saved.reuse"),
+      description: tFeatures("evalsMore:saved.reuseDescription"),
+    },
+    {
+      value: "different-scope",
+      title: tFeatures("evalsMore:saved.different"),
+      description: tFeatures("evalsMore:saved.differentDescription"),
+    },
+  ] as const;
   return (
     <Dialog
       open={open}
@@ -82,16 +83,16 @@ export function EvaluatorSavedDialog({
         onCloseAutoFocus={onCloseAnimationEnd}
       >
         <DialogHeader className="[&>div]:items-start [&>div>button]:-mt-1">
-          <DialogTitle>Evaluator saved</DialogTitle>
+          <DialogTitle>{tFeatures("evalsMore:saved.title")}</DialogTitle>
           <DialogDescription>
-            Choose which observations this evaluator should score.
+            {tFeatures("ui.chooseWhichObservationsThisEvaluatorShouldScore")}
           </DialogDescription>
         </DialogHeader>
         <DialogBody className="gap-0 p-0">
           <div className="grid h-[30rem] grid-cols-[minmax(0,1fr)_15rem] overflow-hidden">
             <div className="min-w-0 overflow-y-auto px-6 py-5 [scrollbar-gutter:stable]">
               <h3 className="mb-2 text-sm font-bold">
-                Set up rule to run on incoming observations
+                {tFeatures("ui.setUpRuleToRunOnIncomingObservations")}
               </h3>
               <RadioGroup
                 value={mode}
@@ -180,18 +181,17 @@ export function EvaluatorSavedDialog({
                 disabled={isSubmitting}
                 onClick={onSecondaryAction}
               >
-                Skip execution
+                {tFeatures("ui.skipExecution")}
               </Button>
             </TooltipTrigger>
             <TooltipContent className="max-w-72">
-              It remains available for batch evaluations and prompt experiments.
-              Set up incoming observations later.
+              {tFeatures("evalsMore:saved.skipHelp")}
             </TooltipContent>
           </Tooltip>
           <Button
             disabled={!canSubmit}
             loading={isSubmitting}
-            loadingText="Starting evaluator..."
+            loadingText={tFeatures("ui.startingEvaluator")}
             onClick={onPrimaryAction}
           >
             {primaryActionLabel}

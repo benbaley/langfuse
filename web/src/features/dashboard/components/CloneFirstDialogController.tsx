@@ -13,6 +13,7 @@ import { Button } from "@/src/components/ui/button";
 import { showErrorToast, showSuccessToast } from "@/src/features/notifications";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics";
 import type { DashboardPlacement } from "@/src/features/widgets";
+import { useTranslation } from "react-i18next";
 
 /**
  * Clone-first flow for Langfuse-managed (read-only) dashboards: any edit
@@ -90,6 +91,7 @@ function CloneFirstDialogContent({
   cancelDialog: () => boolean;
   onPendingChange: (isPending: boolean) => void;
 }) {
+  const { t: tApp } = useTranslation("app");
   const router = useRouter();
   const utils = api.useUtils();
   const capture = usePostHogClientCapture();
@@ -132,7 +134,7 @@ function CloneFirstDialogContent({
         owner: "LANGFUSE",
       });
       showSuccessToast({
-        title: "Editable copy created",
+        title: tApp("ui.EditableCopyCreated"),
         description: setAsHome
           ? "The copy is now this project's Home dashboard"
           : "You are now working on your own copy",
@@ -168,7 +170,7 @@ function CloneFirstDialogContent({
   return (
     <>
       <DialogHeader>
-        <DialogTitle>Create your editable copy</DialogTitle>
+        <DialogTitle>{tApp("ui.CreateYourEditableCopy")}</DialogTitle>
       </DialogHeader>
       <DialogBody>
         <div className="text-muted-foreground grid gap-3 py-4 text-sm">
@@ -176,24 +178,26 @@ function CloneFirstDialogContent({
             <span className="text-foreground font-bold">
               &ldquo;{dashboardName}&rdquo;
             </span>{" "}
-            is maintained by Langfuse and can&rsquo;t be edited directly.
-            We&rsquo;ll create your own editable copy in this project
-            {pendingDefinition ? " with your change applied" : ""}
-            {setAsHome ? " and show it on your Home page from now on" : ""}.
+            {tApp(
+              "ui.IsMaintainedByLangfuseAndCanRsquoTBeEditedDirectlyWeRsquoLlCreateYourOwnEditableCopyInThisProject",
+            )}
+            {pendingDefinition ? tApp("ui.WithYourChangeApplied") : ""}
+            {setAsHome ? tApp("ui.AndShowItOnYourHomePageFromNowOn") : ""}.
           </p>
           <p>
-            Langfuse-maintained tiles on the copy can be rearranged or removed;
-            editing their content will become available in a future release.
+            {tApp(
+              "ui.LangfuseMaintainedTilesOnTheCopyCanBeRearrangedOrRemovedEditingTheirContentWillBecomeAvailableInAFutureRelease",
+            )}
           </p>
           {existingClone && (
             <div className="bg-muted/50 flex flex-wrap items-center justify-between gap-2 rounded-md border p-3">
               <span>
-                You already have a copy:{" "}
+                {tApp("ui.YouAlreadyHaveACopy")}{" "}
                 <span className="text-foreground font-bold">
                   &ldquo;{existingClone.name}&rdquo;
                 </span>
                 {pendingDefinition
-                  ? " — opening it will discard your attempted change"
+                  ? tApp("ui.OpeningItWillDiscardYourAttemptedChange")
                   : ""}
               </span>
               <Button
@@ -214,7 +218,7 @@ function CloneFirstDialogContent({
                 }}
               >
                 <ExternalLinkIcon size={14} className="mr-1" />
-                Open it instead
+                {tApp("ui.OpenItInstead")}
               </Button>
             </div>
           )}
@@ -228,14 +232,14 @@ function CloneFirstDialogContent({
             type="button"
             disabled={cloneDashboard.isPending}
           >
-            Cancel
+            {tApp("ui.cancel")}
           </Button>
           <Button
             onClick={handleConfirm}
             type="button"
             loading={cloneDashboard.isPending}
           >
-            Create my copy
+            {tApp("ui.CreateMyCopy")}
           </Button>
         </div>
       </DialogFooter>

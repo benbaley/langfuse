@@ -26,12 +26,14 @@ import { Alert } from "@/src/components/design-system/Alert/Alert";
 import { Button } from "@/src/components/ui/button";
 import { useState } from "react";
 import { Skeleton } from "@/src/components/ui/skeleton";
+import { useTranslation } from "react-i18next";
 
 // Multi-step setup process
 // 1. Select Evaluator: /project/:projectId/evals/legacy/new
 // 2. Set up LLM connection (only after selecting an evaluator that needs it): /project/:projectId/evals/legacy/new?evaluator=:evaluatorId
 // 3. Configure Evaluator: /project/:projectId/evals/legacy/new?evaluator=:evaluatorId
 export default function NewEvaluatorPage() {
+  const { t: tFeatures } = useTranslation("features");
   const router = useRouter();
   const projectId = router.query.projectId as string;
   const evaluatorId = router.query.evaluator as string | undefined;
@@ -158,7 +160,7 @@ export default function NewEvaluatorPage() {
   const isProviderStepComplete = step === "run" && selectedTemplateIsLlm;
 
   if (!hasAccess) {
-    return <div>You do not have access to this page.</div>;
+    return <div>{tFeatures("ui.youDoNotHaveAccessToThisPage")}</div>;
   }
 
   return (
@@ -190,7 +192,7 @@ export default function NewEvaluatorPage() {
                   : "text-foreground font-bold",
               )}
             >
-              1. Select Evaluator
+              {tFeatures("evalsMore:evaluator.step1")}
               {step !== "select" && (
                 <Check className="ml-1 inline-block h-3 w-3" />
               )}
@@ -205,7 +207,7 @@ export default function NewEvaluatorPage() {
                   : "text-muted-foreground",
               )}
             >
-              2. Set up LLM connection
+              {tFeatures("evalsMore:evaluator.step2")}
               {isProviderStepComplete && (
                 <Check className="ml-1 inline-block h-3 w-3" />
               )}
@@ -221,7 +223,7 @@ export default function NewEvaluatorPage() {
               )}
             >
               <div className="flex flex-row">
-                3. Run Evaluator
+                {tFeatures("evalsMore:evaluator.step3")}
                 {currentTemplate && (
                   <div className="flex flex-row gap-2">
                     <span>
@@ -263,11 +265,15 @@ export default function NewEvaluatorPage() {
           <div className="flex flex-col gap-4">
             {hasNewerTemplate && latestTemplate && currentTemplate ? (
               <Alert variant="info" icon={Info}>
-                <Alert.Title>Selected Evaluator has been updated</Alert.Title>
+                <Alert.Title>
+                  {tFeatures("ui.selectedEvaluatorHasBeenUpdated")}
+                </Alert.Title>
                 <Alert.Description>
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <span>
-                      Click to use the latest version of your evaluator{" "}
+                      {tFeatures(
+                        "ui.clickToUseTheLatestVersionOfYourEvaluator",
+                      )}{" "}
                       {latestTemplate.name}.
                     </span>
                     <Button
@@ -277,7 +283,7 @@ export default function NewEvaluatorPage() {
                       className="w-fit"
                       onClick={handleUseUpdatedEvaluator}
                     >
-                      Use updated evaluator
+                      {tFeatures("ui.useUpdatedEvaluator")}
                     </Button>
                   </div>
                 </Alert.Description>

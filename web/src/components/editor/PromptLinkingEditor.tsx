@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 /* eslint-disable @repo/no-style-props */
 import { useState, useRef, useEffect } from "react";
 import { CodeMirrorEditor } from "./CodeMirrorEditor";
@@ -25,6 +26,7 @@ export function PromptLinkingEditor({
   maxHeight = "60vh",
   className,
 }: PromptLinkingEditorProps) {
+  const { t: tMore } = useTranslation("coreMore");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const projectId = useProjectIdFromURL();
   const editorRef = useRef<ReactCodeMirrorRef>(null);
@@ -76,7 +78,7 @@ export function PromptLinkingEditor({
           onClick={() => setIsDialogOpen(true)}
         >
           <Plus className="mr-2 h-4 w-4" />
-          <span className="text-xs">Add prompt reference</span>
+          <span className="text-xs">{tMore("prompts.addReference")}</span>
         </Button>
       </div>
 

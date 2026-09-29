@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Badge } from "@/src/components/ui/badge";
 import { Button } from "@/src/components/ui/button";
 import {
@@ -29,6 +30,7 @@ export const ScoreComparisonFilterPills = ({
   pills: ScoreComparisonPill[];
   onRemove: (filter: ScoreComparisonFilter) => void;
 }) => {
+  const { t: tMore } = useTranslation("coreMore");
   return (
     <div className="flex flex-wrap items-center gap-1.5 border-b px-2 py-2">
       {pills.map(({ filter, scoreName, comparisonName }) => {
@@ -50,14 +52,11 @@ export const ScoreComparisonFilterPills = ({
             <Tooltip>
               <TooltipTrigger asChild>
                 <span className="text-muted-foreground shrink-0 cursor-default underline decoration-dotted">
-                  this page
+                  {tMore("experiments.thisPage")}
                 </span>
               </TooltipTrigger>
               <TooltipContent className="max-w-[280px]">
-                Comparing one experiment&apos;s score against another&apos;s is
-                not something the items query can express, so this narrows the
-                items loaded on the current page. Page through to check the rest
-                of the run.
+                {tMore("experiments.comparisonPageHelp")}
               </TooltipContent>
             </Tooltip>
             <Button

@@ -5,7 +5,8 @@ import {
 } from "@langfuse/shared";
 
 import { Badge } from "@/src/components/ui/badge";
-import { QUESTION_TYPE_COPY } from "@/src/features/evals/v2/components/Evaluators/DecisionModel/QuestionTypeSelector/QuestionTypeSelector";
+import { getQuestionTypeCopy } from "@/src/features/evals/v2/components/Evaluators/DecisionModel/QuestionTypeSelector/QuestionTypeSelector";
+import { useTranslation } from "react-i18next";
 
 function entryText(entry: DecisionModelEntry | null | undefined) {
   if (entry == null) return "";
@@ -13,6 +14,7 @@ function entryText(entry: DecisionModelEntry | null | undefined) {
 }
 
 function Criteria({ question }: { question: DecisionModelQuestion }) {
+  const { t: tFeatures } = useTranslation("features");
   switch (question.type) {
     case DecisionModelQuestionType.CHOICE:
       return (
@@ -47,19 +49,21 @@ function Criteria({ question }: { question: DecisionModelQuestion }) {
         <dl className="grid grid-cols-[auto_1fr] gap-x-2 gap-y-0.5">
           {question.criteria.true ? (
             <>
-              <dt className="text-muted-foreground">Yes</dt>
+              <dt className="text-muted-foreground">{tFeatures("ui.yes")}</dt>
               <dd>{entryText(question.criteria.true)}</dd>
             </>
           ) : null}
           {question.criteria.false ? (
             <>
-              <dt className="text-muted-foreground">No</dt>
+              <dt className="text-muted-foreground">{tFeatures("ui.no")}</dt>
               <dd>{entryText(question.criteria.false)}</dd>
             </>
           ) : null}
         </dl>
       ) : (
-        <p className="text-muted-foreground">Returns the probability of yes.</p>
+        <p className="text-muted-foreground">
+          {tFeatures("ui.returnsTheProbabilityOfYes")}
+        </p>
       );
   }
 }
@@ -72,7 +76,8 @@ export function DecisionModelQuestionSummary({
   question: DecisionModelQuestion;
   index: number;
 }) {
-  const copy = QUESTION_TYPE_COPY[question.type];
+  const { t: tFeatures } = useTranslation("features");
+  const copy = getQuestionTypeCopy(tFeatures)[question.type];
   return (
     <div className="bg-card text-card-foreground flex flex-col gap-2 rounded-md border p-3 text-sm">
       <div className="flex min-w-0 items-center gap-2">

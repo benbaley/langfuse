@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useWatch } from "react-hook-form";
 import {
   FormControl,
@@ -22,6 +23,7 @@ export const ExportScheduleFields = ({
 }: {
   control: BlobStorageFormControl;
 }) => {
+  const { t } = useTranslation("settingsMore");
   const watchedExportMode = useWatch({ control, name: "exportMode" });
 
   return (
@@ -31,24 +33,24 @@ export const ExportScheduleFields = ({
         name="exportFrequency"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Export Frequency</FormLabel>
+            <FormLabel>{t("blob.frequency")}</FormLabel>
             <FormControl>
               <SelectInput
                 value={field.value}
                 onValueChange={field.onChange}
-                placeholder="Select frequency"
+                placeholder={t("blob.selectFrequency")}
                 options={[
-                  { value: "every_20_minutes", label: "Every 20 Minutes" },
-                  { value: "hourly", label: "Hourly" },
-                  { value: "daily", label: "Daily" },
-                  { value: "weekly", label: "Weekly" },
+                  {
+                    value: "every_20_minutes",
+                    label: t("blob.every20Minutes"),
+                  },
+                  { value: "hourly", label: t("blob.hourly") },
+                  { value: "daily", label: t("blob.daily") },
+                  { value: "weekly", label: t("blob.weekly") },
                 ]}
               />
             </FormControl>
-            <FormDescription>
-              How often the data should be exported. Changes are taken into
-              consideration from the next run onwards.
-            </FormDescription>
+            <FormDescription>{t("blob.frequencyHint")}</FormDescription>
             <FormMessage />
           </FormItem>
         )}
@@ -59,12 +61,12 @@ export const ExportScheduleFields = ({
         name="fileType"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>File Type</FormLabel>
+            <FormLabel>{t("blob.fileType")}</FormLabel>
             <FormControl>
               <SelectInput
                 value={field.value}
                 onValueChange={field.onChange}
-                placeholder="Select file type"
+                placeholder={t("blob.selectFileType")}
                 options={[
                   {
                     value: BlobStorageIntegrationFileType.PARQUET,
@@ -87,8 +89,8 @@ export const ExportScheduleFields = ({
             </FormControl>
             <FormDescription>
               {field.value === BlobStorageIntegrationFileType.PARQUET
-                ? "Apache Parquet — a columnar binary format encoded and compressed by ClickHouse. Gzip compression does not apply."
-                : "The file format for exported data."}
+                ? t("blob.parquetHint")
+                : t("blob.fileTypeHint")}
             </FormDescription>
             <FormMessage />
           </FormItem>
@@ -100,33 +102,29 @@ export const ExportScheduleFields = ({
         name="exportMode"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Export Mode</FormLabel>
+            <FormLabel>{t("blob.mode")}</FormLabel>
             <FormControl>
               <SelectInput
                 value={field.value}
                 onValueChange={field.onChange}
-                placeholder="Select export mode"
+                placeholder={t("blob.selectMode")}
                 options={[
                   {
                     value: BlobStorageExportMode.FULL_HISTORY,
-                    label: "Full history",
+                    label: t("blob.fullHistory"),
                   },
                   {
                     value: BlobStorageExportMode.FROM_TODAY,
-                    label: "Today",
+                    label: t("blob.today"),
                   },
                   {
                     value: BlobStorageExportMode.FROM_CUSTOM_DATE,
-                    label: "Custom date",
+                    label: t("blob.customDate"),
                   },
                 ]}
               />
             </FormControl>
-            <FormDescription>
-              Choose when to start exporting data. &quot;Today&quot; and
-              &quot;Custom date&quot; modes will not include historical data
-              before the specified date.
-            </FormDescription>
+            <FormDescription>{t("blob.modeHint")}</FormDescription>
             <FormMessage />
           </FormItem>
         )}
@@ -138,7 +136,7 @@ export const ExportScheduleFields = ({
           name="exportStartDate"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Export Start Date</FormLabel>
+              <FormLabel>{t("blob.startDate")}</FormLabel>
               <FormControl>
                 <Input
                   type="date"
@@ -157,12 +155,10 @@ export const ExportScheduleFields = ({
                       : null;
                     field.onChange(date);
                   }}
-                  placeholder="Select start date"
+                  placeholder={t("blob.selectStartDate")}
                 />
               </FormControl>
-              <FormDescription>
-                Data before this date will not be included in exports
-              </FormDescription>
+              <FormDescription>{t("blob.startDateHint")}</FormDescription>
               <FormMessage />
             </FormItem>
           )}

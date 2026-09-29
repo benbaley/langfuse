@@ -12,6 +12,7 @@ import { ExperimentBaselineControls } from "./ExperimentBaselineControls";
 import { ExperimentComparisonSelector } from "./ExperimentComparisonSelector";
 import { getExperimentColorStyles } from "./table/types";
 import { cn } from "@/src/utils/tailwind";
+import { useTranslation } from "react-i18next";
 
 type ExperimentSelectionControlsProps = {
   projectId: string;
@@ -40,6 +41,7 @@ export function ExperimentSelectionControls({
   onBaselineClear,
   onComparisonIdsChange,
 }: ExperimentSelectionControlsProps) {
+  const { t: tFeatures } = useTranslation("features");
   const router = useRouter();
   const capture = usePostHogClientCapture();
   // The dataset each run belongs to, for `isSameDataset`. The picker reports its
@@ -137,7 +139,7 @@ export function ExperimentSelectionControls({
               )}
             />
           )}
-          Baseline
+          {tFeatures("ui.baseline")}
         </div>
         <div className="w-full max-w-64 min-w-0 flex-1">
           <ExperimentBaselineControls

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useCallback, useMemo } from "react";
 import { Trash } from "lucide-react";
 import { type Role } from "@langfuse/shared";
@@ -90,28 +91,29 @@ export function MembersSettingsTable({
   pagination,
   ...tableProps
 }: MembersSettingsTableProps) {
+  const { t } = useTranslation("settings");
   const columns = useMemo<LangfuseColumnDef<MembersSettingsTableRow>[]>(
     () => [
       createUserTableColumn<MembersSettingsTableRow>({
         accessorKey: "user",
-        header: "Name",
+        header: t("memberName"),
         variant: "avatar",
       }),
       createTextTableColumn<MembersSettingsTableRow>({
         accessorKey: "email",
-        header: "Email",
+        header: t("email"),
         nullValue: "-",
       }),
       createBadgeListTableColumn<MembersSettingsTableRow>({
         accessorKey: "providers",
-        header: "SSO Provider",
+        header: t("ssoProvider"),
         enableHiding: true,
         nullValue: "-",
         shouldWrap: true,
       }),
       {
         accessorKey: "orgRole",
-        header: "Organization Role",
+        header: t("organizationRole"),
         headerTooltip: {
           description:
             "The organization role is the default role for this user across the organization and its projects.",
@@ -146,7 +148,7 @@ export function MembersSettingsTable({
                       href={`/organization/${orgId}/settings/members`}
                       className="underline"
                     >
-                      organization settings
+                      {t("organizationSettings")}
                     </Link>
                     .
                   </p>
@@ -160,7 +162,7 @@ export function MembersSettingsTable({
         ? ([
             {
               accessorKey: "projectRole",
-              header: "Project Role",
+              header: t("projectRole"),
               headerTooltip: {
                 description:
                   "The project role applies to this project and overrides the default organization role.",
@@ -190,7 +192,7 @@ export function MembersSettingsTable({
         ? ([
             {
               accessorKey: "featurePreviews",
-              header: "Feature Previews",
+              header: t("featurePreviews"),
               enableHiding: true,
               size: 140,
               cell: ({ row }) => {
@@ -209,7 +211,7 @@ export function MembersSettingsTable({
                         <>
                           <PopoverTrigger asChild>
                             <Button variant="outline" size="sm">
-                              {enabledCount}/{totalCount} enabled
+                              {enabledCount}/{totalCount} {t("enabled")}
                             </Button>
                           </PopoverTrigger>
                           {content}
@@ -224,7 +226,7 @@ export function MembersSettingsTable({
         : []),
       createDateTableColumn<MembersSettingsTableRow>({
         accessorKey: "createdAt",
-        header: "Member Since",
+        header: t("memberSince"),
         enableHiding: true,
         defaultHidden: true,
         mode: "relative",
@@ -241,6 +243,7 @@ export function MembersSettingsTable({
       showFeaturePreviews,
       updatingOrgRoleMembershipIds,
       updatingProjectRoleMembershipIds,
+      t,
     ],
   );
   const actions = useCallback<
@@ -259,16 +262,16 @@ export function MembersSettingsTable({
         disabled:
           hasOrgCudAccess || member.meta.userId === currentUserId
             ? undefined
-            : { reason: "You do not have permission to remove this member" },
+            : { reason: t("removeMemberForbidden") },
         onClick: () => onDelete(member),
       },
     ],
-    [currentUserId, hasOrgCudAccess, onDelete],
+    [currentUserId, hasOrgCudAccess, onDelete, t],
   );
 
   return (
     <SettingsTable
-      tableName={project ? "project members" : "organization members"}
+      tableName={project ? t("projectMembers") : t("organizationMembers")}
       columns={columns}
       actions={actions}
       columnVisibilityKey={
@@ -281,7 +284,7 @@ export function MembersSettingsTable({
       }
       search={{
         value: search.value,
-        placeholder: "Search name or email",
+        placeholder: t("searchNameEmail"),
         onChange: search.onChange,
       }}
       toolbarActions={toolbarActions}

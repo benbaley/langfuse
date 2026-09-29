@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useMemo, type ReactNode } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -52,6 +53,7 @@ export const BlobStorageIntegrationForm = ({
   // this draft.
   children?: ReactNode;
 }) => {
+  const { t } = useTranslation("settingsMore");
   // Block the save when the persisted source is no longer selectable rather
   // than silently rewriting it (LFE-10296). The policy context is fixed for
   // the lifetime of this mount: it derives from the project and config
@@ -63,12 +65,11 @@ export const BlobStorageIntegrationForm = ({
           ctx.addIssue({
             code: "custom",
             path: ["exportSource"],
-            message:
-              "This export source is not available on this deployment. Select an available export source to save.",
+            message: t("integrations.unavailableSource"),
           });
         }
       }),
-    [exportSourceCtx],
+    [exportSourceCtx, t],
   );
 
   const blobStorageForm = useForm({
@@ -100,7 +101,7 @@ export const BlobStorageIntegrationForm = ({
             name="compressed"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Gzip Compression</FormLabel>
+                <FormLabel>{t("blob.gzip")}</FormLabel>
                 <FormControl>
                   <div className="mt-1 ml-4">
                     <Switch
@@ -109,10 +110,7 @@ export const BlobStorageIntegrationForm = ({
                     />
                   </div>
                 </FormControl>
-                <FormDescription>
-                  Compress exported files with gzip (.csv.gz, .json.gz,
-                  .jsonl.gz)
-                </FormDescription>
+                <FormDescription>{t("blob.gzipHint")}</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -123,7 +121,7 @@ export const BlobStorageIntegrationForm = ({
           name="enabled"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Enabled</FormLabel>
+              <FormLabel>{t("common.enabled")}</FormLabel>
               <FormControl>
                 <div className="mt-1 ml-4">
                   <Switch
@@ -142,7 +140,7 @@ export const BlobStorageIntegrationForm = ({
           loading={isSaving}
           onClick={blobStorageForm.handleSubmit(onSubmit)}
         >
-          Save
+          {t("common.save")}
         </Button>
         {children}
       </div>

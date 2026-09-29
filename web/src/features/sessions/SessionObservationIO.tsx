@@ -15,6 +15,7 @@ import { usePostHogClientCapture } from "@/src/features/posthog-analytics";
 import { compactNumberFormatter } from "@/src/utils/numbers";
 import { decodeUnicodeEscapesOnly } from "@/src/utils/unicode";
 import { parseJsonIfString } from "@langfuse/shared";
+import { Trans, useTranslation } from "react-i18next";
 
 export type SessionTraceObservation =
   RouterOutputs["sessions"]["observationsForTraceFromEvents"][number];
@@ -52,6 +53,7 @@ const TruncatedIOSection = ({
   fullLength: number;
   truncated: boolean;
 }) => {
+  const { t: tMore } = useTranslation("coreMore");
   const text = typeof value === "string" ? value : JSON.stringify(value);
   // Character counts stay on the raw slice; decode only the displayed value so
   // \uXXXX escapes match PrettyJsonView / LargeStringFallback (and stay bounded).
@@ -67,9 +69,13 @@ const TruncatedIOSection = ({
         <span className="font-bold">{label}</span>
         {(truncated || rawShown.length < text.length) && (
           <span>
-            {compactNumberFormatter(Math.max(fullLength, text.length), 1)}{" "}
-            characters — showing the first{" "}
-            {compactNumberFormatter(rawShown.length, 1)}
+            {tMore("sessions.truncatedCharacters", {
+              total: compactNumberFormatter(
+                Math.max(fullLength, text.length),
+                1,
+              ),
+              shown: compactNumberFormatter(rawShown.length, 1),
+            })}
           </span>
         )}
       </div>
@@ -120,6 +126,8 @@ export const SessionObservationIO = ({
   parsedMetadata?: unknown;
   chatMLParserResult?: ChatMLParserResult;
 }) => {
+  const { t: tMore } = useTranslation("coreMore");
+  const { t: tFeatures } = useTranslation("features");
   const capture = usePostHogClientCapture();
   const utils = api.useUtils();
   const [isDownloading, setIsDownloading] = React.useState(false);
@@ -208,15 +216,19 @@ export const SessionObservationIO = ({
         {ioPreview}
         {observation.metadataTruncated && (
           <p className="text-muted-foreground text-xs">
-            Some metadata values are too large to show here.{" "}
-            <button
-              type="button"
-              onClick={openInTraceView}
-              className="text-primary underline underline-offset-2 hover:no-underline"
-            >
-              Open in trace view
-            </button>{" "}
-            for full metadata.
+            <Trans
+              ns="coreMore"
+              i18nKey="sessions.fullMetadata"
+              components={{
+                action: (
+                  <button
+                    type="button"
+                    onClick={openInTraceView}
+                    className="text-primary underline underline-offset-2 hover:no-underline"
+                  />
+                ),
+              }}
+            />
           </p>
         )}
       </>
@@ -238,14 +250,13 @@ export const SessionObservationIO = ({
   return (
     <div className="flex flex-col gap-2 rounded-md border border-dashed p-3">
       <p className="text-muted-foreground text-xs">
-        This observation&apos;s input/output is too large to display in the
-        session view.
+        {tMore("sessions.largeIO")}
       </p>
       {observation.input !== null &&
         observation.input !== undefined &&
         observation.input !== "" && (
           <TruncatedIOSection
-            label="Input"
+            label={tFeatures("ui.input")}
             value={observation.input}
             fullLength={observation.inputLength}
             truncated={observation.inputTruncated}
@@ -255,7 +266,7 @@ export const SessionObservationIO = ({
         observation.output !== undefined &&
         observation.output !== "" && (
           <TruncatedIOSection
-            label="Output"
+            label={tFeatures("ui.output")}
             value={observation.output}
             fullLength={observation.outputLength}
             truncated={observation.outputTruncated}
@@ -265,7 +276,7 @@ export const SessionObservationIO = ({
           observation and was always shown alongside I/O before the cap. */}
       {hasMetadataForDisplay && (
         <TruncatedIOSection
-          label="Metadata"
+          label={tFeatures("ui.metadata")}
           value={metadataForDisplay}
           fullLength={observation.metadataLength}
           truncated={observation.metadataTruncated}
@@ -274,7 +285,7 @@ export const SessionObservationIO = ({
       <div className="flex flex-wrap gap-2">
         <Button variant="outline" size="sm" onClick={openInTraceView}>
           <ExternalLinkIcon className="mr-1 h-3.5 w-3.5" />
-          Open in trace view
+          {tFeatures("ui.openInTraceView")}
         </Button>
         <Button
           variant="outline"
@@ -287,7 +298,7 @@ export const SessionObservationIO = ({
           ) : (
             <Download className="mr-1 h-3.5 w-3.5" />
           )}
-          Download I/O
+          {tFeatures("ui.downloadIO")}
         </Button>
       </div>
     </div>

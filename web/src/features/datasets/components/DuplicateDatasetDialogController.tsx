@@ -4,6 +4,7 @@ import { type ReactNode } from "react";
 import { ConfirmationDialogController } from "@/src/components/design-system/ConfirmationDialogController/ConfirmationDialogController";
 import { useHasProjectAccess } from "@/src/features/rbac";
 import { api } from "@/src/utils/api";
+import { useTranslation } from "react-i18next";
 
 export function DuplicateDatasetDialogController({
   children,
@@ -17,6 +18,7 @@ export function DuplicateDatasetDialogController({
   datasetId: string;
   projectId: string;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const router = useRouter();
   const hasAccess = useHasProjectAccess({
     projectId,
@@ -30,8 +32,8 @@ export function DuplicateDatasetDialogController({
 
   return (
     <ConfirmationDialogController
-      title="Duplicate dataset?"
-      text="This creates a copy of the dataset and all of its items."
+      title={tFeatures("ui.duplicateDataset")}
+      text={tFeatures("ui.thisCreatesACopyOfTheDatasetAndAllOfItsItems")}
       confirmLabel="Duplicate dataset"
       variant="default"
       disabled={!hasAccess}

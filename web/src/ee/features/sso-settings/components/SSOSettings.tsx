@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { showErrorToast, showSuccessToast } from "@/src/features/notifications";
 import { Alert } from "@/src/components/design-system/Alert/Alert";
 import { ConfirmationDialogController } from "@/src/components/design-system/ConfirmationDialogController/ConfirmationDialogController";
@@ -40,6 +41,20 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useCopyToClipboard } from "@/src/hooks/useCopyToClipboard";
 
+const SSO_VALIDATION_MESSAGES: Record<string, string> = {
+  "OIDC issuer urls must be a valid URL": "settingsMore:validation.oidcUrl",
+  "OIDC issuer urls must start with https://":
+    "settingsMore:validation.oidcHttps",
+  "Github Enterprise baseUrls must be a valid URL":
+    "settingsMore:validation.githubUrl",
+  "Github Enterprise baseUrls must start with https://":
+    "settingsMore:validation.githubHttps",
+  "Authentik issuer must be in format https://<domain>/application/o/<slug> without trailing slash":
+    "settingsMore:validation.authentikIssuer",
+  "Azure AD tenantId is required": "settingsMore:validation.azureTenant",
+  "Name is required": "settingsMore:validation.nameRequired",
+};
+
 const SSO_PROVIDERS: ReadonlyArray<{
   id: SsoProviderSchema["authProvider"];
   label: string;
@@ -70,8 +85,8 @@ const providerLabel = (id: string) =>
 const formSchema = z.object({
   authProvider: z.enum(SSO_PROVIDERS.map((p) => p.id) as [string, ...string[]]),
   authConfig: z.object({
-    clientId: z.string().min(1, "Required"),
-    clientSecret: z.string().min(1, "Required"),
+    clientId: z.string().min(1, "settingsMore:validation.required"),
+    clientSecret: z.string().min(1, "settingsMore:validation.required"),
     issuer: z.string().optional(),
     tenantId: z.string().optional(),
     baseUrl: z.string().optional(),
@@ -108,6 +123,7 @@ type SsoConfigTableRow = {
 };
 
 export const SSOSettings = ({ orgId }: { orgId: string }) => {
+  const { t } = useTranslation("settingsMore");
   const hasEntitlement = useHasEntitlement("cloud-multi-tenant-sso");
   const hasAccess = useHasOrganizationAccess({
     organizationId: orgId,
@@ -116,10 +132,9 @@ export const SSOSettings = ({ orgId }: { orgId: string }) => {
 
   const heading = (
     <>
-      <Header title="SSO Configuration" />
+      <Header title={t("sso.title")} />
       <p className="text-muted-foreground mb-4 text-sm">
-        Configure Single Sign-On per verified domain. Once active, every user
-        signing in with that domain is redirected to your identity provider.
+        {t("sso.description")}
       </p>
     </>
   );
@@ -131,11 +146,8 @@ export const SSOSettings = ({ orgId }: { orgId: string }) => {
         <div>
           {heading}
           <Alert icon={AlertCircle}>
-            <Alert.Title>Not available</Alert.Title>
-            <Alert.Description>
-              Enterprise SSO is not available on your plan. Please upgrade to
-              access this feature.
-            </Alert.Description>
+            <Alert.Title>{t("common.notAvailable")}</Alert.Title>
+            <Alert.Description>{t("sso.planUnavailable")}</Alert.Description>
           </Alert>
         </div>
       </div>
@@ -149,10 +161,8 @@ export const SSOSettings = ({ orgId }: { orgId: string }) => {
         <div>
           {heading}
           <Alert>
-            <Alert.Title>Access Denied</Alert.Title>
-            <Alert.Description>
-              You do not have permission to configure SSO for this organization.
-            </Alert.Description>
+            <Alert.Title>{t("common.accessDenied")}</Alert.Title>
+            <Alert.Description>{t("sso.accessDenied")}</Alert.Description>
           </Alert>
         </div>
       </div>
@@ -171,6 +181,7 @@ export const SSOSettings = ({ orgId }: { orgId: string }) => {
 };
 
 function SsoConfigsTable({ orgId }: { orgId: string }) {
+  const { t, i18n } = useTranslation("settingsMore");
   const verifiedDomainsQuery = api.verifiedDomain.list.useQuery({ orgId });
   const ssoConfigsQuery = api.ssoConfig.get.useQuery({ orgId });
 
@@ -200,7 +211,7 @@ function SsoConfigsTable({ orgId }: { orgId: string }) {
     return (
       <Card className="overflow-hidden">
         <p className="text-muted-foreground px-6 py-12 text-center text-sm">
-          Verify a domain in the section above to configure SSO for it.
+          {t("sso.verifyDomain")}
         </p>
       </Card>
     );
@@ -214,28 +225,32 @@ function SsoConfigsTable({ orgId }: { orgId: string }) {
             const columns: LangfuseColumnDef<SsoConfigTableRow>[] = [
               createTextTableColumn<SsoConfigTableRow>({
                 accessorKey: "domain",
-                header: "Domain",
+                header: t("common.domain"),
               }),
               {
                 accessorKey: "config",
-                header: "Provider",
+                header: t("common.provider"),
                 cell: ({ row }) =>
                   row.original.config ? (
                     <Badge variant="default">
-                      {providerLabel(row.original.config.authProvider)}
+                      {row.original.config.authProvider === "custom"
+                        ? t("sso.customOidc")
+                        : providerLabel(row.original.config.authProvider)}
                     </Badge>
                   ) : (
-                    <Badge variant="secondary">Not configured</Badge>
+                    <Badge variant="secondary">{t("sso.notConfigured")}</Badge>
                   ),
               },
               {
                 accessorKey: "config",
                 id: "updatedAt",
-                header: "Updated",
+                header: t("common.updated"),
                 hideBelowMd: true,
                 cell: ({ row }) =>
                   row.original.config
-                    ? row.original.config.updatedAt.toLocaleDateString()
+                    ? row.original.config.updatedAt.toLocaleDateString(
+                        i18n.language,
+                      )
                     : "—",
               },
               {
@@ -249,13 +264,17 @@ function SsoConfigsTable({ orgId }: { orgId: string }) {
                       variant={row.original.config ? "outline" : "default"}
                       onClick={() => openConfigDialog(row.original)}
                     >
-                      {row.original.config ? "Update" : "Configure SSO"}
+                      {row.original.config
+                        ? t("common.update")
+                        : t("sso.configure")}
                     </Button>
                     {row.original.config ? (
                       <Button
                         variant="ghost"
                         size="icon-xs"
-                        aria-label={`Delete SSO for ${row.original.domain}`}
+                        aria-label={t("sso.deleteLabel", {
+                          domain: row.original.domain,
+                        })}
                         onClick={() => openDeleteDialog(row.original.domain)}
                       >
                         <TrashIcon className="h-4 w-4" />
@@ -324,6 +343,7 @@ function SsoConfigDialogContent({
   existing: SsoConfigRow | null;
   closeDialog: () => void;
 }) {
+  const { t } = useTranslation("settingsMore");
   const [pendingValues, setPendingValues] = useState<FormValues | null>(null);
   const utils = api.useUtils();
 
@@ -365,8 +385,8 @@ function SsoConfigDialogContent({
     onSuccess: () => {
       utils.ssoConfig.get.invalidate({ orgId });
       showSuccessToast({
-        title: existing ? "SSO updated" : "SSO configured",
-        description: `Active for @${domain} within 1 hour.`,
+        title: existing ? t("sso.updated") : t("sso.configured"),
+        description: t("sso.activeSoon", { domain }),
       });
       closeDialog();
       setPendingValues(null);
@@ -374,7 +394,7 @@ function SsoConfigDialogContent({
     },
     onError: (err) => {
       showErrorToast(
-        existing ? "Update failed" : "SSO configuration failed",
+        existing ? t("sso.updateFailed") : t("sso.configurationFailed"),
         err.message,
       );
     },
@@ -398,7 +418,10 @@ function SsoConfigDialogContent({
       const formField = formPath.startsWith("authConfig.")
         ? (formPath as AuthConfigFormField)
         : "authProvider";
-      form.setError(formField, { message: firstIssue.message });
+      form.setError(formField, {
+        message:
+          SSO_VALIDATION_MESSAGES[firstIssue.message] ?? firstIssue.message,
+      });
       // Defensive fallback: if a future schema path doesn't map cleanly to
       // a registered form field, surface a toast so the user is never left
       // with a silently-closing dialog and no feedback.
@@ -414,7 +437,7 @@ function SsoConfigDialogContent({
       ];
       if (!FORM_FIELDS.includes(formField)) {
         showErrorToast(
-          existing ? "Update failed" : "SSO configuration failed",
+          existing ? t("sso.updateFailed") : t("sso.configurationFailed"),
           firstIssue.message,
         );
       }
@@ -427,11 +450,13 @@ function SsoConfigDialogContent({
     <ConfirmationDialogController
       title={
         existing
-          ? `Replace SSO for @${domain}?`
-          : `Activate SSO for @${domain}?`
+          ? t("sso.replaceTitle", { domain })
+          : t("sso.activateTitle", { domain })
       }
-      text={`Saving will activate SSO for @${domain} within 1 hour. Every user at that domain will be redirected to your identity provider on sign-in - they will not be able to use Google, GitHub, password, or any other method until SSO is deleted.${existing ? " The new credentials will replace the active configuration." : ""} Tip: sign in via the new SSO in a second browser to confirm it works before closing this tab.`}
-      confirmLabel={existing ? "Replace" : "Activate SSO"}
+      text={t(existing ? "sso.replaceWarning" : "sso.activateWarning", {
+        domain,
+      })}
+      confirmLabel={existing ? t("sso.replace") : t("sso.activate")}
       variant="default"
       loading={saveMutation.isPending}
       onConfirm={handleConfirm}
@@ -441,8 +466,8 @@ function SsoConfigDialogContent({
           <DialogHeader>
             <DialogTitle>
               {existing
-                ? `Update SSO for ${domain}`
-                : `Configure SSO for ${domain}`}
+                ? t("sso.updateTitle", { domain })
+                : t("sso.configureTitle", { domain })}
             </DialogTitle>
           </DialogHeader>
           <Form {...form}>
@@ -458,19 +483,29 @@ function SsoConfigDialogContent({
                   name="authProvider"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Provider</FormLabel>
+                      <FormLabel>{t("common.provider")}</FormLabel>
                       <FormControl>
                         <SelectInput
                           value={field.value}
                           onValueChange={field.onChange}
-                          placeholder="Select an SSO provider"
+                          placeholder={t("sso.selectProvider")}
                           options={SSO_PROVIDERS.map((provider) => ({
                             value: provider.id,
-                            label: provider.label,
+                            label:
+                              provider.id === "custom"
+                                ? t("sso.customOidc")
+                                : provider.label,
                           }))}
                         />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage
+                        translateError={(message) =>
+                          typeof message === "string" &&
+                          message.startsWith("settingsMore:")
+                            ? t(message.slice("settingsMore:".length))
+                            : undefined
+                        }
+                      />
                     </FormItem>
                   )}
                 />
@@ -483,11 +518,18 @@ function SsoConfigDialogContent({
                     name="authConfig.name"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Display Name</FormLabel>
+                        <FormLabel>{t("sso.displayName")}</FormLabel>
                         <FormControl>
                           <Input placeholder="Acme SSO" {...field} />
                         </FormControl>
-                        <FormMessage />
+                        <FormMessage
+                          translateError={(message) =>
+                            typeof message === "string" &&
+                            message.startsWith("settingsMore:")
+                              ? t(message.slice("settingsMore:".length))
+                              : undefined
+                          }
+                        />
                       </FormItem>
                     )}
                   />
@@ -498,11 +540,18 @@ function SsoConfigDialogContent({
                   name="authConfig.clientId"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Client ID</FormLabel>
+                      <FormLabel>{t("sso.clientId")}</FormLabel>
                       <FormControl>
                         <Input {...field} />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage
+                        translateError={(message) =>
+                          typeof message === "string" &&
+                          message.startsWith("settingsMore:")
+                            ? t(message.slice("settingsMore:".length))
+                            : undefined
+                        }
+                      />
                     </FormItem>
                   )}
                 />
@@ -512,18 +561,23 @@ function SsoConfigDialogContent({
                   name="authConfig.clientSecret"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Client Secret</FormLabel>
+                      <FormLabel>{t("sso.clientSecret")}</FormLabel>
                       <FormControl>
                         <Input
                           type="password"
                           autoComplete="off"
-                          placeholder={
-                            existing ? "Re-enter to update" : undefined
-                          }
+                          placeholder={existing ? t("sso.reenter") : undefined}
                           {...field}
                         />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage
+                        translateError={(message) =>
+                          typeof message === "string" &&
+                          message.startsWith("settingsMore:")
+                            ? t(message.slice("settingsMore:".length))
+                            : undefined
+                        }
+                      />
                     </FormItem>
                   )}
                 />
@@ -534,14 +588,21 @@ function SsoConfigDialogContent({
                     name="authConfig.issuer"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Issuer URL</FormLabel>
+                        <FormLabel>{t("sso.issuer")}</FormLabel>
                         <FormControl>
                           <Input
                             placeholder="https://example.okta.com"
                             {...field}
                           />
                         </FormControl>
-                        <FormMessage />
+                        <FormMessage
+                          translateError={(message) =>
+                            typeof message === "string" &&
+                            message.startsWith("settingsMore:")
+                              ? t(message.slice("settingsMore:".length))
+                              : undefined
+                          }
+                        />
                       </FormItem>
                     )}
                   />
@@ -553,11 +614,18 @@ function SsoConfigDialogContent({
                     name="authConfig.tenantId"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Tenant ID</FormLabel>
+                        <FormLabel>{t("sso.tenantId")}</FormLabel>
                         <FormControl>
                           <Input {...field} />
                         </FormControl>
-                        <FormMessage />
+                        <FormMessage
+                          translateError={(message) =>
+                            typeof message === "string" &&
+                            message.startsWith("settingsMore:")
+                              ? t(message.slice("settingsMore:".length))
+                              : undefined
+                          }
+                        />
                       </FormItem>
                     )}
                   />
@@ -569,14 +637,21 @@ function SsoConfigDialogContent({
                     name="authConfig.baseUrl"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Base URL</FormLabel>
+                        <FormLabel>{t("sso.baseUrl")}</FormLabel>
                         <FormControl>
                           <Input
                             placeholder="https://github.acme.com"
                             {...field}
                           />
                         </FormControl>
-                        <FormMessage />
+                        <FormMessage
+                          translateError={(message) =>
+                            typeof message === "string" &&
+                            message.startsWith("settingsMore:")
+                              ? t(message.slice("settingsMore:".length))
+                              : undefined
+                          }
+                        />
                       </FormItem>
                     )}
                   />
@@ -598,12 +673,9 @@ function SsoConfigDialogContent({
                             />
                           </FormControl>
                           <div className="space-y-1 leading-none">
-                            <FormLabel>
-                              Use id_token claims only (skip userinfo)
-                            </FormLabel>
+                            <FormLabel>{t("sso.idToken")}</FormLabel>
                             <FormDescription>
-                              Leave off for IdPs that release email only via the
-                              userinfo endpoint.
+                              {t("sso.idTokenHint")}
                             </FormDescription>
                           </div>
                         </FormItem>
@@ -614,10 +686,10 @@ function SsoConfigDialogContent({
               </DialogBody>
               <DialogFooter>
                 <Button type="button" variant="ghost" onClick={closeDialog}>
-                  Cancel
+                  {t("common.cancel")}
                 </Button>
                 <Button type="submit" loading={saveMutation.isPending}>
-                  Save
+                  {t("common.save")}
                 </Button>
               </DialogFooter>
             </form>
@@ -629,6 +701,7 @@ function SsoConfigDialogContent({
 }
 
 function CallbackUrlPanel({ callbackUrl }: { callbackUrl: string }) {
+  const { t } = useTranslation("settingsMore");
   const columns: LangfuseColumnDef<{ url: string }>[] = [
     {
       accessorKey: "url",
@@ -641,7 +714,7 @@ function CallbackUrlPanel({ callbackUrl }: { callbackUrl: string }) {
 
   return (
     <div>
-      <p className="mb-2 text-sm font-bold">Callback URL</p>
+      <p className="mb-2 text-sm font-bold">{t("sso.callbackUrl")}</p>
       <Card className="overflow-hidden">
         <SimpleDataTable
           columns={columns}
@@ -651,13 +724,14 @@ function CallbackUrlPanel({ callbackUrl }: { callbackUrl: string }) {
         />
       </Card>
       <p className="text-muted-foreground mt-2 text-xs">
-        Add this URL as an authorized redirect URI in your identity provider.
+        {t("sso.callbackHint")}
       </p>
     </div>
   );
 }
 
 function CopyableCallbackUrl({ value }: { value: string }) {
+  const { t } = useTranslation("settingsMore");
   const { copy, isCopied } = useCopyToClipboard();
 
   return (
@@ -667,8 +741,8 @@ function CopyableCallbackUrl({ value }: { value: string }) {
         variant="ghost"
         size="icon-xs"
         className="absolute top-1/2 right-0 -translate-y-1/2"
-        title="Copy to clipboard"
-        aria-label="Copy to clipboard"
+        title={t("common.copy")}
+        aria-label={t("common.copy")}
         onClick={async (event) => {
           event.preventDefault();
           const button = event.currentTarget;
@@ -695,6 +769,7 @@ function DeleteSsoConfigDialogController({
     openDialog: (domain: string) => void;
   }) => React.ReactNode;
 }) {
+  const { t } = useTranslation("settingsMore");
   const [selectedDomain, setSelectedDomain] = useState<string | null>(null);
   const utils = api.useUtils();
 
@@ -702,20 +777,22 @@ function DeleteSsoConfigDialogController({
     onSuccess: () => {
       utils.ssoConfig.get.invalidate({ orgId });
       showSuccessToast({
-        title: "SSO disabled",
-        description: `SSO for @${selectedDomain} has been removed.`,
+        title: t("sso.disabled"),
+        description: t("sso.removedHint", { domain: selectedDomain }),
       });
     },
     onError: (err) => {
-      showErrorToast("Failed to remove SSO", err.message);
+      showErrorToast(t("sso.removeFailed"), err.message);
     },
   });
 
   return (
     <ConfirmationDialogController
-      title={`Remove SSO for @${selectedDomain ?? "this domain"}?`}
-      text="Users at this domain will be able to sign in with any enabled method again. Active sessions are not invalidated."
-      confirmLabel="Remove"
+      title={t("sso.removeTitle", {
+        domain: selectedDomain ?? t("sso.thisDomain"),
+      })}
+      text={t("sso.removeHint")}
+      confirmLabel={t("common.remove")}
       variant="destructive"
       loading={deleteMutation.isPending}
       onConfirm={async () => {

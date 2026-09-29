@@ -25,6 +25,7 @@ import {
 } from "../../../fns/chatMessageUtils";
 import { ThinkingBlock, RedactedThinkingBlock } from "../../ThinkingBlock";
 import { type IOPreviewContentMode } from "../IOPreview";
+import { useTranslation } from "react-i18next";
 
 // View mode for pretty/json toggle
 export type ViewMode = "pretty" | "json";
@@ -56,6 +57,7 @@ export function ChatMessage({
   isOutputMessage,
   contentMode = "all",
 }: ChatMessageProps) {
+  const { t: tFeatures } = useTranslation("features");
   const [showTableView, setShowTableView] = useState(false);
 
   const title = getMessageTitle(message);
@@ -74,7 +76,9 @@ export function ChatMessage({
         size="icon-xs"
         onClick={() => setShowTableView((v) => !v)}
         title={
-          showTableView ? "Show formatted view" : "Show passthrough JSON data"
+          showTableView
+            ? tFeatures("ui.showFormattedView")
+            : tFeatures("ui.showPassthroughJsonData")
         }
         className="hover:bg-border -mr-2"
       >
@@ -92,13 +96,13 @@ export function ChatMessage({
       <div className="transition-colors">
         <div style={{ display: shouldRenderMarkdown ? "block" : "none" }}>
           <MarkdownJsonView
-            title="Placeholder"
+            title={tFeatures("ui.placeholder")}
             content={message.name || "Unnamed placeholder"}
           />
         </div>
         <div style={{ display: shouldRenderMarkdown ? "none" : "block" }}>
           <PrettyJsonView
-            title="Placeholder"
+            title={tFeatures("ui.placeholder")}
             json={message.name || "Unnamed placeholder"}
             currentView={currentView}
           />
@@ -112,7 +116,10 @@ export function ChatMessage({
     return (
       <div className="transition-colors">
         <PrettyJsonView
-          title={title || (isOutputMessage ? "Output" : "Input")}
+          title={
+            title ||
+            (isOutputMessage ? tFeatures("ui.output") : tFeatures("ui.input"))
+          }
           json={message.json}
           currentView={currentView}
         />
@@ -236,7 +243,10 @@ export function ChatMessage({
     return (
       <div className="transition-colors">
         <PrettyJsonView
-          title={title || (isOutputMessage ? "Output" : "Input")}
+          title={
+            title ||
+            (isOutputMessage ? tFeatures("ui.output") : tFeatures("ui.input"))
+          }
           json={withoutUnsetFields(message)}
           currentView={currentView}
         />

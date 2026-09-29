@@ -34,12 +34,17 @@ import {
 import { useExperimentStripMetric } from "@/src/features/experiments/hooks/useExperimentStripMetric";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics";
 import { chartMetricChangedProps } from "@/src/features/experiments/lib/analytics";
+import { Translation, useTranslation } from "react-i18next";
 
 /**
  * Stable node: `Chart` is memoized, so a fresh element on every render would
  * defeat it. Says which half is missing — the metric, not the experiments.
  */
-const EMPTY_PLOT = <MetricStripMessage message="No values for this metric" />;
+const EMPTY_PLOT = (
+  <Translation ns="coreMore">
+    {(t) => <MetricStripMessage message={t("experiments.noMetric")} />}
+  </Translation>
+);
 
 /**
  * The band's shared plot height plus one 20px row for the bar legend beneath
@@ -144,6 +149,8 @@ export function ExperimentMetricStrip({
   isExternalLoading = false,
   scoreCoverage,
 }: ExperimentMetricStripProps) {
+  const { t: tMore } = useTranslation("coreMore");
+  const { t: tFeatures } = useTranslation("features");
   // Chronological, oldest first: an improving metric has to read left-to-right.
   // The table stays newest-first, so this is deliberately not the table order.
   const orderedExperiments = useMemo(
@@ -288,7 +295,7 @@ export function ExperimentMetricStrip({
       contentHeightClass={CONTENT_HEIGHT_CLASS}
       // The band's own voice, in place of a 144px dashed card clipped by a
       // 63px band: say which half is missing.
-      emptyMessage="No experiments in view"
+      emptyMessage={tFeatures("ui.noExperimentsInView")}
       header={
         <MetricStripHeaderRow>
           <Select value={metricId} onValueChange={handleMetricChange}>
@@ -309,7 +316,7 @@ export function ExperimentMetricStrip({
               )}
               hideDownIcon
             >
-              <SelectValue placeholder="Select metric...">
+              <SelectValue placeholder={tFeatures("ui.selectMetric")}>
                 {selectedLabel}
               </SelectValue>
               {isSelectedNameAmbiguous && selectedLevel && (
@@ -344,7 +351,7 @@ export function ExperimentMetricStrip({
             </SelectContent>
           </Select>
           <span className="text-muted-foreground flex items-baseline text-xs leading-none">
-            oldest to newest
+            {tMore("experiments.chronological")}
             <DocPopup description={AXIS_EXPLANATION} />
           </span>
         </MetricStripHeaderRow>

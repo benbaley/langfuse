@@ -17,8 +17,10 @@ import { PaginationBar } from "@/src/components/design-system/PaginationBar/Pagi
 import { type AsyncTableData } from "@/src/components/design-system/table/Table";
 import { assertUnreachable } from "@/src/utils/types";
 import { DashboardTable, type DashboardTableRow } from "./DashboardTable";
+import { useTranslation } from "react-i18next";
 
 export function ConnectedDashboardTable() {
+  const { t: tApp } = useTranslation("app");
   const projectId = useProjectIdFromURL() as string;
   const { setDetailPageList } = useDetailPageLists();
   const router = useRouter();
@@ -31,7 +33,7 @@ export function ConnectedDashboardTable() {
     onSuccess: () => {
       utils.dashboard.invalidate();
       showSuccessToast({
-        title: "Dashboard cloned",
+        title: tApp("ui.DashboardCloned"),
         description: "The dashboard has been cloned successfully",
       });
     },
@@ -43,7 +45,7 @@ export function ConnectedDashboardTable() {
     onSuccess: () => {
       capture("dashboard:delete_dashboard_button_click");
       showSuccessToast({
-        title: "Dashboard deleted",
+        title: tApp("ui.DashboardDeleted"),
         description: "The dashboard has been deleted successfully",
       });
       utils.dashboard.invalidate();
@@ -145,8 +147,10 @@ export function ConnectedDashboardTable() {
         >
           {({ openDialog: openEditDialog }) => (
             <ConfirmationDialogController
-              title="Delete dashboard"
-              text="This action cannot be undone. It permanently deletes this dashboard."
+              title={tApp("ui.DeleteDashboard")}
+              text={tApp(
+                "ui.ThisActionCannotBeUndoneItPermanentlyDeletesThisDashboard",
+              )}
               confirmLabel="Delete dashboard"
               variant="destructive"
               loading={deleteDashboard.isPending}

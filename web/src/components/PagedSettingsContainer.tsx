@@ -1,4 +1,5 @@
 /* eslint-disable no-nested-ternary */
+import { useTranslation } from "react-i18next";
 import { cn } from "@/src/utils/tailwind";
 import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
@@ -32,6 +33,7 @@ export const PagedSettingsContainer = ({
   activeSlug,
   fullHeight = false,
 }: SettingsProps) => {
+  const { t } = useTranslation("settings");
   const router = useRouter();
   const availablePages = pages.filter((page) =>
     "show" in page
@@ -77,16 +79,16 @@ export const PagedSettingsContainer = ({
             value={currentPage.slug}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Select a page" />
+              <SelectValue placeholder={t("selectPage")} />
             </SelectTrigger>
             <SelectContent>
               {groupPagesBySection(availablePages).map((group) => (
-                <SelectGroup key={group.section ?? "default"}>
+                <SelectGroup key={group.pages[0].slug}>
                   {group.section ? (
                     <SelectLabel>{group.section}</SelectLabel>
                   ) : null}
                   {group.pages.map((page) => (
-                    <SelectItem key={page.title} value={page.slug}>
+                    <SelectItem key={page.slug} value={page.slug}>
                       {page.title}
                       {"href" in page && (
                         <ArrowUpRight size={14} className="ml-1 inline" />
@@ -106,7 +108,7 @@ export const PagedSettingsContainer = ({
           x-chunk="dashboard-04-chunk-0"
         >
           {availablePages.map((page, index) => (
-            <Fragment key={page.title}>
+            <Fragment key={page.slug}>
               {page.section &&
               page.section !== availablePages[index - 1]?.section ? (
                 <span className="text-muted-foreground mt-4 flex h-8 items-center px-2 text-xs font-bold first:mt-0">

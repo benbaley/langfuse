@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 /* eslint-disable no-nested-ternary */
 // Grammar-aware search composer.
 //
@@ -354,6 +355,7 @@ export function SearchComposer({
   freeTextReason?: string | null;
   registry?: FieldRegistry;
 }) {
+  const { t } = useTranslation("filters");
   const storeApi = useSearchBarStoreApi();
   const commitToFilterState = useSearchBarCommit();
   const { draft, valid, diagnostics, invalidRevealDraft } = useSearchBarStore(
@@ -1231,7 +1233,7 @@ export function SearchComposer({
     setHoveredTokenId(token?.getAttribute("data-segment-id") ?? null);
   };
 
-  const placeholder = composerPlaceholder(registry);
+  const placeholder = composerPlaceholder(registry, t);
   const segments = deriveComposerSegments(draft, scoreTypes, registry);
   // The token holding a collapsed caret — the keyboard counterpart to hover.
   // Not at the trailing insertion point, where the user is appending, not
@@ -1440,7 +1442,7 @@ export function SearchComposer({
         <div
           ref={rootRef}
           role="combobox"
-          aria-label="Search"
+          aria-label={t("ui.search")}
           aria-expanded={plan !== null}
           aria-controls={plan !== null ? LISTBOX_ID : undefined}
           aria-autocomplete="list"
@@ -1512,7 +1514,7 @@ export function SearchComposer({
           <button
             type="button"
             data-testid="search-bar-ask-ai"
-            aria-label="Ask AI to build or refine filters"
+            aria-label={t("ui.askAiHelp")}
             title={
               draft.trim().length === 0
                 ? "Describe filters in natural language"
@@ -1533,7 +1535,7 @@ export function SearchComposer({
             )}
           >
             <WandSparkles className="h-3.5 w-3.5" aria-hidden="true" />
-            <span>Ask AI</span>
+            <span>{t("ui.askAi")}</span>
           </button>
         )}
         {/* Bar-local overlay stacking ladder: token text (base) < remove-X
@@ -1554,7 +1556,7 @@ export function SearchComposer({
           <span
             className="text-destructive"
             title={visibleDiagnostics.map((d) => d.message).join("; ")}
-            aria-label="invalid query"
+            aria-label={t("ui.invalidQuery")}
           >
             <AlertCircle className="h-4 w-4" />
           </span>
@@ -1657,12 +1659,13 @@ function RemoveTokenButton({
   position: { left: number; top: number };
   onRemove: (segment: ComposerSegment) => void;
 }) {
+  const { t } = useTranslation("filters");
   return (
     <button
       type="button"
       data-overlay-remove
-      aria-label={`Remove ${segment.raw}`}
-      title={`Remove ${segment.raw}`}
+      aria-label={t("ui.remove", { value: segment.raw })}
+      title={t("ui.remove", { value: segment.raw })}
       style={{ left: position.left, top: position.top }}
       className={cn(
         "absolute z-20 inline-flex h-4 w-4 items-center justify-center rounded-sm",

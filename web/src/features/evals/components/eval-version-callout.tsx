@@ -1,3 +1,4 @@
+import type { TFunction } from "i18next";
 import { Alert } from "@/src/components/design-system/Alert/Alert";
 import { AlertTriangle } from "lucide-react";
 import { type EvalCapabilities } from "@/src/features/evals/hooks/useEvalCapabilities";
@@ -20,6 +21,7 @@ interface CalloutContent {
 export const getEvalVersionCalloutContent = (
   targetObject: string,
   evalCapabilities: EvalCapabilities,
+  tFeatures: TFunction,
 ) => {
   // For event/observation target
   if (isEventTarget(targetObject)) {
@@ -28,19 +30,17 @@ export const getEvalVersionCalloutContent = (
     }
 
     return {
-      title: "Please verify your SDK version",
+      title: tFeatures("evalsMore:sdk.verify"),
       description: (
         <>
-          This evaluator targets observations, which require JS SDK v4+ or
-          Python SDK v3+. You can still configure this evaluator now—it will
-          start running once you upgrade.{" "}
+          {tFeatures("evalsMore:sdk.observations")}{" "}
           <a
             href="https://langfuse.com/docs/observability/sdk/upgrade-path"
             target="_blank"
             rel="noopener noreferrer"
             className="text-dark-blue font-bold hover:opacity-80"
           >
-            Learn more
+            {tFeatures("evalsMore:sdk.learnMore")}
           </a>
           .
         </>
@@ -52,19 +52,17 @@ export const getEvalVersionCalloutContent = (
   if (isExperimentTarget(targetObject)) {
     if (!evalCapabilities.isNewCompatible) {
       return {
-        title: "Please verify you are using the Experiment Runner SDK",
+        title: tFeatures("evalsMore:sdk.verifyRunner"),
         description: (
           <>
-            The Experiment Runner SDK requires JS SDK v4.4+ or Python SDK v3.9+.
-            You can still configure this evaluator now—it will start running
-            once you upgrade.{" "}
+            {tFeatures("evalsMore:sdk.runner")}{" "}
             <a
               href="https://langfuse.com/docs/evaluation/experiments/experiments-via-sdk#experiment-runner-sdk"
               target="_blank"
               rel="noopener noreferrer"
               className="text-dark-blue font-bold hover:opacity-80"
             >
-              Learn more about the Experiment Runner SDK.
+              {tFeatures("evalsMore:sdk.learnRunner")}
             </a>
             .
           </>
@@ -84,20 +82,17 @@ export const getEvalVersionCalloutContent = (
     }
 
     return {
-      title: "Legacy low-level SDK methods",
+      title: tFeatures("evalsMore:sdk.legacyMethods"),
       description: (
         <>
-          This evaluator targets traces from legacy low-level SDK methods for
-          dataset runs that manually linked dataset items to traces. Consider
-          upgrading to the Experiment Runner SDK for improved performance and
-          features.{" "}
+          {tFeatures("evalsMore:sdk.legacyRuns")}{" "}
           <a
             href="https://langfuse.com/docs/evaluation/experiments/experiments-via-sdk#experiment-runner-sdk"
             target="_blank"
             rel="noopener noreferrer"
             className="text-dark-blue font-bold hover:opacity-80"
           >
-            Learn more
+            {tFeatures("evalsMore:sdk.learnMore")}
           </a>
           .
         </>
@@ -114,18 +109,17 @@ export const getEvalVersionCalloutContent = (
     }
 
     return {
-      title: "Consider upgrading to observation evaluators",
+      title: tFeatures("evalsMore:sdk.upgradeTitle"),
       description: (
         <>
-          Observation evaluators provide more granular control and an easier
-          workflow. We strongly recommend upgrading to observation evaluators.{" "}
+          {tFeatures("evalsMore:sdk.recommendObservations")}{" "}
           <a
             href="https://langfuse.com/faq/all/llm-as-a-judge-migration"
             target="_blank"
             rel="noopener noreferrer"
             className="text-dark-blue font-bold hover:opacity-80"
           >
-            Learn more
+            {tFeatures("evalsMore:sdk.learnMore")}
           </a>
           .
         </>

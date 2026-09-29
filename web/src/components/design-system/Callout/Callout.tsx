@@ -1,4 +1,5 @@
 "use client";
+import { useTranslation } from "react-i18next";
 
 import { cva } from "class-variance-authority";
 import { type LucideIcon, X } from "lucide-react";
@@ -67,6 +68,8 @@ export function Callout({
   actions,
   onDismiss,
 }: CalloutProps) {
+const { t: tUi } = useTranslation("uiMore");
+
   return (
     <div role="alert" className={calloutVariants({ variant })}>
       <div className={descriptionVariants({ align })}>
@@ -126,7 +129,7 @@ export function Callout({
           ) : null}
         </div>
         <button
-          aria-label="Dismiss"
+          aria-label={tUi("dismiss")}
           className="focus-visible:ring-ring inline-flex size-6 shrink-0 items-center justify-center rounded-md bg-transparent transition-colors hover:bg-black/5 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-hidden dark:hover:bg-white/10"
           onClick={onDismiss}
           type="button"

@@ -17,6 +17,7 @@ import {
   filterStateToQueryText,
 } from "@/src/features/search-bar";
 import { cn } from "@/src/utils/tailwind";
+import { useTranslation } from "react-i18next";
 
 export function RuleFilterPills({
   filter,
@@ -27,6 +28,7 @@ export function RuleFilterPills({
   display?: "compact" | "search-bar";
   disabledReasons?: ReadonlyMap<number, string>;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const renderWithDisabledReason = (
     content: ReactNode,
     index: number,
@@ -62,7 +64,9 @@ export function RuleFilterPills({
         >
           <div className={COMPOSER_TEXT_CLASSES}>
             {filter.length === 0 ? (
-              <span className="text-muted-foreground">No filters</span>
+              <span className="text-muted-foreground">
+                {tFeatures("ui.noFilters")}
+              </span>
             ) : (
               filter.map((condition, index) => {
                 const query = filterStateToQueryText(
@@ -123,7 +127,9 @@ export function RuleFilterPills({
             className="m-0"
           />
           {!hasFilters ? (
-            <span className="text-muted-foreground">No filters</span>
+            <span className="text-muted-foreground">
+              {tFeatures("ui.noFilters")}
+            </span>
           ) : null}
         </div>
       </div>
@@ -131,7 +137,11 @@ export function RuleFilterPills({
   }
 
   if (filter.length === 0) {
-    return <span className="text-muted-foreground text-sm">No filters</span>;
+    return (
+      <span className="text-muted-foreground text-sm">
+        {tFeatures("ui.noFilters")}
+      </span>
+    );
   }
 
   const items = filter.map((condition, index) => ({

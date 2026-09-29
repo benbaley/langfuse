@@ -1,3 +1,4 @@
+import { Trans, useTranslation } from "react-i18next";
 import { Input } from "@/src/components/ui/input";
 import {
   FormControl,
@@ -31,6 +32,7 @@ export const SlackActionForm: React.FC<SlackActionFormProps> = ({
   disabled,
   projectId,
 }) => {
+  const { t } = useTranslation("settingsMore");
   const initialChannelId = form.getValues("slack.channelId") as string;
   const initialChannelName = form.getValues("slack.channelName") as string;
   const [selectedChannel, setSelectedChannel] = useState<SlackChannel | null>(
@@ -86,7 +88,7 @@ export const SlackActionForm: React.FC<SlackActionFormProps> = ({
             name="slack.channelId"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Channel</FormLabel>
+                <FormLabel>{t("slack.channel")}</FormLabel>
                 <FormControl>
                   <div className="max-w-md">
                     <ChannelSelector
@@ -95,18 +97,19 @@ export const SlackActionForm: React.FC<SlackActionFormProps> = ({
                       selectedChannel={selectedChannel}
                       onChannelSelect={handleChannelSelect}
                       disabled={disabled}
-                      placeholder="Select a channel"
+                      placeholder={t("slack.selectChannel")}
                       showRefreshButton={true}
                     />
                   </div>
                 </FormControl>
                 <FormDescription>
-                  Select the Slack channel where notifications will be sent. For
-                  private channels, invite the app first with{" "}
-                  <code className="bg-muted rounded px-1 py-0.5">
-                    /invite @Langfuse
-                  </code>{" "}
-                  in that channel.
+                  <Trans
+                    t={t}
+                    i18nKey="slack.channelHint"
+                    components={{
+                      code: <code className="bg-muted rounded px-1 py-0.5" />,
+                    }}
+                  />
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -149,7 +152,7 @@ export const SlackActionForm: React.FC<SlackActionFormProps> = ({
                 }}
               />
               <p className="text-muted-foreground text-sm">
-                Test this channel to verify the bot can send messages.
+                {t("slack.verifyBot")}
               </p>
             </div>
           )}

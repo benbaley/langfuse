@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 import { CheckCircle, AlertCircle } from "lucide-react";
 import { Badge } from "@/src/components/ui/badge";
@@ -50,6 +51,7 @@ export const SlackConnectionCard: React.FC<SlackConnectionCardProps> = ({
   onConnectionChange,
   showConnectButton = true,
 }) => {
+  const { t } = useTranslation("settingsMore");
   // Get Slack integration status
   const {
     data: integrationStatus,
@@ -77,14 +79,14 @@ export const SlackConnectionCard: React.FC<SlackConnectionCardProps> = ({
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            Slack Connection
+            {t("slack.connection")}
           </CardTitle>
-          <CardDescription>Checking connection status...</CardDescription>
+          <CardDescription>{t("slack.checking")}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="text-muted-foreground flex items-center gap-2">
             <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-            <span>Loading...</span>
+            <span>{t("common.loading")}</span>
           </div>
         </CardContent>
       </Card>
@@ -97,15 +99,13 @@ export const SlackConnectionCard: React.FC<SlackConnectionCardProps> = ({
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            Slack Connection
+            {t("slack.connection")}
           </CardTitle>
-          <CardDescription>Error loading connection status</CardDescription>
+          <CardDescription>{t("slack.statusError")}</CardDescription>
         </CardHeader>
         <CardContent>
           <Alert icon={AlertCircle}>
-            <Alert.Description>
-              Failed to load Slack integration status. Please try again.
-            </Alert.Description>
+            <Alert.Description>{t("slack.statusFailed")}</Alert.Description>
           </Alert>
         </CardContent>
       </Card>
@@ -118,11 +118,9 @@ export const SlackConnectionCard: React.FC<SlackConnectionCardProps> = ({
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            Slack Connection
+            {t("slack.connection")}
           </CardTitle>
-          <CardDescription>
-            Connect your Slack workspace to send notifications
-          </CardDescription>
+          <CardDescription>{t("slack.connectHint")}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {integrationStatus?.error && (
@@ -133,8 +131,7 @@ export const SlackConnectionCard: React.FC<SlackConnectionCardProps> = ({
 
           <div className="space-y-2">
             <p className="text-muted-foreground text-sm">
-              Connect your Slack workspace to enable real-time notifications for
-              your automations.
+              {t("slack.realtimeHint")}
             </p>
 
             {showConnectButton && (
@@ -158,28 +155,28 @@ export const SlackConnectionCard: React.FC<SlackConnectionCardProps> = ({
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          Slack Connection
+          {t("slack.connection")}
         </CardTitle>
-        <CardDescription>Connected to your Slack workspace</CardDescription>
+        <CardDescription>{t("slack.connectedHint")}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Connection Status */}
         <div className="flex items-center gap-2">
           <CheckCircle className="h-4 w-4 text-green-500" />
-          <span className="text-sm font-bold">Connected</span>
+          <span className="text-sm font-bold">{t("slack.connected")}</span>
         </div>
 
         {/* Team Information */}
         <div className="space-y-2">
           <div className="flex items-center gap-2">
-            <span className="text-sm font-bold">Workspace:</span>
+            <span className="text-sm font-bold">{t("slack.workspace")}</span>
             <Badge variant="secondary" className="text-xs">
               {integrationStatus.teamName}
             </Badge>
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-sm font-bold">Team ID:</span>
+            <span className="text-sm font-bold">{t("slack.teamId")}</span>
             <Badge variant="outline" className="font-mono text-xs">
               {integrationStatus.teamId}
             </Badge>
@@ -187,7 +184,7 @@ export const SlackConnectionCard: React.FC<SlackConnectionCardProps> = ({
 
           {integrationStatus.botUserId && (
             <div className="flex items-center gap-2">
-              <span className="text-sm font-bold">Bot User:</span>
+              <span className="text-sm font-bold">{t("slack.botUser")}</span>
               <Badge variant="outline" className="font-mono text-xs">
                 {integrationStatus.botUserId}
               </Badge>
@@ -212,7 +209,7 @@ export const SlackConnectionCard: React.FC<SlackConnectionCardProps> = ({
             onClick={() => refetchStatus()}
             disabled={disabled}
           >
-            Refresh Status
+            {t("slack.refresh")}
           </Button>
         </div>
       </CardContent>

@@ -67,6 +67,7 @@ import {
   type EvaluatorCreationSource,
 } from "@/src/features/evals/v2/fns/evaluators/getEvaluatorCreationAnalyticsProperties";
 import { getFilterAnalyticsProperties } from "@/src/features/evals/v2/fns/getFilterAnalyticsProperties";
+import { useTranslation } from "react-i18next";
 
 type InitialEvaluator = {
   id: string;
@@ -171,6 +172,7 @@ export function EvaluatorSetupPage(
         initialEvaluator: InitialEvaluator;
       },
 ) {
+  const { t: tFeatures } = useTranslation("features");
   const { projectId } = props;
   const isMobile = useIsMobile();
   const { isLangfuseCloud } = useLangfuseCloudRegion();
@@ -355,7 +357,7 @@ export function EvaluatorSetupPage(
         isAllMatching: false,
       });
       showSuccessToast({
-        title: "Evaluator deleted",
+        title: tFeatures("ui.evaluatorDeleted"),
         description: "The evaluator and all of its versions were deleted.",
       });
       await router.push(`/project/${projectId}/evals`);
@@ -759,7 +761,7 @@ export function EvaluatorSetupPage(
             <Button
               type="button"
               variant="outline"
-              title="View version history"
+              title={tFeatures("ui.viewVersionHistory")}
               onClick={() => {
                 capture("evaluators:version_history_interaction", {
                   action: "open",
@@ -768,12 +770,12 @@ export function EvaluatorSetupPage(
               }}
             >
               <History className="mr-2 h-4 w-4" />
-              Version history
+              {tFeatures("ui.versionHistoryTitle")}
             </Button>
             <Button
               type="button"
               variant="outline"
-              title="Delete evaluator"
+              title={tFeatures("ui.deleteEvaluator")}
               onClick={() => setDeleteOpen(true)}
             >
               <Trash2 className="text-destructive h-4 w-4" />
@@ -896,8 +898,10 @@ export function EvaluatorSetupPage(
         <ConfirmDialog
           open={deleteOpen}
           onOpenChange={setDeleteOpen}
-          title="Delete evaluator?"
-          description="This deletes the evaluator and its complete version history. This action cannot be undone."
+          title={tFeatures("ui.deleteEvaluatorQuestion")}
+          description={tFeatures(
+            "ui.thisDeletesTheEvaluatorAndItsCompleteVersionHistoryThisActionCannotBeUndone",
+          )}
           confirmLabel="Delete evaluator"
           onConfirm={() =>
             deleteEvaluator.mutate({
@@ -914,8 +918,8 @@ export function EvaluatorSetupPage(
       <ConfirmDialog
         open={discardOpen}
         onOpenChange={setDiscardOpen}
-        title="Discard unsaved changes?"
-        description="Your evaluator changes will be lost."
+        title={tFeatures("ui.discardUnsavedChanges")}
+        description={tFeatures("ui.yourEvaluatorChangesWillBeLost")}
         confirmLabel="Discard changes"
         onConfirm={close}
       />

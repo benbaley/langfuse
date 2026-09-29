@@ -7,8 +7,10 @@ import {
   SAMPLING_SLIDER_STEP,
 } from "@/src/features/evals/v2/constants/ruleSampling";
 import type { RuleSetupStore } from "@/src/features/evals/v2/types/rules";
+import { useTranslation } from "react-i18next";
 
 export function RuleSamplingSection({ store }: { store: RuleSetupStore }) {
+  const { t: tFeatures } = useTranslation("features");
   const sampling = useStore(store, (state) => state.sampling);
   const setSampling = useStore(store, (state) => state.actions.setSampling);
 
@@ -16,14 +18,17 @@ export function RuleSamplingSection({ store }: { store: RuleSetupStore }) {
     <section className="mt-2 max-w-xl space-y-2">
       <div>
         <div className="flex items-center gap-1.5">
-          <h3 className="text-sm font-bold">Sampling rate</h3>
-          <InfoTooltip label="About sampling rate">
-            The percentage of matching observations that will be evaluated.
-            Lower sampling rates reduce evaluation volume and cost.
+          <h3 className="text-sm font-bold">
+            {tFeatures("evalsMore:sampling.rate")}
+          </h3>
+          <InfoTooltip label={tFeatures("evalsMore:sampling.about")}>
+            {tFeatures("evalsMore:sampling.description")}
           </InfoTooltip>
         </div>
         <p className="text-muted-foreground text-sm">
-          Set the percentage of matching observations this rule evaluates.
+          {tFeatures(
+            "ui.setThePercentageOfMatchingObservationsThisRuleEvaluates",
+          )}
         </p>
       </div>
       <Slider

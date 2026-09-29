@@ -11,12 +11,12 @@ import type {
 import {
   EVALUATOR_GALLERY_PREVIEW_SIZE,
   EVALUATOR_GALLERY_RECOMMENDED_SECTION_KEY,
-  EVALUATOR_GALLERY_SAFETY_CALLOUT,
   EVALUATOR_GALLERY_SAFETY_SECTION_KEY,
 } from "@/src/features/evals/v2/constants/evaluatorGallery";
 import { getGalleryCategoryPresentation } from "@/src/features/evals/v2/fns/templateGallery/galleryCategoryPresentation";
 import { getGalleryTemplateId } from "@/src/features/evals/v2/fns/templateGallery/galleryTemplatePresentation";
 import { cn } from "@/src/utils/tailwind";
+import { useTranslation } from "react-i18next";
 
 export function EvaluatorGallerySection({
   section,
@@ -29,6 +29,7 @@ export function EvaluatorGallerySection({
   onExpandedChange?: (expanded: boolean) => void;
   onSelectTemplate: (template: GalleryTemplate) => void;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const isRecommended =
     section.key === EVALUATOR_GALLERY_RECOMMENDED_SECTION_KEY;
   const isSafety = section.key === EVALUATOR_GALLERY_SAFETY_SECTION_KEY;
@@ -43,7 +44,11 @@ export function EvaluatorGallerySection({
   return (
     <section className="flex scroll-mt-1 flex-col gap-3">
       {isRecommended ? (
-        <EvaluatorRecommendedCards label={section.label}>
+        <EvaluatorRecommendedCards
+          label={tFeatures(`evalsMore:gallery.category.${section.key}`, {
+            defaultValue: section.label,
+          })}
+        >
           {shownTemplates.map((template) => (
             <EvaluatorRecommendedCard
               key={getGalleryTemplateId(template)}
@@ -58,11 +63,15 @@ export function EvaluatorGallerySection({
             <div className="flex items-center gap-2">
               <Icon className={cn("h-3.5 w-3.5 shrink-0", iconClassName)} />
               <h4 className="text-muted-foreground text-xs font-bold tracking-wide uppercase">
-                {section.label}
+                {tFeatures(`evalsMore:gallery.category.${section.key}`, {
+                  defaultValue: section.label,
+                })}
               </h4>
               {isSafety ? (
-                <InfoTooltip label={`About ${section.label}`}>
-                  {EVALUATOR_GALLERY_SAFETY_CALLOUT}
+                <InfoTooltip
+                  label={`About ${tFeatures(`evalsMore:gallery.category.${section.key}`, { defaultValue: section.label })}`}
+                >
+                  {tFeatures("evalsMore:gallery.safetyHelp")}
                 </InfoTooltip>
               ) : null}
             </div>
@@ -90,7 +99,9 @@ export function EvaluatorGallerySection({
           ) : (
             <ChevronDown className="h-3.5 w-3.5" />
           )}
-          {expanded ? "Show fewer" : `Show all ${totalCount} templates`}
+          {expanded
+            ? tFeatures("ui.showFewer")
+            : tFeatures("evalsMore:gallery.showAll", { total: totalCount })}
         </button>
       ) : null}
     </section>

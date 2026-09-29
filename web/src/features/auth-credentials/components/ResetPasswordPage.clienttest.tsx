@@ -6,6 +6,8 @@ import {
   waitFor,
 } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { I18nextProvider } from "react-i18next";
+import { createUiI18n } from "@/src/features/i18n/instance";
 
 const {
   mutateAsyncMock,
@@ -124,6 +126,67 @@ describe("ResetPasswordPage re-authentication", () => {
 
   afterEach(() => {
     vi.useRealTimers();
+  });
+
+  it("validates Chinese password setup locally without changing submitted credentials", async () => {
+    useSessionMock.mockReturnValue({ status: "unauthenticated", data: null });
+    const i18n = createUiI18n("en");
+    render(
+      <I18nextProvider i18n={i18n}>
+        <ResetPasswordPage
+          passwordResetAvailable
+          initialEmail="user@example.com"
+          intent="setup"
+        />
+      </I18nextProvider>,
+    );
+    fireEvent.change(screen.getByLabelText("Verification code"), {
+      target: { value: "123" },
+    });
+    fireEvent.change(screen.getByLabelText("Password"), {
+      target: { value: "short" },
+    });
+    fireEvent.change(screen.getByLabelText("Confirm Password"), {
+      target: { value: "short" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Set password" }));
+    expect(
+      await screen.findByText("Verification code must be 6 digits."),
+    ).toBeTruthy();
+    expect(
+      screen.getAllByText("Password must be at least 8 characters long."),
+    ).toHaveLength(2);
+    await act(async () => {
+      await i18n.changeLanguage("zh-CN");
+    });
+    expect(await screen.findByText("验证码必须为 6 位数字。")).toBeTruthy();
+    expect(screen.getAllByText("密码长度至少为 8 个字符。")).toHaveLength(2);
+    expect(mutateAsyncMock).not.toHaveBeenCalled();
+
+    fireEvent.change(screen.getByLabelText("验证码"), {
+      target: { value: "123456" },
+    });
+    fireEvent.change(screen.getByLabelText("密码"), {
+      target: { value: "Newpass1!" },
+    });
+    fireEvent.change(screen.getByLabelText("确认密码"), {
+      target: { value: "Otherpass1!" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Set password" }));
+    expect(await screen.findByText("两次输入的密码不一致。")).toBeTruthy();
+    expect(mutateAsyncMock).not.toHaveBeenCalled();
+
+    fireEvent.change(screen.getByLabelText("确认密码"), {
+      target: { value: "Newpass1!" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Set password" }));
+    await waitFor(() =>
+      expect(mutateAsyncMock).toHaveBeenCalledWith({
+        email: "user@example.com",
+        token: "123456",
+        password: "Newpass1!",
+      }),
+    );
   });
 
   it("re-authenticates after password update while already signed in", async () => {

@@ -1,4 +1,5 @@
 import { ConfirmDialog } from "@/src/components/ui/confirm-dialog";
+import { useTranslation } from "react-i18next";
 
 export function EvaluatorBulkDeleteDialog({
   open,
@@ -13,16 +14,19 @@ export function EvaluatorBulkDeleteDialog({
   onOpenChange: (open: boolean) => void;
   onConfirm: () => void | Promise<void>;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   return (
     <ConfirmDialog
       open={open}
       onOpenChange={onOpenChange}
       title={
         scope === "allMatching"
-          ? "Delete all matching evaluators?"
-          : "Delete selected evaluators?"
+          ? tFeatures("ui.deleteAllMatchingEvaluators")
+          : tFeatures("ui.deleteSelectedEvaluators")
       }
-      description="All versions and evaluation rule assignments will be deleted."
+      description={tFeatures(
+        "ui.allVersionsAndEvaluationRuleAssignmentsWillBeDeleted",
+      )}
       confirmLabel="Delete evaluators"
       loading={isDeleting}
       onConfirm={onConfirm}

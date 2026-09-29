@@ -22,6 +22,7 @@ import {
 import { useExperimentNames } from "@/src/features/experiments/hooks/useExperimentNames";
 import { cn } from "@/src/utils/tailwind";
 import { type DataTablePeekViewProps } from "@/src/components/table/peek";
+import { useTranslation } from "react-i18next";
 
 // Grid view row heights (matching DatasetCompareRunsTable)
 const GRID_VIEW_ROW_HEIGHTS = {
@@ -96,6 +97,7 @@ export const ExperimentGridView = ({
   setRowSelection,
   highlightAllRows,
 }: ExperimentGridViewProps) => {
+  const { t: tFeatures } = useTranslation("features");
   // Keep the explicit baseline separate from the comparison list. A baseline
   // is optional, so c-only URLs render every selected experiment here.
   const allExperimentIds = useMemo(
@@ -139,7 +141,7 @@ export const ExperimentGridView = ({
                 size="sm"
                 className={cn("shrink-0 font-bold", colorStyles?.badgeClass)}
               >
-                {isBaseline ? "Baseline" : "Comp"}
+                {isBaseline ? tFeatures("ui.baseline") : "Comp"}
               </Badge>
             )}
           </div>
@@ -216,6 +218,7 @@ export const ExperimentGridView = ({
       } as LangfuseColumnDef<ExperimentItemsTableRow>;
     });
   }, [
+    tFeatures,
     allExperimentIds,
     experimentNames,
     baselineExperimentId,
@@ -238,7 +241,7 @@ export const ExperimentGridView = ({
       ...(selectActionColumn ? [selectActionColumn] : []),
       createIOTableColumn<ExperimentItemsTableRow>({
         accessorKey: "input",
-        header: "Input",
+        header: tFeatures("ui.input"),
         size: 200,
         getCell: (value) => (ioLoading ? { type: "loading" } : (value ?? null)),
         singleLine,
@@ -249,7 +252,7 @@ export const ExperimentGridView = ({
         ? [
             createIOTableColumn<ExperimentItemsTableRow>({
               accessorKey: "expectedOutput",
-              header: "Expected Output",
+              header: tFeatures("ui.expectedOutput"),
               size: 200,
               getCell: (value) =>
                 ioLoading ? { type: "loading" } : value || undefined,
@@ -261,6 +264,7 @@ export const ExperimentGridView = ({
       ...experimentColumns,
     ],
     [
+      tFeatures,
       experimentColumns,
       ioLoading,
       selectActionColumn,

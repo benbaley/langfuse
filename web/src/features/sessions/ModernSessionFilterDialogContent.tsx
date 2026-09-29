@@ -10,6 +10,7 @@ import {
   DialogTitle,
 } from "@/src/components/ui/dialog";
 import { InlineFilterBuilder } from "@/src/features/filters";
+import { useTranslation } from "react-i18next";
 
 export type ModernSessionFilterDialogViewActions =
   | { type: "none" }
@@ -42,12 +43,14 @@ export function ModernSessionFilterDialogContent({
   onCancel,
   onApplyFilters,
 }: ModernSessionFilterDialogContentProps) {
+  const { t: tMore } = useTranslation("coreMore");
+  const { t: tFeatures } = useTranslation("features");
   const [filters, setFilters] = useState(initialFilters);
 
   return (
     <DialogContent size="lg">
       <DialogHeader>
-        <DialogTitle>Filter observations</DialogTitle>
+        <DialogTitle>{tFeatures("ui.filterObservations")}</DialogTitle>
       </DialogHeader>
       <DialogBody className="overflow-y-auto">
         <InlineFilterBuilder
@@ -59,14 +62,14 @@ export function ModernSessionFilterDialogContent({
       </DialogBody>
       <DialogFooter>
         <Button variant="outline" onClick={onCancel}>
-          Cancel
+          {tFeatures("ui.cancel")}
         </Button>
         {viewActions.type !== "none" ? (
           <Button
             variant="outline"
             onClick={() => viewActions.onCreate(filters)}
           >
-            Save as new view
+            {tFeatures("ui.saveAsNewView")}
           </Button>
         ) : null}
         {viewActions.type === "update" ? (
@@ -75,10 +78,12 @@ export function ModernSessionFilterDialogContent({
             loading={viewActions.isUpdating}
             onClick={() => viewActions.onUpdate(filters)}
           >
-            Update &quot;{viewActions.viewName}&quot;
+            {tMore("sessions.updateView", { name: viewActions.viewName })}
           </Button>
         ) : null}
-        <Button onClick={() => onApplyFilters(filters)}>Apply filters</Button>
+        <Button onClick={() => onApplyFilters(filters)}>
+          {tFeatures("ui.applyFilters")}
+        </Button>
       </DialogFooter>
     </DialogContent>
   );

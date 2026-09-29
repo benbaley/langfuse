@@ -97,6 +97,7 @@ import {
 } from "@tanstack/react-table";
 import {
   SESSION_DETAIL_SYSTEM_PRESETS,
+  translateSessionDetailPreset,
   type SessionDetailSystemPreset,
   getSessionDetailPresetToApply,
   findSessionDetailViewByFilters,
@@ -130,6 +131,7 @@ import {
   INITIAL_SESSION_USERS_DISPLAY_COUNT,
   SESSION_USERS_PER_PAGE,
 } from "@/src/features/sessions/sessionUsers";
+import { useTranslation } from "react-i18next";
 
 // some projects have thousands of users in a session, paginate to avoid rendering all at once
 // Keep this near TanStack's default to avoid waking too many lazy row loaders.
@@ -142,6 +144,8 @@ function SessionUsers({
   projectId: string;
   users?: string[];
 }) {
+  const { t: tMore } = useTranslation("coreMore");
+  const { t: tFeatures } = useTranslation("features");
   const [page, setPage] = useState(0);
 
   if (!users) return null;
@@ -152,7 +156,7 @@ function SessionUsers({
   return (
     <div className="flex flex-wrap items-center gap-2">
       {initialUsers.map((userId: string) => {
-        const userBadgeText = `User ID: ${userId}`;
+        const userBadgeText = tMore("sessions.userId", { id: userId });
 
         return (
           <Link
@@ -175,11 +179,13 @@ function SessionUsers({
         <Popover modal>
           <PopoverTrigger asChild>
             <Button variant="outline" size="sm" className="mt-0.5">
-              +{remainingUsers.length} more users
+              {tMore("sessions.moreUsers", { count: remainingUsers.length })}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-[300px]">
-            <Label className="text-base capitalize">Session Users</Label>
+            <Label className="text-base capitalize">
+              {tFeatures("ui.sessionUsers")}
+            </Label>
             <ScrollArea className="h-[300px]">
               <div className="flex flex-col gap-2 p-2">
                 {remainingUsers
@@ -188,7 +194,9 @@ function SessionUsers({
                     (page + 1) * SESSION_USERS_PER_PAGE,
                   )
                   .map((userId: string) => {
-                    const userBadgeText = `User ID: ${userId}`;
+                    const userBadgeText = tMore("sessions.userId", {
+                      id: userId,
+                    });
 
                     return (
                       <Link
@@ -217,11 +225,15 @@ function SessionUsers({
                   onClick={() => setPage((p) => Math.max(0, p - 1))}
                   disabled={page === 0}
                 >
-                  Previous
+                  {tFeatures("ui.previous")}
                 </Button>
                 <span className="text-muted-foreground text-sm">
-                  Page {page + 1} of{" "}
-                  {Math.ceil(remainingUsers.length / SESSION_USERS_PER_PAGE)}
+                  {tMore("sessions.page", {
+                    current: page + 1,
+                    total: Math.ceil(
+                      remainingUsers.length / SESSION_USERS_PER_PAGE,
+                    ),
+                  })}
                 </span>
                 <Button
                   variant="outline"
@@ -231,7 +243,7 @@ function SessionUsers({
                     (page + 1) * SESSION_USERS_PER_PAGE >= remainingUsers.length
                   }
                 >
-                  Next
+                  {tFeatures("ui.next")}
                 </Button>
               </div>
             )}
@@ -323,6 +335,7 @@ const CopySessionIdButton: React.FC<{
    *  default "toolbar" keeps the inline icon-only button. */
   layout?: "toolbar" | "menu";
 }> = ({ sessionId, layout = "toolbar" }) => {
+  const { t: tFeatures } = useTranslation("features");
   const capture = usePostHogClientCapture();
   const { copy, isCopied } = useCopyToClipboard();
   const isMenu = layout === "menu";
@@ -336,7 +349,7 @@ const CopySessionIdButton: React.FC<{
       <Button
         variant="ghost"
         size="sm"
-        aria-label="Copy session ID"
+        aria-label={tFeatures("ui.copySessionId")}
         className="w-full justify-start gap-2 font-normal"
         onClick={onCopy}
       >
@@ -345,7 +358,7 @@ const CopySessionIdButton: React.FC<{
         ) : (
           <CopyIcon className="h-4 w-4" />
         )}
-        <span className="text-sm">Copy session ID</span>
+        <span className="text-sm">{tFeatures("ui.copySessionId")}</span>
       </Button>
     );
   }
@@ -354,8 +367,8 @@ const CopySessionIdButton: React.FC<{
     <Button
       variant="ghost"
       size="icon-xs"
-      title="Copy session ID"
-      aria-label="Copy session ID"
+      title={tFeatures("ui.copySessionId")}
+      aria-label={tFeatures("ui.copySessionId")}
       onClick={onCopy}
     >
       {isCopied ? (
@@ -371,6 +384,8 @@ export const SessionPage: React.FC<{
   sessionId: string;
   projectId: string;
 }> = ({ sessionId, projectId }) => {
+  const { t: tMore } = useTranslation("coreMore");
+  const { t: tFeatures } = useTranslation("features");
   const router = useRouter();
   const { setDetailPageList, detailPagelists } = useDetailPageLists();
   const userSession = useSession();
@@ -514,15 +529,15 @@ export const SessionPage: React.FC<{
   const virtualItems = virtualizer.getVirtualItems();
 
   if (session.error?.data?.code === "UNAUTHORIZED")
-    return <ErrorPage message="You do not have access to this session." />;
+    return <ErrorPage message={tFeatures("errors.sessionAccess")} />;
 
   if (session.error?.data?.code === "NOT_FOUND")
     return (
       <ErrorPage
-        title="Session not found"
-        message="The session is either still being processed or has been deleted."
+        title={tFeatures("ui.sessionNotFound")}
+        message={tFeatures("errors.sessionMissing")}
         additionalButton={{
-          label: "Retry",
+          label: tFeatures("ui.retry"),
           onClick: () => window.location.reload(),
         }}
       />
@@ -570,7 +585,7 @@ export const SessionPage: React.FC<{
                   variant="outline"
                   size="icon"
                   onClick={onDownloadSessionAsJson}
-                  title="Download session as JSON"
+                  title={tFeatures("ui.downloadSessionAsJson")}
                 >
                   <Download className="h-4 w-4" />
                 </Button>
@@ -613,8 +628,8 @@ export const SessionPage: React.FC<{
                               sessionCommentCounts.data,
                               sessionId,
                             )
-                              ? "Comments"
-                              : "Comment"}
+                              ? tFeatures("ui.comments")
+                              : tFeatures("ui.comment")}
                           </span>
                           {getNumberFromMap(
                             sessionCommentCounts.data,
@@ -662,7 +677,7 @@ export const SessionPage: React.FC<{
                         ) : (
                           <SquarePen className="mr-1.5 h-4 w-4" />
                         )}
-                        <span>Annotate</span>
+                        <span>{tFeatures("ui.annotate")}</span>
                       </Button>
                     )}
                   </AnnotateDrawerController>
@@ -680,7 +695,7 @@ export const SessionPage: React.FC<{
                           className="gap-1.5"
                         >
                           <Plus className="h-4 w-4" />
-                          <span>Add to</span>
+                          <span>{tFeatures("ui.addTo")}</span>
                           {totalCount > 0 && (
                             <ActionButtonCountBadge count={totalCount} />
                           )}
@@ -699,7 +714,7 @@ export const SessionPage: React.FC<{
                     />
                   </div>
                   <span className="text-muted-foreground text-xs">
-                    Show corrections
+                    {tFeatures("ui.showCorrections")}
                   </span>
                 </div>
               </>
@@ -713,7 +728,7 @@ export const SessionPage: React.FC<{
                   projectId={projectId}
                   sessionId={sessionId}
                   isPublic={session.data?.public ?? false}
-                  label="Share"
+                  label={tFeatures("ui.share")}
                 />
                 <CopySessionIdButton sessionId={sessionId} layout="menu" />
                 <CommentDrawerController
@@ -743,8 +758,8 @@ export const SessionPage: React.FC<{
                       )}
                       <span className="text-sm">
                         {getNumberFromMap(sessionCommentCounts.data, sessionId)
-                          ? "Comments"
-                          : "Comment"}
+                          ? tFeatures("ui.comments")
+                          : tFeatures("ui.comment")}
                       </span>
                       {!disabled &&
                       getNumberFromMap(sessionCommentCounts.data, sessionId) ? (
@@ -789,7 +804,9 @@ export const SessionPage: React.FC<{
                       ) : (
                         <SquarePen className="h-4 w-4" />
                       )}
-                      <span className="text-sm">Annotate</span>
+                      <span className="text-sm">
+                        {tFeatures("ui.annotate")}
+                      </span>
                     </Button>
                   )}
                 </AnnotateDrawerController>
@@ -808,7 +825,7 @@ export const SessionPage: React.FC<{
                         className="w-full justify-start gap-2 font-normal"
                       >
                         <Plus className="h-4 w-4" />
-                        <span className="text-sm">Add to</span>
+                        <span className="text-sm">{tFeatures("ui.addTo")}</span>
                         {totalCount > 0 && (
                           <AnnotationQueueItemCountBadge
                             totalCount={totalCount}
@@ -829,10 +846,14 @@ export const SessionPage: React.FC<{
                   className="w-full justify-start gap-2 font-normal"
                 >
                   <Download className="h-4 w-4" />
-                  <span className="text-sm">Download JSON</span>
+                  <span className="text-sm">
+                    {tFeatures("ui.downloadJson")}
+                  </span>
                 </Button>
                 <label className="hover:bg-accent flex w-full items-center justify-between gap-4 rounded-md px-2 py-1.5">
-                  <span className="text-sm">Show corrections</span>
+                  <span className="text-sm">
+                    {tFeatures("ui.showCorrections")}
+                  </span>
                   <Switch
                     checked={showCorrections}
                     onCheckedChange={setShowCorrectionsForSession}
@@ -850,16 +871,20 @@ export const SessionPage: React.FC<{
                 desktopClassName="bg-background sticky top-0 z-40 flex flex-wrap gap-2 border-b p-4"
                 summary={
                   <>
-                    <span className="text-sm font-bold">Session controls</span>
+                    <span className="text-sm font-bold">
+                      {tFeatures("ui.sessionControls")}
+                    </span>
                     <span
                       className="text-muted-foreground min-w-0 truncate text-xs"
-                      title={`${session.data?.traces.length ?? 0} traces · ${usdFormatter(
-                        session.data?.totalCost ?? 0,
-                        2,
-                      )}`}
+                      title={tMore("sessions.traceCost", {
+                        count: session.data?.traces.length ?? 0,
+                        cost: usdFormatter(session.data?.totalCost ?? 0, 2),
+                      })}
                     >
-                      {session.data?.traces.length ?? 0} traces ·{" "}
-                      {usdFormatter(session.data?.totalCost ?? 0, 2)}
+                      {tMore("sessions.traceCost", {
+                        count: session.data?.traces.length ?? 0,
+                        cost: usdFormatter(session.data?.totalCost ?? 0, 2),
+                      })}
                     </span>
                   </>
                 }
@@ -871,11 +896,12 @@ export const SessionPage: React.FC<{
                   />
                 ) : null}
                 <Badge variant="outline">
-                  Total traces: {session.data?.traces.length}
+                  {tFeatures("ui.totalTraces")} {session.data?.traces.length}
                 </Badge>
                 {session.data && (
                   <Badge variant="outline">
-                    Total cost: {usdFormatter(session.data.totalCost, 2)}
+                    {tFeatures("ui.totalCostLabel")}{" "}
+                    {usdFormatter(session.data.totalCost, 2)}
                   </Badge>
                 )}
                 <SessionScores scores={session.data?.scores ?? []} />
@@ -937,6 +963,7 @@ export const SessionEventsPage: React.FC<{
   sessionId: string;
   projectId: string;
 }> = ({ sessionId, projectId }) => {
+  const { t: tFeatures } = useTranslation("features");
   const session = api.sessions.byIdWithScoresFromEvents.useQuery(
     {
       sessionId,
@@ -971,15 +998,15 @@ export const SessionEventsPage: React.FC<{
   );
 
   if (session.error?.data?.code === "UNAUTHORIZED")
-    return <ErrorPage message="You do not have access to this session." />;
+    return <ErrorPage message={tFeatures("errors.sessionAccess")} />;
 
   if (session.error?.data?.code === "NOT_FOUND")
     return (
       <ErrorPage
-        title="Session not found"
-        message="The session is either still being processed or has been deleted."
+        title={tFeatures("ui.sessionNotFound")}
+        message={tFeatures("errors.sessionMissing")}
         additionalButton={{
-          label: "Retry",
+          label: tFeatures("ui.retry"),
           onClick: () => window.location.reload(),
         }}
       />
@@ -1024,6 +1051,8 @@ const LoadedSessionEventsPage: React.FC<{
   traces: EventSessionTrace[] | undefined;
   isTracesSuccess: boolean;
 }> = ({ sessionId, projectId, session, traces, isTracesSuccess }) => {
+  const { t: tMore } = useTranslation("coreMore");
+  const { t: tFeatures } = useTranslation("features");
   const router = useRouter();
   const { setDetailPageList, detailPagelists } = useDetailPageLists();
   const userSession = useSession();
@@ -1454,8 +1483,9 @@ const LoadedSessionEventsPage: React.FC<{
   // A named view is selected explicitly; matching filter values alone cannot
   // turn a user's edited working state back into a selected preset.
   const viewLabel =
-    SESSION_DETAIL_SYSTEM_PRESETS.find((preset) => preset.id === selectedViewId)
-      ?.name ?? null;
+    SESSION_DETAIL_SYSTEM_PRESETS.map((preset) =>
+      translateSessionDetailPreset(preset, tMore),
+    ).find((preset) => preset.id === selectedViewId)?.name ?? null;
   const hasSessionControls =
     !isModernSessionEnabled ||
     Boolean(session.users?.length || session.scores.length);
@@ -1683,8 +1713,8 @@ const LoadedSessionEventsPage: React.FC<{
                               sessionCommentCounts.data,
                               sessionId,
                             )
-                              ? "Comments"
-                              : "Comment"}
+                              ? tFeatures("ui.comments")
+                              : tFeatures("ui.comment")}
                           </span>
                           {getNumberFromMap(
                             sessionCommentCounts.data,
@@ -1732,7 +1762,7 @@ const LoadedSessionEventsPage: React.FC<{
                         ) : (
                           <SquarePen className="mr-1.5 h-4 w-4" />
                         )}
-                        <span>Annotate</span>
+                        <span>{tFeatures("ui.annotate")}</span>
                         {isModernSessionEnabled && annotationCount > 0 ? (
                           <span className="ml-1">
                             <ActionButtonCountBadge count={annotationCount} />
@@ -1755,7 +1785,7 @@ const LoadedSessionEventsPage: React.FC<{
                           className="gap-1.5"
                         >
                           <Plus className="h-4 w-4" />
-                          <span>Add to</span>
+                          <span>{tFeatures("ui.addTo")}</span>
                           {totalCount > 0 && (
                             <ActionButtonCountBadge count={totalCount} />
                           )}
@@ -1773,7 +1803,7 @@ const LoadedSessionEventsPage: React.FC<{
                       size="sm"
                     />
                     <span className="text-muted-foreground text-xs">
-                      Show corrections
+                      {tFeatures("ui.showCorrections")}
                     </span>
                   </label>
                 ) : (
@@ -1798,7 +1828,7 @@ const LoadedSessionEventsPage: React.FC<{
                       <Button
                         variant="outline"
                         size="icon"
-                        aria-label="Session actions"
+                        aria-label={tFeatures("ui.sessionActions")}
                       >
                         <MoreVertical className="h-4 w-4" />
                       </Button>
@@ -1816,7 +1846,7 @@ const LoadedSessionEventsPage: React.FC<{
                   projectId={projectId}
                   sessionId={sessionId}
                   isPublic={session.public}
-                  label="Share"
+                  label={tFeatures("ui.share")}
                 />
                 <CopySessionIdButton sessionId={sessionId} layout="menu" />
                 <CommentDrawerController
@@ -1846,8 +1876,8 @@ const LoadedSessionEventsPage: React.FC<{
                       )}
                       <span className="text-sm">
                         {getNumberFromMap(sessionCommentCounts.data, sessionId)
-                          ? "Comments"
-                          : "Comment"}
+                          ? tFeatures("ui.comments")
+                          : tFeatures("ui.comment")}
                       </span>
                       {!disabled &&
                       getNumberFromMap(sessionCommentCounts.data, sessionId) ? (
@@ -1892,7 +1922,9 @@ const LoadedSessionEventsPage: React.FC<{
                       ) : (
                         <SquarePen className="h-4 w-4" />
                       )}
-                      <span className="text-sm">Annotate</span>
+                      <span className="text-sm">
+                        {tFeatures("ui.annotate")}
+                      </span>
                       {isModernSessionEnabled && annotationCount > 0 ? (
                         <span className="ml-1">
                           <ActionButtonCountBadge count={annotationCount} />
@@ -1916,7 +1948,7 @@ const LoadedSessionEventsPage: React.FC<{
                         className="w-full justify-start gap-2 font-normal"
                       >
                         <Plus className="h-4 w-4" />
-                        <span className="text-sm">Add to</span>
+                        <span className="text-sm">{tFeatures("ui.addTo")}</span>
                         {totalCount > 0 && (
                           <AnnotationQueueItemCountBadge
                             totalCount={totalCount}
@@ -1932,7 +1964,9 @@ const LoadedSessionEventsPage: React.FC<{
                 )}
                 {!isModernSessionEnabled || !isSessionTimelineEnabled ? (
                   <label className="hover:bg-accent flex w-full items-center justify-between gap-4 rounded-md px-2 py-1.5">
-                    <span className="text-sm">Show corrections</span>
+                    <span className="text-sm">
+                      {tFeatures("ui.showCorrections")}
+                    </span>
                     <Switch
                       checked={showCorrections}
                       onCheckedChange={setShowCorrectionsForSession}
@@ -1942,7 +1976,9 @@ const LoadedSessionEventsPage: React.FC<{
                 ) : null}
                 {isModernSessionEnabled && !isSessionTimelineEnabled ? (
                   <label className="hover:bg-accent flex w-full items-center justify-between gap-4 rounded-md px-2 py-1.5">
-                    <span className="text-sm">Show system prompt</span>
+                    <span className="text-sm">
+                      {tFeatures("ui.showSystemPrompt")}
+                    </span>
                     <Switch
                       checked={showSystemPrompt}
                       onCheckedChange={setShowSystemPromptForSession}
@@ -1969,17 +2005,19 @@ const LoadedSessionEventsPage: React.FC<{
                   summary={
                     <>
                       <span className="text-sm font-bold">
-                        Session controls
+                        {tFeatures("ui.sessionControls")}
                       </span>
                       <span
                         className="text-muted-foreground min-w-0 truncate text-xs"
-                        title={`${session.countTraces} traces · ${usdFormatter(
-                          session.totalCost ?? 0,
-                          2,
-                        )}`}
+                        title={tMore("sessions.traceCost", {
+                          count: session.countTraces,
+                          cost: usdFormatter(session.totalCost ?? 0, 2),
+                        })}
                       >
-                        {session.countTraces} traces ·{" "}
-                        {usdFormatter(session.totalCost ?? 0, 2)}
+                        {tMore("sessions.traceCost", {
+                          count: session.countTraces,
+                          cost: usdFormatter(session.totalCost ?? 0, 2),
+                        })}
                       </span>
                     </>
                   }
@@ -1999,7 +2037,9 @@ const LoadedSessionEventsPage: React.FC<{
                         columnVisibility,
                         searchQuery: "",
                       }}
-                      systemFilterPresets={SESSION_DETAIL_SYSTEM_PRESETS}
+                      systemFilterPresets={SESSION_DETAIL_SYSTEM_PRESETS.map(
+                        (preset) => translateSessionDetailPreset(preset, tMore),
+                      )}
                       triggerId={SESSION_DETAIL_VIEW_TRIGGER_ID}
                     />
                   ) : null}
@@ -2014,7 +2054,7 @@ const LoadedSessionEventsPage: React.FC<{
                       filterState={visibleFilterState}
                       onChange={queryFilter.setFilterState}
                       columnsWithCustomSelect={filterColumnsWithCustomSelect}
-                      label="Filter observations"
+                      label={tFeatures("ui.filterObservations")}
                       // Analytics (LFE-10781): session-detail observation refinement is a
                       // v3/legacy surface (the v4 events table filters via the grammar bar).
                       tableName="session-detail"
@@ -2032,10 +2072,11 @@ const LoadedSessionEventsPage: React.FC<{
                   {!isModernSessionEnabled ? (
                     <>
                       <Badge variant="outline">
-                        Total traces: {session.countTraces}
+                        {tFeatures("ui.totalTraces")} {session.countTraces}
                       </Badge>
                       <Badge variant="outline">
-                        Total cost: {usdFormatter(session.totalCost ?? 0, 2)}
+                        {tFeatures("ui.totalCostLabel")}{" "}
+                        {usdFormatter(session.totalCost ?? 0, 2)}
                       </Badge>
                     </>
                   ) : null}
@@ -2156,6 +2197,7 @@ export const SessionIO = ({
   environment?: string | null;
   showCorrections: boolean;
 }) => {
+  const { t: tFeatures } = useTranslation("features");
   const trace = api.traces.byId.useQuery(
     { traceId, projectId, timestamp },
     {
@@ -2202,7 +2244,7 @@ export const SessionIO = ({
         />
       ) : (
         <div className="text-muted-foreground p-2 text-xs">
-          This trace has no input or output.
+          {tFeatures("ui.thisTraceHasNoInputOrOutput")}
         </div>
       )}
     </div>

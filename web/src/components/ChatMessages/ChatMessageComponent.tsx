@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import capitalize from "lodash/capitalize";
 import { GripVertical, MinusCircleIcon } from "lucide-react";
 import {
@@ -69,19 +70,19 @@ const ROLES: ChatMessageRole[] = [
 const getRoleNamePlaceholder = (role: string) => {
   switch (role) {
     case ChatMessageRole.System:
-      return "a system message";
+      return "chat.enter.system";
     case ChatMessageRole.Developer:
-      return "a developer message";
+      return "chat.enter.developer";
     case ChatMessageRole.Assistant:
-      return "an assistant message";
+      return "chat.enter.assistant";
     case ChatMessageRole.User:
-      return "a user message";
+      return "chat.enter.user";
     case ChatMessageRole.Tool:
-      return "a tool response message";
+      return "chat.enter.tool";
     case "placeholder":
-      return "placeholder name (e.g. chat_history)";
+      return "chat.enter.placeholder";
     default:
-      return `a ${role}`;
+      return "chat.enter.custom";
   }
 };
 
@@ -105,6 +106,7 @@ export const ChatMessageComponent: React.FC<ChatMessageProps> = ({
   toolCallIds,
   registerRow,
 }) => {
+  const { t } = useTranslation("settingsMore");
   const [roleIndex, setRoleIndex] = useState(1);
   const playgroundContext = useOptionalPlaygroundContext();
   const searchPageId = useOptionalMessageSearchPageId();
@@ -302,7 +304,7 @@ export const ChatMessageComponent: React.FC<ChatMessageProps> = ({
           <div className="bg-background sticky top-0 bottom-0 z-10 flex w-16 shrink-0 flex-col gap-1">
             {isPlaceholder ? (
               <span className="bg-accent text-muted-foreground inline-flex h-6 w-full items-center justify-center rounded-md px-4 font-mono text-[9px]">
-                placeholder
+                {t("chat.placeholder")}
               </span>
             ) : (
               <Button
@@ -311,7 +313,11 @@ export const ChatMessageComponent: React.FC<ChatMessageProps> = ({
                 variant="ghost"
                 className="text-muted-foreground hover:bg-accent hover:text-accent-foreground h-6 w-full px-1 py-0 text-[10px] font-bold"
               >
-                {capitalize(message.role)}
+                {[...ROLES, ChatMessageRole.Model].includes(
+                  message.role as ChatMessageRole,
+                )
+                  ? t(`chat.role.${message.role}`)
+                  : capitalize(message.role)}
               </Button>
             )}
           </div>
@@ -330,10 +336,10 @@ export const ChatMessageComponent: React.FC<ChatMessageProps> = ({
                   }
                 >
                   <SelectTrigger
-                    title="Select Tool Call ID"
+                    title={t("chat.selectToolCall")}
                     className="bg-muted h-[25px] w-[96px] border-0 text-[9px]"
                   >
-                    <SelectValue placeholder="Select Call ID" />
+                    <SelectValue placeholder={t("chat.selectCall")} />
                   </SelectTrigger>
                   <SelectContent>
                     {toolCallIds?.map((id) => (
@@ -375,7 +381,7 @@ export const ChatMessageComponent: React.FC<ChatMessageProps> = ({
             size="icon"
             onClick={() => deleteMessage(message.id)}
             className="h-5 w-5 shrink-0 rounded-full p-0 opacity-60 transition-all hover:opacity-100"
-            aria-label="Delete message"
+            aria-label={t("chat.delete")}
           >
             <MinusCircleIcon size={14} />
           </Button>
@@ -401,7 +407,8 @@ const MemoizedEditor = memo(function MemoizedEditor(props: {
     onEditorMount,
     enableSearchKeymap,
   } = props;
-  const placeholder = `Enter ${getRoleNamePlaceholder(role)} here.`;
+  const { t } = useTranslation("settingsMore");
+  const placeholder = t(getRoleNamePlaceholder(role), { role });
 
   return (
     <CodeMirrorEditor

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useCallback, useMemo } from "react";
 import { Pencil, PlusIcon, Trash } from "lucide-react";
 
@@ -33,6 +34,7 @@ export function LLMApiKeySettingsTable({
     onClick: (apiKey: LLMApiKeySettingsTableRow) => void;
   };
 }) {
+  const { t } = useTranslation("settings");
   const showExtraHeaderKeys =
     tableProps.data.status === "success" &&
     tableProps.data.data.some((apiKey) => apiKey.extraHeaderKeys.length > 0);
@@ -41,37 +43,37 @@ export function LLMApiKeySettingsTable({
     () => [
       createTextTableColumn<LLMApiKeySettingsTableRow>({
         accessorKey: "provider",
-        header: "Provider",
+        header: t("provider"),
         enableResizing: false,
       }),
       createBadgeTableColumn<LLMApiKeySettingsTableRow>({
         accessorKey: "adapter",
-        header: "Adapter",
+        header: t("adapter"),
         enableResizing: false,
       }),
       createTextTableColumn<LLMApiKeySettingsTableRow>({
         accessorKey: "baseURL",
-        header: "Base URL",
+        header: t("baseUrl"),
         nullValue: "default",
         enableResizing: false,
       }),
       createTextTableColumn<LLMApiKeySettingsTableRow>({
         accessorKey: "displaySecretKey",
-        header: "API Key",
+        header: t("apiKey"),
         enableResizing: false,
       }),
       ...(showExtraHeaderKeys
         ? [
             createTextTableColumn<LLMApiKeySettingsTableRow, string[]>({
               accessorKey: "extraHeaderKeys",
-              header: "Extra headers",
+              header: t("extraHeaders"),
               mapValue: (value) => value?.join(", "),
               enableResizing: false,
             }),
           ]
         : []),
     ],
-    [showExtraHeaderKeys],
+    [showExtraHeaderKeys, t],
   );
 
   const actions = useCallback<
@@ -81,26 +83,26 @@ export function LLMApiKeySettingsTable({
       {
         id: "edit",
         type: "item",
-        title: "Edit connection",
+        title: t("editConnection"),
         icon: Pencil,
         disabled: updateAction.hasAccess
           ? undefined
-          : { reason: "You do not have permission to edit this connection" },
+          : { reason: t("editConnectionForbidden") },
         onClick: () => updateAction.onClick(apiKey),
       },
       {
         id: "delete",
         type: "item",
-        title: "Delete connection",
+        title: t("deleteConnection"),
         icon: Trash,
         variant: "destructive",
         disabled: deleteAction.hasAccess
           ? undefined
-          : { reason: "You do not have permission to delete this connection" },
+          : { reason: t("deleteConnectionForbidden") },
         onClick: () => deleteAction.onClick(apiKey),
       },
     ],
-    [deleteAction, updateAction],
+    [deleteAction, updateAction, t],
   );
 
   const toolbarActions: SettingsTableProps<LLMApiKeySettingsTableRow>["toolbarActions"] =
@@ -108,7 +110,7 @@ export function LLMApiKeySettingsTable({
       ? [
           {
             id: "add-connection",
-            label: "Add LLM Connection",
+            label: t("addLlmConnection"),
             variant: "secondary",
             icon: <PlusIcon className="size-4" aria-hidden="true" />,
             onClick: createAction.onClick,
@@ -118,7 +120,7 @@ export function LLMApiKeySettingsTable({
 
   return (
     <SettingsTable
-      tableName="LLM connections"
+      tableName={t("llmConnections")}
       columns={columns}
       actions={actions}
       toolbarActions={toolbarActions}

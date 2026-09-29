@@ -1,4 +1,5 @@
 "use client";
+import { useTranslation } from "react-i18next";
 
 import {
   autoUpdate,
@@ -177,6 +178,8 @@ function DropdownMenuNode({
   search,
   title,
 }: DropdownMenuProps) {
+const { t: tUi } = useTranslation("uiMore");
+
   const [isOpen, setIsOpen] = React.useState(false);
   const [activeIndex, setActiveIndex] = React.useState<number | null>(null);
   const [searchQuery, setSearchQuery] = React.useState("");
@@ -363,7 +366,7 @@ function DropdownMenuNode({
                       <div
                         key={item.id}
                         role="menuitem"
-                        aria-label="Loading"
+                        aria-label={tUi("loading")}
                         aria-disabled="true"
                         className="flex h-8 items-center px-2 py-1.5"
                       >

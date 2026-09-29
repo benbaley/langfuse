@@ -15,11 +15,13 @@ import { createProjectRoute } from "@/src/features/setup/setupRoutes";
 import { cn } from "@/src/utils/tailwind";
 import { Check } from "lucide-react";
 import { useRouter } from "next/router";
+import { useTranslation } from "react-i18next";
 
 // Manual setup process
 // 1. Create Organization: /setup
 // 2. Create Project: /organization/:orgId/setup?orgstep=create-project
 export function SetupPage() {
+  const { t: tApp } = useTranslation("app");
   const { organization } = useQueryProjectOrOrganization();
   const router = useRouter();
 
@@ -29,15 +31,15 @@ export function SetupPage() {
   return (
     <ContainerPage
       headerProps={{
-        title: "Setup",
+        title: tApp("ui.Setup"),
         help: {
           description:
-            "Create a new organization. This will be used to manage your projects and teams.",
+            tApp("setup.help"),
         },
         ...(stepInt === 1 && {
           breadcrumb: [
             {
-              name: "Organizations",
+              name: tApp("setup.organizations"),
               href: "/",
             },
           ],
@@ -54,7 +56,7 @@ export function SetupPage() {
                   : "text-foreground font-bold",
               )}
             >
-              1. Create Organization
+              {tApp("ui.1CreateOrganization")}
               {stepInt > 1 && <Check className="ml-1 inline-block h-3 w-3" />}
             </BreadcrumbPage>
           </BreadcrumbItem>
@@ -67,7 +69,7 @@ export function SetupPage() {
                   : "text-foreground font-bold",
               )}
             >
-              2. Create Project
+              {tApp("ui.2CreateProject")}
             </BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
@@ -77,9 +79,9 @@ export function SetupPage() {
           // 1. Create Org
           stepInt === 1 && (
             <div>
-              <Header title="New Organization" />
+              <Header title={tApp("ui.NewOrganization")} />
               <p className="text-muted-foreground mb-4 text-sm">
-                Organizations are used to manage your projects and teams.
+                {tApp("ui.OrganizationsAreUsedToManageYourProjectsAndTeams")}
               </p>
               <ConnectedNewOrganizationForm
                 onSuccess={async (orgId, sessionRefreshed) => {
@@ -99,11 +101,11 @@ export function SetupPage() {
           // 2. Create Project
           stepInt === 2 && organization && (
             <div>
-              <Header title="New Project" />
+              <Header title={tApp("ui.NewProject")} />
               <p className="text-muted-foreground mb-4 text-sm">
-                Projects are used to group traces, datasets, evals and prompts.
-                Environments can be separated using the built-in environment
-                feature.
+                {tApp(
+                  "ui.ProjectsAreUsedToGroupTracesDatasetsEvalsAndPromptsEnvironmentsCanBeSeparatedUsingTheBuiltInEnvironmentFeature",
+                )}
               </p>
               <NewProjectForm
                 orgId={organization.id}

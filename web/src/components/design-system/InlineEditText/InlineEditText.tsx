@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import * as React from "react";
 import { cn } from "@/src/utils/tailwind";
 
@@ -27,6 +28,8 @@ export const InlineEditText = ({
   placeholder,
   "aria-label": ariaLabel,
 }: InlineEditTextProps) => {
+const { t: tUi } = useTranslation("uiMore");
+
   const [editing, setEditing] = React.useState(false);
   const [draft, setDraft] = React.useState(value);
 
@@ -90,7 +93,7 @@ export const InlineEditText = ({
         setEditing(true);
       }}
       aria-label={ariaLabel ?? "Edit text"}
-      title="Click to edit"
+      title={tUi("clickToEdit")}
       className="hover:bg-accent/50 focus-visible:ring-ring inline-flex h-[1lh] max-w-full items-center rounded-sm px-1 text-left align-bottom [font:inherit] focus-visible:ring-2 focus-visible:outline-hidden"
     >
       <span

@@ -1,4 +1,5 @@
 /* eslint-disable no-nested-ternary */
+import { useTranslation } from "react-i18next";
 import { Card } from "@/src/components/ui/card";
 import { Input } from "@/src/components/ui/input";
 import { api, reportTrpcErrorWithoutToast } from "@/src/utils/api";
@@ -23,6 +24,7 @@ import { ActionButton } from "@/src/components/ActionButton";
 import { useHasEntitlement } from "@/src/features/entitlements";
 
 export default function ConfigureRetention() {
+  const { t } = useTranslation("settings");
   const { update: updateSession } = useSession();
   const utils = api.useUtils();
   const { project } = useQueryProject();
@@ -33,8 +35,28 @@ export default function ConfigureRetention() {
   });
   const hasEntitlement = useHasEntitlement("data-retention");
 
-  const form = useForm({
-    resolver: zodResolver(projectRetentionSchema),
+  const form = useForm<
+    z.input<typeof projectRetentionSchema>,
+    any,
+    z.output<typeof projectRetentionSchema>
+  >({
+    resolver: async (values, context, options) => {
+      const result = await zodResolver(projectRetentionSchema)(
+        values,
+        context,
+        options,
+      );
+      const error = result.errors.retention;
+      if (error?.message) {
+        const translationKeys: Record<string, string> = {
+          "Must be an integer": "retentionInteger",
+          "Value must be 0 or at least 3 days": "retentionMinimum",
+        };
+        const key = translationKeys[error.message];
+        if (key) error.message = t(key);
+      }
+      return result;
+    },
     defaultValues: {
       retention: project?.retentionDays ?? 0,
     },
@@ -65,34 +87,27 @@ export default function ConfigureRetention() {
 
   return (
     <div>
-      <Header title="Data Retention" />
+      <Header title={t("dataRetention")} />
       <Card className="mb-4 p-3">
-        <p className="text-primary mb-4 text-sm">
-          Data retention automatically deletes events older than the specified
-          number of days. The value must be 0 or at least 3 days. Set to 0 to
-          retain data indefinitely. The deletion happens asynchronously, i.e.
-          event may be available for a while after they expired.
-        </p>
+        <p className="text-primary mb-4 text-sm">{t("retentionDescription")}</p>
         {Boolean(form.getValues().retention) &&
         form.getValues().retention !== project?.retentionDays ? (
           <p className="text-primary mb-4 text-sm">
-            Your Project&#39;s retention will be set from &quot;
-            {project?.retentionDays ?? "Indefinite"}
-            &quot; to &quot;
-            {Number(form.watch("retention")) === 0
-              ? "Indefinite"
-              : Number(form.watch("retention"))}
-            &quot; days.
+            {t("retentionChanging", {
+              current: project?.retentionDays ?? t("indefinite"),
+              next:
+                Number(form.watch("retention")) === 0
+                  ? t("indefinite")
+                  : Number(form.watch("retention")),
+            })}
           </p>
         ) : !Boolean(project?.retentionDays) ? (
           <p className="text-primary mb-4 text-sm">
-            Your Project retains data indefinitely.
+            {t("retentionIndefinite")}
           </p>
         ) : (
           <p className="text-primary mb-4 text-sm">
-            Your Project&#39;s current retention is &quot;
-            {project?.retentionDays ?? ""}
-            &quot; days.
+            {t("retentionCurrent", { count: project?.retentionDays ?? 0 })}
           </p>
         )}
         <Form {...form}>
@@ -118,7 +133,7 @@ export default function ConfigureRetention() {
                         disabled={!hasAccess || !hasEntitlement}
                       />
                       {!hasAccess && (
-                        <span title="No access">
+                        <span title={t("noAccess")}>
                           <LockIcon className="text-muted absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2 transform" />
                         </span>
                       )}
@@ -137,7 +152,7 @@ export default function ConfigureRetention() {
                 disabled={form.getValues().retention === null}
                 type="submit"
               >
-                Save
+                {t("save")}
               </ActionButton>
             </div>
           </form>

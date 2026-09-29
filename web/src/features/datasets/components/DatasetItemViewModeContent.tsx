@@ -4,6 +4,7 @@ import {
   type DatasetSchema,
 } from "../utils/datasetItemUtils";
 import { DatasetItemFields } from "@/src/features/datasets/components/DatasetItemFields";
+import { useTranslation } from "react-i18next";
 
 type DatasetItemViewModeContentProps = {
   item: DatasetItemDomain | null;
@@ -20,17 +21,24 @@ export const DatasetItemViewModeContent = ({
   isLoading,
   dataset,
 }: DatasetItemViewModeContentProps) => {
+  const { t: tFeatures } = useTranslation("features");
   if (isLoading) {
-    return <div className="text-muted-foreground text-sm">Loading...</div>;
+    return (
+      <div className="text-muted-foreground text-sm">
+        {tFeatures("ui.loading")}
+      </div>
+    );
   }
 
   if (item === null) {
     return (
       <div className="flex flex-col items-center justify-center p-12 text-center">
         <div className="text-muted-foreground">
-          <p className="text-lg font-bold">Dataset item not found</p>
+          <p className="text-lg font-bold">
+            {tFeatures("ui.datasetItemNotFound")}
+          </p>
           <p className="mt-2 text-sm">
-            This dataset item does not exist or has been deleted.
+            {tFeatures("ui.thisDatasetItemDoesNotExistOrHasBeenDeleted")}
           </p>
         </div>
       </div>

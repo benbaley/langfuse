@@ -13,6 +13,7 @@ import {
   type OutlierStripMetricKey,
   type OutlierStripTick,
 } from "./lib/binning";
+import { useTranslation } from "react-i18next";
 
 /**
  * OutlierBarStrip — compact, Firefox-devtools-inspired bar strip (LFE-14451).
@@ -100,6 +101,7 @@ export function OutlierBarStrip({
   disabledReason,
   className,
 }: OutlierBarStripProps) {
+  const { t: tFeatures } = useTranslation("features");
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
   const [mouse, setMouse] = useState<{ x: number; y: number } | null>(null);
   // Touch model: taps and drags PREVIEW (pinned tooltip with an explicit
@@ -549,7 +551,7 @@ export function OutlierBarStrip({
         >
           {hasActivity
             ? `No ${metricSpec.shortLabel.toLowerCase()} data in range`
-            : "No observations in range"}
+            : tFeatures("ui.noObservationsInRange")}
         </span>
       )}
 
@@ -644,7 +646,7 @@ export function OutlierBarStrip({
               </div>
               <button
                 type="button"
-                aria-label="Dismiss preview"
+                aria-label={tFeatures("ui.dismissPreview")}
                 className="text-muted-foreground -mt-0.5 -mr-0.5 p-0.5"
                 onClick={() => {
                   setTouchPreview(null);
@@ -670,7 +672,7 @@ export function OutlierBarStrip({
                   onSelectBucket?.(range, { trigger: "touch_explore" });
                 }}
               >
-                Explore this window
+                {tFeatures("ui.exploreThisWindow")}
               </Button>
             )}
           </div>

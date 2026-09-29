@@ -19,6 +19,7 @@ import {
   MEDIA_REFERENCE_PATTERN,
   MediaReferenceStringSchema,
 } from "@langfuse/shared";
+import { useTranslation } from "react-i18next";
 
 /**
  * Extracts media references from live dataset item fields, deduped by media id.
@@ -172,6 +173,7 @@ function DatasetItemMediaUploadButton({
   onSelectFile: (file: File) => void | Promise<void>;
   disabled?: boolean;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const inputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
 
@@ -199,7 +201,7 @@ function DatasetItemMediaUploadButton({
         size="icon-xs"
         className="text-muted-foreground"
         disabled={disabled || isUploading}
-        title="Attach media"
+        title={tFeatures("ui.attachMedia")}
         onClick={() => inputRef.current?.click()}
       >
         {isUploading ? (
@@ -218,6 +220,7 @@ function DatasetItemMediaUploadButton({
  * confirmation.
  */
 function CopyFieldValueButton({ value }: { value: string }) {
+  const { t: tFeatures } = useTranslation("features");
   const [copied, setCopied] = useState(false);
 
   return (
@@ -226,7 +229,7 @@ function CopyFieldValueButton({ value }: { value: string }) {
       variant="ghost"
       size="icon-xs"
       className="text-muted-foreground"
-      title="Copy to clipboard"
+      title={tFeatures("ui.copyToClipboard")}
       onClick={async () => {
         await copyTextToClipboard(value);
         setCopied(true);
@@ -298,6 +301,7 @@ function DatasetItemAttachments({
   referenceStrings?: string[];
   pendingUploads?: PendingMediaUpload[];
 }) {
+  const { t: tFeatures } = useTranslation("features");
   if (
     media.length === 0 &&
     referenceStrings.length === 0 &&
@@ -306,7 +310,7 @@ function DatasetItemAttachments({
     return null;
   return (
     <div className="flex flex-col gap-2">
-      <span className="text-sm font-bold">Attachments</span>
+      <span className="text-sm font-bold">{tFeatures("ui.attachments")}</span>
       <div className="ph-no-capture flex flex-wrap gap-2">
         {referenceStrings.map((referenceString) => (
           <LangfuseMediaView

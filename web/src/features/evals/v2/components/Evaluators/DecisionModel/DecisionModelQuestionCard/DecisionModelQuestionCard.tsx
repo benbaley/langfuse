@@ -1,3 +1,5 @@
+import { localizeEvaluatorValidation } from "@/src/features/evals/v2/fns/localizeEvaluatorValidation";
+import type { TFunction } from "i18next";
 import { useId } from "react";
 import { DecisionModelQuestionType } from "@langfuse/shared";
 import { Trash2 } from "lucide-react";
@@ -12,7 +14,7 @@ import { ChoiceOptionsEditor } from "@/src/features/evals/v2/components/Evaluato
 import { NoulCriteriaEditor } from "@/src/features/evals/v2/components/Evaluators/DecisionModel/NoulCriteriaEditor/NoulCriteriaEditor";
 import { QuestionInstructionsField } from "@/src/features/evals/v2/components/Evaluators/DecisionModel/QuestionInstructionsField/QuestionInstructionsField";
 import {
-  QUESTION_TYPE_COPY,
+  getQuestionTypeCopy,
   QuestionTypeSelector,
 } from "@/src/features/evals/v2/components/Evaluators/DecisionModel/QuestionTypeSelector/QuestionTypeSelector";
 import { ScoreLevelsEditor } from "@/src/features/evals/v2/components/Evaluators/DecisionModel/ScoreLevelsEditor/ScoreLevelsEditor";
@@ -22,6 +24,7 @@ import {
   type DecisionModelQuestionDraftErrors,
 } from "@/src/features/evals/v2/types/decisionModel";
 import { cn } from "@/src/utils/tailwind";
+import { useTranslation } from "react-i18next";
 
 export type DecisionModelQuestionCardProps = {
   question: DecisionModelQuestionDraft;
@@ -34,14 +37,21 @@ export type DecisionModelQuestionCardProps = {
   errors?: DecisionModelQuestionDraftErrors;
 };
 
-function writesLine(question: DecisionModelQuestionDraft) {
+function writesLine(
+  question: DecisionModelQuestionDraft,
+  tFeatures: TFunction,
+) {
   switch (question.type) {
     case DecisionModelQuestionType.CHOICE:
-      return `Writes a categorical score with one of ${question.options.length} labels.`;
+      return tFeatures("evalsMore:decision.writesChoice", {
+        total: question.options.length,
+      });
     case DecisionModelQuestionType.SCORE:
-      return `Writes a numeric score from 0 to ${Math.max(question.levels.length - 1, 0)} (expected level; can fall between levels).`;
+      return tFeatures("evalsMore:decision.writesScore", {
+        maximum: Math.max(question.levels.length - 1, 0),
+      });
     case DecisionModelQuestionType.NOUL:
-      return "Writes a numeric score from 0 to 1: the probability the answer is yes.";
+      return tFeatures("evalsMore:decision.writesProbability");
   }
 }
 
@@ -94,19 +104,31 @@ export function DecisionModelQuestionCard({
   onExpandedChange,
   onChange,
   onRemove,
-  errors = {},
+  errors: rawErrors = {},
 }: DecisionModelQuestionCardProps) {
+  const { t: tFeatures } = useTranslation("features");
+  const errors = Object.fromEntries(
+    Object.entries(rawErrors).map(([key, message]) => [
+      key,
+      localizeEvaluatorValidation(tFeatures, message),
+    ]),
+  );
   const id = useId();
-  const copy = QUESTION_TYPE_COPY[question.type];
+  const copy = getQuestionTypeCopy(tFeatures)[question.type];
   const hasErrors = Object.values(errors).some(Boolean);
-  const summary = question.instructions.trim() || "Untitled question";
+  const summary =
+    question.instructions.trim() || tFeatures("evalsMore:decision.untitled");
 
   return (
     <CollapsibleCard
       open={expanded}
       onOpenChange={onExpandedChange}
       disabled={false}
-      triggerTitle={expanded ? "Collapse question" : "Expand question"}
+      triggerTitle={
+        expanded
+          ? tFeatures("evalsMore:decision.collapse")
+          : tFeatures("evalsMore:decision.expand")
+      }
       header={
         <span className="flex min-w-0 items-center gap-2">
           <span className="text-muted-foreground shrink-0 font-mono text-xs">
@@ -120,7 +142,8 @@ export function DecisionModelQuestionCard({
               !question.scoreName.trim() && "text-dark-yellow",
             )}
           >
-            {question.scoreName.trim() || "score name missing"}
+            {question.scoreName.trim() ||
+              tFeatures("evalsMore:decision.nameMissing")}
           </Badge>
           <span
             className={cn(
@@ -133,7 +156,7 @@ export function DecisionModelQuestionCard({
           </span>
           {hasErrors ? (
             <Badge variant="destructive" className="shrink-0">
-              Needs attention
+              {tFeatures("ui.needsAttention")}
             </Badge>
           ) : null}
         </span>
@@ -148,7 +171,9 @@ export function DecisionModelQuestionCard({
             disabled={!onRemove}
             onClick={onRemove ?? undefined}
             title={
-              onRemove ? "Remove question" : "At least one question is required"
+              onRemove
+                ? tFeatures("ui.removeQuestion")
+                : tFeatures("ui.atLeastOneQuestionIsRequired")
             }
           >
             <Trash2 className="h-3.5 w-3.5" />
@@ -159,11 +184,9 @@ export function DecisionModelQuestionCard({
       <div className="flex flex-col gap-5 p-4">
         <div className="flex flex-col gap-1.5">
           <Label className="flex items-center gap-1.5">
-            Type
-            <InfoTooltip label="About question types">
-              Choice picks one of a fixed set of labels. Score rates along
-              ordered levels you describe. Yes/no returns the probability that a
-              statement is true. Pick the one your code can act on directly.
+            {tFeatures("ui.type")}
+            <InfoTooltip label={tFeatures("ui.aboutQuestionTypes")}>
+              {tFeatures("evalsMore:decision.typesHelp")}
             </InfoTooltip>
           </Label>
           <QuestionTypeSelector
@@ -201,10 +224,9 @@ export function DecisionModelQuestionCard({
             htmlFor={`${id}-score-name`}
             className="flex items-center gap-1.5"
           >
-            Score name
-            <InfoTooltip label="About score names">
-              Each question writes its own score under this name. Keep it
-              stable: renaming starts a new score series.
+            {tFeatures("ui.scoreNameTitle")}
+            <InfoTooltip label={tFeatures("ui.aboutScoreNames")}>
+              {tFeatures("evalsMore:decision.scoreNamesHelp")}
             </InfoTooltip>
           </Label>
           <div className="flex flex-wrap items-center gap-3">
@@ -214,7 +236,7 @@ export function DecisionModelQuestionCard({
               onChange={(event) =>
                 onChange({ ...question, scoreName: event.target.value })
               }
-              placeholder="e.g. refund_requested"
+              placeholder={tFeatures("evalsMore:decision.scoreNameExample")}
               aria-invalid={Boolean(errors.scoreName)}
               className={cn(
                 "max-w-xs font-mono",
@@ -222,7 +244,7 @@ export function DecisionModelQuestionCard({
               )}
             />
             <span className="text-muted-foreground text-xs">
-              {writesLine(question)}
+              {writesLine(question, tFeatures)}
             </span>
           </div>
           {errors.scoreName ? (

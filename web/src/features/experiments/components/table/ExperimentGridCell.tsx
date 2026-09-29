@@ -52,6 +52,7 @@ import Link from "next/link";
 import { ScoreTag, type ScoreLevel } from "@/src/components/score-tag";
 import { NotRecordedMetric } from "./NotRecordedMetric";
 import { describeRunComparison } from "@/src/features/experiments/fns/describeRunComparison";
+import { useTranslation } from "react-i18next";
 
 type ExperimentGridCellProps = {
   projectId: string;
@@ -125,6 +126,7 @@ const ScoreCommentPeek = ({
   executionTraceId?: string | null;
   projectId: string;
 }) => {
+  const { t: tFeatures } = useTranslation("features");
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -140,7 +142,7 @@ const ScoreCommentPeek = ({
         <button
           type="button"
           className="inline-flex cursor-pointer"
-          aria-label="View score comment"
+          aria-label={tFeatures("ui.viewScoreComment")}
         >
           <MessageCircleMore size={12} className="text-muted-foreground" />
         </button>
@@ -150,14 +152,18 @@ const ScoreCommentPeek = ({
             does not say it is the score's comment. */}
         <div className="bg-popover sticky top-0 z-10 flex h-8 items-center justify-between px-1">
           <span className="text-muted-foreground pl-1.5 text-[10px] font-bold uppercase">
-            Score comment
+            {tFeatures("ui.scoreCommentTitle")}
           </span>
           <Button
             onClick={handleCopy}
             variant="ghost"
             size="icon-xs"
             className="hover:bg-accent rounded p-1"
-            aria-label={copied ? "Copied" : "Copy to clipboard"}
+            aria-label={
+              copied
+                ? tFeatures("ui.copiedTitle")
+                : tFeatures("ui.copyToClipboard")
+            }
           >
             {copied ? (
               <Check className="h-3 w-3" />
@@ -177,7 +183,7 @@ const ScoreCommentPeek = ({
               onClick={(event) => event.stopPropagation()}
             >
               <ExternalLink className="h-3 w-3" />
-              View execution trace
+              {tFeatures("ui.viewExecutionTrace")}
             </Link>
           )}
         </div>
@@ -277,6 +283,7 @@ const ScoreItem = ({
   level: Extract<ScoreLevel, "observation" | "trace">;
   showScoreLevelLabel: boolean;
 }) => {
+  const { t: tFeatures } = useTranslation("features");
   // Decompose the key to get name, source, and dataType
   const { name, source, dataType } = decomposeAggregateScoreKey(scoreKey);
 
@@ -324,11 +331,15 @@ const ScoreItem = ({
           >
             <div className="flex flex-col gap-1">
               <div className="flex items-center gap-2">
-                <span className="text-muted-foreground">Source:</span>
+                <span className="text-muted-foreground">
+                  {tFeatures("ui.sourceLabel")}
+                </span>
                 <span className="capitalize">{source.toLowerCase()}</span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-muted-foreground">Type:</span>
+                <span className="text-muted-foreground">
+                  {tFeatures("ui.typeLabel")}
+                </span>
                 <span className="capitalize">{dataType.toLowerCase()}</span>
               </div>
               {/* The side-by-side layout has no score column headers, so the
@@ -474,6 +485,7 @@ const CellIdentifiers = ({
   data: GridCellData;
   columnVisibility: VisibilityState;
 }) => {
+  const { t: tFeatures } = useTranslation("features");
   const visible = (key: (typeof METADATA_KEYS)[number]) =>
     isMetadataFieldVisible(columnVisibility, key);
 
@@ -481,7 +493,7 @@ const CellIdentifiers = ({
     ...(visible("itemId")
       ? [
           {
-            label: "Item ID",
+            label: tFeatures("ui.itemIdTitle"),
             value: <span className="font-mono text-xs">{data.itemId}</span>,
           },
         ]
@@ -489,7 +501,7 @@ const CellIdentifiers = ({
     ...(visible("observationId")
       ? [
           {
-            label: "Observation",
+            label: tFeatures("ui.observation"),
             value: (
               <span className="font-mono text-xs">{data.observationId}</span>
             ),
@@ -499,7 +511,7 @@ const CellIdentifiers = ({
     ...(visible("traceId")
       ? [
           {
-            label: "Execution Trace",
+            label: tFeatures("ui.executionTrace"),
             value: (
               <Link
                 href={`/project/${encodeURIComponent(data.projectId)}/traces/${encodeURIComponent(data.traceId)}?observation=${encodeURIComponent(data.observationId)}`}
@@ -521,7 +533,7 @@ const CellIdentifiers = ({
     ...(visible("startTime")
       ? [
           {
-            label: "Start Time",
+            label: tFeatures("ui.startTime"),
             value: (
               <span
                 className="text-xs"
@@ -712,6 +724,7 @@ export const ExperimentGridCell = ({
   showScoreLevelLabels,
   onExperimentClick,
 }: ExperimentGridCellProps) => {
+  const { t: tFeatures } = useTranslation("features");
   const scoreDiffs = useMemo(
     () =>
       !showDiff || isBaseline || !baselineScores
@@ -790,7 +803,7 @@ export const ExperimentGridCell = ({
       // Output section
       {
         accessorKey: "output",
-        header: "Output",
+        header: tFeatures("ui.output"),
         cell: ({ data }) =>
           data.isLoading ? (
             <ConnectedIOTableCell
@@ -810,7 +823,7 @@ export const ExperimentGridCell = ({
       // follows the list-view columns.
       {
         accessorKey: "scores",
-        header: "Scores",
+        header: tFeatures("ui.scores"),
         children: [
           ...(columnVisibility.observationScores !== false
             ? orderedObservationKeys.map((key) =>
@@ -842,6 +855,7 @@ export const ExperimentGridCell = ({
         : []),
     ],
     [
+      tFeatures,
       columnVisibility,
       orderedObservationKeys,
       orderedTraceKeys,
@@ -957,9 +971,12 @@ export const ExperimentGridCell = ({
  * Empty cell component for when there's no data for an experiment.
  */
 export const ExperimentGridCellEmpty = () => {
+  const { t: tFeatures } = useTranslation("features");
   return (
     <div className="flex h-full w-full min-w-0 items-start justify-start p-2">
-      <span className="text-muted-foreground text-xs">No data</span>
+      <span className="text-muted-foreground text-xs">
+        {tFeatures("ui.noData")}
+      </span>
     </div>
   );
 };

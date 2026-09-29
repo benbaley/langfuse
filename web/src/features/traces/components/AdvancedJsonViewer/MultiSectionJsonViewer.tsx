@@ -28,6 +28,7 @@ import { SectionContextProvider } from "./contexts/SectionContext";
 import { searchInTree, getMatchCountsPerNode } from "./utils/searchJson";
 import { type MediaReturnType } from "@/src/features/media";
 import { type CommentedPathsByField } from "./utils/commentRanges";
+import { useTranslation } from "react-i18next";
 
 export interface MultiSectionJsonViewerHandle {
   scrollToSection: (sectionKey: string) => void;
@@ -117,6 +118,7 @@ export const MultiSectionJsonViewer = forwardRef<
   },
   ref,
 ) {
+  const { t: tFeatures } = useTranslation("features");
   // Ref for child viewer (either virtualized or simple)
   const viewerRef = useRef<
     VirtualizedMultiSectionViewerHandle | SimpleMultiSectionViewerHandle
@@ -232,7 +234,7 @@ export const MultiSectionJsonViewer = forwardRef<
   );
 
   if (!tree) {
-    return <div className={className}>Building tree...</div>;
+    return <div className={className}>{tFeatures("ui.buildingTree")}</div>;
   }
 
   return (

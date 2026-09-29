@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useWatch } from "react-hook-form";
 import { Info, ExternalLink } from "lucide-react";
 import { Alert } from "@/src/components/design-system/Alert/Alert";
@@ -22,7 +23,6 @@ import {
 } from "@langfuse/shared";
 import {
   getExportSourceOptions,
-  getExportSourceUnavailableMessage,
   shouldHideExportSourceSelector,
 } from "@/src/features/analytics-integrations";
 import { type BlobStorageFormControl } from "@/src/features/blobstorage-integration/components/formValues";
@@ -38,6 +38,7 @@ export const ExportSourceField = ({
   persistedExportSource: AnalyticsIntegrationExportSource | null | undefined;
   exportSourceCtx: ExportSourceContext;
 }) => {
+  const { t } = useTranslation("settingsMore");
   const watchedExportSource = useWatch({ control, name: "exportSource" });
   const exportSourceOptions = getExportSourceOptions(
     persistedExportSource,
@@ -62,7 +63,7 @@ export const ExportSourceField = ({
           render={({ field }) => (
             <FormItem>
               <FormLabel className="flex items-center gap-1.5 pt-2">
-                Export Source
+                {t("integrations.exportSource")}
                 <Tooltip>
                   <TooltipTrigger>
                     <Info className="text-muted-foreground h-3.5 w-3.5" />
@@ -73,9 +74,11 @@ export const ExportSourceField = ({
                   >
                     {exportSourceOptions.map((option) => (
                       <div key={option.value} className="space-y-0.5">
-                        <div className="font-bold">{option.label}</div>
+                        <div className="font-bold">
+                          {t(`integrations.source.${option.value}.label`)}
+                        </div>
                         <div className="text-muted-foreground text-xs">
-                          {option.description}
+                          {t(`integrations.source.${option.value}.description`)}
                         </div>
                       </div>
                     ))}
@@ -86,7 +89,7 @@ export const ExportSourceField = ({
                         rel="noopener noreferrer"
                         className="text-muted-foreground hover:text-primary inline-flex items-center gap-1 text-xs hover:underline"
                       >
-                        For further information see
+                        {t("common.moreInfo")}
                         <ExternalLink className="h-3 w-3" />
                       </a>
                     </div>
@@ -98,25 +101,31 @@ export const ExportSourceField = ({
                   onValueChange={field.onChange}
                   value={field.value}
                   disabled={exportSourceLocked}
-                  placeholder="Select data to export"
+                  placeholder={t("integrations.selectSource")}
                   options={exportSourceOptions.map((option) => {
                     if (option.unavailable) {
                       return {
                         value: option.value,
-                        label: `${option.label} (not available on this deployment)`,
+                        label: t("integrations.sourceUnavailableLabel", {
+                          source: t(
+                            `integrations.source.${option.value}.label`,
+                          ),
+                        }),
                         disabled: true as const,
-                        disabledReason: "Not available on this deployment.",
+                        disabledReason: t(
+                          "integrations.sourceUnavailableReason",
+                        ),
                       };
                     }
 
-                    return { value: option.value, label: option.label };
+                    return {
+                      value: option.value,
+                      label: t(`integrations.source.${option.value}.label`),
+                    };
                   })}
                 />
               </FormControl>
-              <FormDescription>
-                Choose which data sources to export to blob storage. Scores are
-                always included.
-              </FormDescription>
+              <FormDescription>{t("blob.sourceHint")}</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -125,10 +134,10 @@ export const ExportSourceField = ({
 
       {!watchedValidation.ok && (
         <Alert variant="destructive">
-          <Alert.Title>Saved export source is no longer available</Alert.Title>
+          <Alert.Title>{t("integrations.savedSourceUnavailable")}</Alert.Title>
           <Alert.Description>
             {/* Reason-specific body; texts live in the shared lookup. */}
-            {getExportSourceUnavailableMessage(watchedValidation.reason)}
+            {t(`integrations.blocked.${watchedValidation.reason}`)}
           </Alert.Description>
         </Alert>
       )}

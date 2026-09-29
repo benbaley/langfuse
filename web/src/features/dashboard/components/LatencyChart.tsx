@@ -22,6 +22,7 @@ import type { DatabaseRow } from "@/src/server/api/services/sqlInterface";
 import { DashboardLineTimeSeriesChart } from "@/src/features/dashboard/components/DashboardLineTimeSeriesChart";
 import { useScheduledDashboardExecuteQuery } from "@/src/features/dashboard/hooks/useDashboardQueryScheduler";
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 
 export const GenerationLatencyChart = ({
   className,
@@ -46,6 +47,7 @@ export const GenerationLatencyChart = ({
   schedulerId?: string;
   syncId?: string;
 }) => {
+  const { t: tApp } = useTranslation("app");
   const { allModels, selectedModels, setSelectedModels } = useModelSelection(
     projectId,
     globalFilterState,
@@ -146,8 +148,8 @@ export const GenerationLatencyChart = ({
   return (
     <DashboardCard
       className={className}
-      title="Model latencies"
-      description="Latencies (seconds) per LLM generation"
+      title={tApp("ui.ModelLatencies")}
+      description={tApp("ui.LatenciesSecondsPerLlmGeneration")}
       isLoading={
         isLoading || (latencies.isPending && selectedModels.length > 0)
       }
@@ -175,7 +177,7 @@ export const GenerationLatencyChart = ({
                   <div className="h-80 w-full shrink-0 grow lg:h-56">
                     <DashboardLineTimeSeriesChart
                       data={item.data}
-                      label="Latency"
+                      label={tApp("ui.Latency")}
                       unit="millisecond"
                       syncId={syncId}
                       missingValue="gap"

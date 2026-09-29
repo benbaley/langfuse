@@ -1,7 +1,8 @@
 /* eslint-disable @repo/no-style-props */
 import { Info } from "lucide-react";
-import { format } from "date-fns";
+
 import { Button } from "@/src/components/ui/button";
+import { useTranslation } from "react-i18next";
 
 type DatasetVersionWarningBannerProps = {
   selectedVersion: Date;
@@ -19,6 +20,8 @@ export function DatasetVersionWarningBanner({
   className = "",
   changeCounts,
 }: DatasetVersionWarningBannerProps) {
+  const { t: tMore, i18n } = useTranslation("coreMore");
+  const { t: tFeatures } = useTranslation("features");
   const totalChanges = changeCounts
     ? changeCounts.upserts + changeCounts.deletes
     : 0;
@@ -32,27 +35,25 @@ export function DatasetVersionWarningBanner({
       <div className="flex min-w-0 flex-1 flex-col gap-2">
         <div className="flex items-center justify-between gap-4">
           <p className="text-muted-foreground text-sm wrap-break-word">
-            Viewing version from{" "}
-            <span className="text-foreground font-bold">
-              {format(selectedVersion, "MMM d, yyyy 'at' h:mm a")}
-            </span>
+            {tMore("datasets.viewingVersion", {
+              time: selectedVersion.toLocaleString(i18n.resolvedLanguage),
+            })}
           </p>
           <Button
             onClick={resetToLatest}
             variant="link"
             className="h-auto shrink-0 p-0 text-sm underline-offset-4"
           >
-            Return to latest
+            {tFeatures("ui.returnToLatest")}
           </Button>
         </div>
         {changeCounts && hasChanges && (
           <p className="text-muted-foreground text-xs">
-            {totalChanges} change{totalChanges !== 1 ? "s" : ""} since this
-            version,
-            {changeCounts.upserts > 0 &&
-              ` ${changeCounts.upserts} upsert${changeCounts.upserts !== 1 ? "s" : ""}`}
-            {changeCounts.deletes > 0 &&
-              ` ${changeCounts.deletes} delete${changeCounts.deletes !== 1 ? "s" : ""}`}
+            {tMore("datasets.changesSinceVersion", {
+              count: totalChanges,
+              upserts: changeCounts.upserts,
+              deletes: changeCounts.deletes,
+            })}
           </p>
         )}
       </div>

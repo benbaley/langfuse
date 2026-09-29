@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 /* eslint-disable @repo/no-style-props */
 import { useState } from "react";
 import {
@@ -21,6 +22,8 @@ export default function DocPopup({
   href,
   className,
 }: DocPopupProps) {
+const { t: tUi } = useTranslation("uiMore");
+
   const capture = usePostHogClientCapture();
   // Controlled so a CLICK/TAP on the icon also opens the card: HoverCard
   // never opens on touch by itself, and the old click-to-navigate behavior
@@ -79,9 +82,7 @@ export default function DocPopup({
                 });
               }}
               className="text-muted-foreground hover:text-primary mt-2 inline-flex items-center gap-1 text-xs underline underline-offset-2"
-            >
-              Read docs
-              <ExternalLink className="h-3 w-3" />
+            >{tUi("readDocs")}<ExternalLink className="h-3 w-3" />
             </a>
           )}
         </HoverCardContent>

@@ -1,3 +1,4 @@
+import type { TFunction } from "i18next";
 export const DATASET_ITEM_TABS = {
   ITEM: "item",
   RUNS: "runs",
@@ -10,19 +11,21 @@ export const getDatasetItemTabs = ({
   projectId,
   datasetId,
   itemId,
+  t,
 }: {
   projectId: string;
   datasetId: string;
   itemId: string;
+  t: TFunction<"navigation">;
 }) => [
   {
     value: DATASET_ITEM_TABS.ITEM,
-    label: "Item",
+    label: t("datasets.item"),
     href: `/project/${projectId}/datasets/${datasetId}/items/${encodeURIComponent(itemId)}`,
   },
   {
     value: DATASET_ITEM_TABS.RUNS,
-    label: "Experiments",
+    label: t("datasets.experiments"),
     href: `/project/${projectId}/datasets/${datasetId}/items/${encodeURIComponent(itemId)}/runs`,
   },
 ];

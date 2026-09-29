@@ -1,9 +1,11 @@
+import { useTranslation } from "react-i18next";
 import { useHasProjectAccess } from "@/src/features/rbac";
 import Header from "@/src/components/layouts/header";
 import { Alert } from "@/src/components/design-system/Alert/Alert";
 import { ConnectedLLMApiKeySettingsTable } from "./LLMApiKeySettingsTable/ConnectedLLMApiKeySettingsTable";
 
 export function LlmApiKeyList(props: { projectId: string }) {
+  const { t } = useTranslation("settings");
   const hasAccess = useHasProjectAccess({
     projectId: props.projectId,
     scope: "llmApiKeys:read",
@@ -11,12 +13,10 @@ export function LlmApiKeyList(props: { projectId: string }) {
   if (!hasAccess) {
     return (
       <div>
-        <Header title="LLM Connections" />
+        <Header title={t("llmConnections")} />
         <Alert>
-          <Alert.Title>Access Denied</Alert.Title>
-          <Alert.Description>
-            You do not have permission to view LLM API keys for this project.
-          </Alert.Description>
+          <Alert.Title>{t("accessDenied")}</Alert.Title>
+          <Alert.Description>{t("llmKeysForbidden")}</Alert.Description>
         </Alert>
       </div>
     );
@@ -24,7 +24,7 @@ export function LlmApiKeyList(props: { projectId: string }) {
 
   return (
     <div id="llm-api-keys">
-      <Header title="LLM Connections" />
+      <Header title={t("llmConnections")} />
       <p className="mb-4 text-sm">
         Connect your LLM services to enable evaluations and playground features.
         Your provider will charge based on usage.

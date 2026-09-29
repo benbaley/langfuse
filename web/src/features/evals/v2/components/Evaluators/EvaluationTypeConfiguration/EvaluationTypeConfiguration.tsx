@@ -5,6 +5,7 @@ import { type EvalTemplateType } from "@langfuse/shared";
 import { Label } from "@/src/components/ui/label";
 import { InfoTooltip } from "@/src/components/ui/InfoTooltip/InfoTooltip";
 import { EvaluationTypeToggle } from "./components/EvaluationTypeToggle/EvaluationTypeToggle";
+import { useTranslation } from "react-i18next";
 
 /** Shared execution row; its container owns which mode-specific selector follows it. */
 export function EvaluationTypeConfiguration({
@@ -18,22 +19,19 @@ export function EvaluationTypeConfiguration({
   disabled: boolean;
   children: ReactNode;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   return (
     <div className="flex flex-col gap-2">
       <Label className="flex items-center gap-1.5">
-        Evaluation
+        {tFeatures("ui.evaluation")}
         <span className="inline-flex -translate-y-px">
-          <InfoTooltip label="About evaluation types">
-            Use custom code for deterministic checks like exact matches, regex,
-            or schema validation. Use an LLM when the check needs judgment, such
-            as rating helpfulness, tone, or answer quality. Use a decision model
-            (experimental) for a fast, cheap label with calibrated probabilities
-            when the possible answers are known upfront.
+          <InfoTooltip label={tFeatures("ui.aboutEvaluationTypes")}>
+            {tFeatures("evalsMore:decision.methodsHelp")}
           </InfoTooltip>
         </span>
       </Label>
       <div className="flex flex-wrap items-center gap-2 text-sm">
-        <span>Run</span>
+        <span>{tFeatures("ui.run")}</span>
         <EvaluationTypeToggle
           value={mode}
           onValueChange={onModeChange}

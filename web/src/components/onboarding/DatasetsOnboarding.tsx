@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import {
   SplashScreen,
   type ValueProposition,
@@ -8,39 +9,38 @@ import { CreateDatasetDialogController } from "@/src/features/datasets/component
 import { Database, Beaker, Zap, Code, LockIcon, PlusIcon } from "lucide-react";
 
 export function DatasetsOnboarding({ projectId }: { projectId: string }) {
+  const { t: tFeatures } = useTranslation("features");
+
   const valuePropositions: ValueProposition[] = [
     {
-      title: "Continuous improvement",
-      description:
-        "Create datasets from production edge cases to improve your application",
+      title: tFeatures("evalsMore:onboarding.datasetsImprove"),
+      description: tFeatures("evalsMore:onboarding.datasetsImproveHelp"),
       icon: Zap,
     },
     {
-      title: "Pre-deployment testing",
-      description: "Benchmark new releases before deploying to production",
+      title: tFeatures("evalsMore:onboarding.datasetsPreDeploy"),
+      description: tFeatures("evalsMore:onboarding.datasetsPreDeployHelp"),
       icon: Beaker,
     },
     {
-      title: "Structured testing",
-      description:
-        "Run experiments on collections of inputs and expected outputs",
+      title: tFeatures("evalsMore:onboarding.datasetsStructured"),
+      description: tFeatures("evalsMore:onboarding.datasetsStructuredHelp"),
       icon: Database,
     },
     {
-      title: "Custom workflows",
-      description:
-        "Build custom workflows around your datasets via the API and SDKs, e.g. for fine-tuning, few-shotting",
+      title: tFeatures("evalsMore:onboarding.datasetsWorkflows"),
+      description: tFeatures("evalsMore:onboarding.datasetsWorkflowsHelp"),
       icon: Code,
     },
   ];
 
   return (
     <SplashScreen
-      title="Get Started with Datasets & Experiments"
-      description="Datasets in Langfuse are collections of inputs (and expected outputs) for your LLM application. You can run Experiments against these datasets to test new releases before deployment to production."
+      title={tFeatures("evalsMore:onboarding.datasetsTitle")}
+      description={tFeatures("evalsMore:onboarding.datasetsDescription")}
       valuePropositions={valuePropositions}
       primaryAction={{
-        label: "Create Dataset",
+        label: tFeatures("evalsMore:onboarding.createDataset"),
         component: (
           <CreateDatasetDialogController
             projectId={projectId}
@@ -54,7 +54,7 @@ export function DatasetsOnboarding({ projectId }: { projectId: string }) {
                   onClick={openDialog}
                   variant="default"
                   icon={disabled === undefined ? PlusIcon : LockIcon}
-                  text="New dataset"
+                  text={tFeatures("evalsMore:onboarding.newDataset")}
                 />
               </DialogTrigger>
             )}
@@ -62,7 +62,7 @@ export function DatasetsOnboarding({ projectId }: { projectId: string }) {
         ),
       }}
       secondaryAction={{
-        label: "Learn More",
+        label: tFeatures("evalsMore:onboarding.learnMore"),
         href: "https://langfuse.com/docs/datasets",
       }}
       videoSrc="https://static.langfuse.com/prod-assets/onboarding/datasets-overview-v1.mp4"

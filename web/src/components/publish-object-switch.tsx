@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Button } from "@/src/components/ui/button";
 import { Label } from "@/src/components/ui/label";
 import {
@@ -34,6 +35,7 @@ export const PublishTraceSwitch = (props: {
   /** Hover tooltip for the icon button (suppressed while the popover is open). */
   tooltip?: string;
 }) => {
+  const { t: tMore } = useTranslation("coreMore");
   const { isV4 } = useReadPath();
   const capture = usePostHogClientCapture();
   const hasAccess = useHasProjectAccess({
@@ -112,7 +114,7 @@ export const PublishTraceSwitch = (props: {
 
   return (
     <Base
-      itemName="trace"
+      itemName={tMore("share.trace")}
       isPublic={props.isPublic}
       shareUrl={props.shareUrl}
       size={props.size}
@@ -140,6 +142,7 @@ export const PublishSessionSwitch = (props: {
   /** When set, render as a full-width labeled menu item instead of an icon. */
   label?: string;
 }) => {
+  const { t: tMore } = useTranslation("coreMore");
   const capture = usePostHogClientCapture();
   const hasAccess = useHasProjectAccess({
     projectId: props.projectId,
@@ -157,7 +160,7 @@ export const PublishSessionSwitch = (props: {
 
   return (
     <Base
-      itemName="session"
+      itemName={tMore("share.session")}
       isPublic={props.isPublic}
       size={props.size}
       label={props.label}
@@ -198,6 +201,7 @@ const Base = (props: {
   label?: string;
   tooltip?: string;
 }) => {
+  const { t: tMore } = useTranslation("coreMore");
   const [isCopied, setIsCopied] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -277,23 +281,22 @@ const Base = (props: {
             {props.isPublic ? (
               <>
                 <Label className="text-base capitalize">
-                  {props.itemName} Shared
+                  {tMore("share.sharedTitle", { type: props.itemName })}
                 </Label>
                 <span className="text-muted-foreground text-sm">
-                  This {props.itemName} is public. Anyone with the link can view
-                  this {props.itemName}.
+                  {tMore("share.publicHelp", { type: props.itemName })}
                 </span>
                 <div className="mr-2 flex items-center justify-end gap-2 text-sm">
                   <Button variant="outline" size="sm" onClick={copyUrl}>
                     {isCopied ? (
                       <>
                         <CheckIcon size={12} className="mr-1" />
-                        Copied
+                        {tMore("action.copied")}
                       </>
                     ) : (
                       <>
                         <Link size={12} className="mr-1" />
-                        Copy
+                        {tMore("action.copyLabel")}
                       </>
                     )}
                   </Button>
@@ -303,18 +306,17 @@ const Base = (props: {
                     loading={props.isLoading}
                     onClick={handleOnClick}
                   >
-                    Unshare
+                    {tMore("share.unshare")}
                   </Button>
                 </div>
               </>
             ) : (
               <>
                 <Label className="text-base capitalize">
-                  {props.itemName} Private
+                  {tMore("share.privateTitle", { type: props.itemName })}
                 </Label>
                 <span className="text-muted-foreground text-sm">
-                  This {props.itemName} is private. Only authorized project
-                  members can view this {props.itemName}.
+                  {tMore("share.privateHelp", { type: props.itemName })}
                 </span>
                 <div className="mr-2 flex items-center justify-end gap-2 text-sm">
                   <Button
@@ -323,7 +325,7 @@ const Base = (props: {
                     loading={props.isLoading}
                     onClick={handleOnClick}
                   >
-                    Share
+                    {tMore("share.share")}
                   </Button>
                 </div>
               </>

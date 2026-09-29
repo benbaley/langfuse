@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useCallback, useEffect } from "react";
 import { BotMessageSquare } from "lucide-react";
 
@@ -22,6 +23,7 @@ export const InAppAiAgentButton = ({
 }: {
   prominent?: boolean;
 } = {}) => {
+  const { t } = useTranslation("navigation");
   const { open, setOpen, openAssistant, attentionCount } = useInAppAiAgent();
 
   const toggleAssistant = useCallback(
@@ -57,9 +59,7 @@ export const InAppAiAgentButton = ({
   }, [toggleAssistant]);
 
   const attentionSuffix =
-    attentionCount > 0
-      ? ` (${attentionCount} ${attentionCount === 1 ? "needs" : "need"} attention)`
-      : "";
+    attentionCount > 0 ? t("attentionCount", { count: attentionCount }) : "";
 
   return (
     <Button
@@ -67,7 +67,7 @@ export const InAppAiAgentButton = ({
       variant="outline"
       // Count lives on the button name — a nested badge aria-label is ignored
       // once the parent already has aria-label.
-      aria-label={`${open ? "Close" : "Open"} assistant${attentionSuffix}`}
+      aria-label={`${t(open ? "closeAssistant" : "openAssistant")}${attentionSuffix}`}
       aria-pressed={open}
       data-ignore-outside-interaction
       onClick={() => toggleAssistant("top_nav")}
@@ -112,7 +112,7 @@ export const InAppAiAgentButton = ({
           reveal in the 640–767px band and overflow the box. */}
       {!prominent && (
         <>
-          <span className="hidden sm:inline">Assistant</span>
+          <span className="hidden sm:inline">{t("assistant")}</span>
           <span className="hidden md:inline-flex">
             <KeyboardShortcut variant="subtle" keys={["Mod", "I"]} />
           </span>

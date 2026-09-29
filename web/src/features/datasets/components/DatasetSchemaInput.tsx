@@ -1,3 +1,4 @@
+import { translateDatasetFormError } from "../utils/translateDatasetFormError";
 import React, { useState } from "react";
 import {
   FormControl,
@@ -8,6 +9,7 @@ import {
 } from "@/src/components/ui/form";
 import { Switch } from "@/src/components/design-system/Switch/Switch";
 import { JSONSchemaEditor } from "@/src/components/JSONSchemaEditor";
+import { useTranslation } from "react-i18next";
 
 type DatasetSchemaInputProps = {
   label: string;
@@ -26,6 +28,8 @@ export const DatasetSchemaInput: React.FC<DatasetSchemaInputProps> = ({
   onChange,
   disabled = false,
 }) => {
+  const { t: tMore } = useTranslation("coreMore");
+  const { t: tFeatures } = useTranslation("features");
   // Track if schema enforcement is enabled based on whether value is empty
   const [isEnabled, setIsEnabled] = useState(value !== "");
 
@@ -58,7 +62,7 @@ export const DatasetSchemaInput: React.FC<DatasetSchemaInputProps> = ({
         <FormLabel>{label}</FormLabel>
         <div className="flex items-center gap-2">
           <span className="text-muted-foreground text-sm">
-            {isEnabled ? "Enabled" : "Disabled"}
+            {isEnabled ? tFeatures("ui.enabled") : tFeatures("ui.disabled")}
           </span>
           <Switch
             checked={isEnabled}
@@ -81,7 +85,9 @@ export const DatasetSchemaInput: React.FC<DatasetSchemaInputProps> = ({
         </FormControl>
       )}
 
-      <FormMessage />
+      <FormMessage
+        translateError={(message) => translateDatasetFormError(message, tMore)}
+      />
     </FormItem>
   );
 };

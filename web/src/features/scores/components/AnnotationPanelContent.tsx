@@ -15,6 +15,7 @@ import {
   type AnnotationPanelData,
   type AnnotationRefreshHandle,
 } from "../types";
+import { useTranslation } from "react-i18next";
 
 export function AnnotationPanelContent({
   data,
@@ -27,6 +28,7 @@ export function AnnotationPanelContent({
   isActive: boolean;
   refreshRef?: Ref<AnnotationRefreshHandle>;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const target = data.scoreTarget;
   const scoresQuery = api.events.scoresForTrace.useQuery(
     {
@@ -59,16 +61,19 @@ export function AnnotationPanelContent({
   if (scores === undefined) {
     return (
       <div className="flex flex-col gap-4">
-        <Header title="Annotate" actionButtons={[actionButtons]} />
+        <Header
+          title={tFeatures("ui.annotate")}
+          actionButtons={[actionButtons]}
+        />
         {scoresQuery.isError ? (
           <div className="flex flex-col items-start gap-3">
-            <p className="text-sm">Could not load scores.</p>
+            <p className="text-sm">{tFeatures("ui.couldNotLoadScores")}</p>
             <Button
               variant="outline"
               size="sm"
               onClick={() => scoresQuery.refetch()}
             >
-              Try again
+              {tFeatures("ui.tryAgain")}
             </Button>
           </div>
         ) : (

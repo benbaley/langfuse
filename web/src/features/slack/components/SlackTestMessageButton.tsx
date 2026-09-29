@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 import { Button, type ButtonProps } from "@/src/components/ui/button";
 import { Zap } from "lucide-react";
@@ -47,23 +48,24 @@ export const SlackTestMessageButton: React.FC<SlackTestMessageButtonProps> = ({
   disabled = false,
   variant = "default",
   size = "default",
-  buttonText = "Send Test Message",
+  buttonText,
   onSuccess,
   onError,
   showText = true,
   hasAccess = true,
 }) => {
+  const { t } = useTranslation("settingsMore");
   // Test message mutation
   const testMessageMutation = api.slack.sendTestMessage.useMutation({
     onSuccess: (data) => {
       showSuccessToast({
-        title: "Test Message Sent",
-        description: "Test message sent successfully to the selected channel.",
+        title: t("slack.testSent"),
+        description: t("slack.testSentHint"),
       });
       onSuccess?.(data.channelInfo);
     },
     onError: (error) => {
-      showErrorToast("Failed to Send Test Message", error.message);
+      showErrorToast(t("slack.testFailed"), error.message);
       onError?.(new Error(error.message));
     },
   });
@@ -98,12 +100,12 @@ export const SlackTestMessageButton: React.FC<SlackTestMessageButtonProps> = ({
       {testMessageMutation.isPending ? (
         <>
           <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-          {showText && <span>Sending...</span>}
+          {showText && <span>{t("slack.sending")}</span>}
         </>
       ) : (
         <>
           <Zap className="h-4 w-4" />
-          {showText && <span>{buttonText}</span>}
+          {showText && <span>{buttonText ?? t("slack.sendTest")}</span>}
         </>
       )}
     </Button>

@@ -25,6 +25,7 @@ import {
 } from "@/src/features/experiments/constants/comparison";
 import { getExperimentColorStyles } from "./table/types";
 import { cn } from "@/src/utils/tailwind";
+import { useTranslation } from "react-i18next";
 
 export type ExperimentOption = Omit<ExperimentNameOption, "startTime"> & {
   /** null when an id in the URL no longer resolves to a run. */
@@ -93,6 +94,8 @@ export function ExperimentComparisonSelector({
   isAutoSelectEnabled,
   onAutoSelectEnabledChange,
 }: ExperimentComparisonSelectorProps) {
+  const { t: tMore } = useTranslation("coreMore");
+  const { t: tFeatures } = useTranslation("features");
   const {
     searchResults,
     searchQuery,
@@ -331,7 +334,7 @@ export function ExperimentComparisonSelector({
         placeholder={
           isMaxReached
             ? `Max ${MAX_SELECTED_EXPERIMENTS} experiments`
-            : "Search experiments..."
+            : tFeatures("ui.searchExperiments")
         }
         disabled={isLoading}
         showSearchIcon={false}
@@ -358,7 +361,7 @@ export function ExperimentComparisonSelector({
                   {isAutoSelectEnabled && <Check className="h-3 w-3" />}
                 </div>
                 <span className="text-xs">
-                  Auto-select a comparison experiment by default
+                  {tFeatures("ui.autoSelectAComparisonExperimentByDefault")}
                 </span>
               </button>
             );
@@ -390,9 +393,11 @@ export function ExperimentComparisonSelector({
                 {!row.isBaselineDataset && (
                   <span
                     className="text-muted-foreground ml-auto shrink-0 text-xs italic"
-                    title="Runs on another dataset scored different items, so their values are not comparable."
+                    title={tFeatures(
+                      "ui.runsOnAnotherDatasetScoredDifferentItemsSoTheirValuesAreNotComparable",
+                    )}
                   >
-                    other dataset
+                    {tMore("experiments.otherDataset")}
                   </span>
                 )}
               </button>
@@ -419,12 +424,12 @@ export function ExperimentComparisonSelector({
               </span>
               {row.isBaseline && (
                 <Badge variant="outline" className="shrink-0 text-[10px]">
-                  BASELINE
+                  {tMore("experiments.baseline")}
                 </Badge>
               )}
               {row.isLatest && (
                 <Badge variant="outline" className="shrink-0 text-[10px]">
-                  LATEST
+                  {tMore("experiments.latest")}
                 </Badge>
               )}
               {option.startTime && (
@@ -470,7 +475,7 @@ export function ExperimentComparisonSelector({
             ) : null;
           }
 
-          // A comparison should never be on another dataset, but the URL can say
+          // A comparison should never be on an{tMore("experiments.otherDataset")}, but the URL can say
           // anything, so name the dataset rather than leaving it unexplained.
           const isOtherDataset =
             baselineDatasetKey !== null &&
@@ -482,7 +487,9 @@ export function ExperimentComparisonSelector({
             option.startTime
               ? `Started ${option.startTime.toLocaleString()}`
               : "This experiment is no longer available",
-            isOtherDataset ? `Dataset: ${datasetLabelOf(option)}` : null,
+            isOtherDataset
+              ? tMore("experiments.dataset", { name: datasetLabelOf(option) })
+              : null,
           ]
             .filter(Boolean)
             .join("\n");
@@ -516,7 +523,9 @@ export function ExperimentComparisonSelector({
               {isOtherDataset && (
                 <span
                   className="text-muted-foreground max-w-24 truncate text-[10px]"
-                  title={`Dataset: ${datasetLabelOf(option)}`}
+                  title={tMore("experiments.dataset", {
+                    name: datasetLabelOf(option),
+                  })}
                 >
                   {datasetLabelOf(option)}
                 </span>
@@ -528,7 +537,9 @@ export function ExperimentComparisonSelector({
                   onRemove();
                 }}
                 className="hover:bg-muted ml-0.5 rounded-full"
-                aria-label={`Remove ${option.experimentName}`}
+                aria-label={tMore("action.remove", {
+                  name: option.experimentName,
+                })}
               >
                 <X className="h-3 w-3" />
               </button>

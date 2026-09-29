@@ -15,6 +15,7 @@ import { Switch } from "@/src/components/design-system/Switch/Switch";
 import { cn } from "@/src/utils/tailwind";
 import { isValidVariableName, MUSTACHE_REGEX } from "@langfuse/shared";
 import { truncateEnd } from "@/src/features/evals/v2/fns/variableMapping/segmentsToJsonPath";
+import { useTranslation } from "react-i18next";
 
 export type InterpolatedPromptPreviewState =
   | {
@@ -206,6 +207,7 @@ export function PromptVariableEditor({
   /** Hides the editor/preview while preserving the prompt header. */
   collapsed?: boolean;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   // Statuses and labels travel as serialized keys and are parsed back inside
   // the memo, so the memo depends on their content rather than their identity.
   // The round trip is load-bearing in both directions: callers pass fresh
@@ -283,7 +285,7 @@ export function PromptVariableEditor({
                     onPreviewEnabledChange?.(checked)
                   }
                 />
-                Preview
+                {tFeatures("ui.preview")}
               </label>
             ) : null}
             {toolbarActions}

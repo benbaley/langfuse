@@ -1,4 +1,5 @@
 /* eslint-disable no-nested-ternary */
+import { Trans, useTranslation } from "react-i18next";
 import { PostHogLogo } from "@/src/components/PosthogLogo";
 import Header from "@/src/components/layouts/header";
 import ContainerPage from "@/src/components/layouts/container-page";
@@ -32,6 +33,7 @@ import { useRouter } from "next/router";
 import { useMemo } from "react";
 
 export default function PostHogIntegrationPage() {
+  const { t } = useTranslation("settingsMore");
   const router = useRouter();
   const projectId = router.query.projectId as string;
 
@@ -62,40 +64,38 @@ export default function PostHogIntegrationPage() {
   return (
     <ContainerPage
       headerProps={{
-        title: "PostHog Integration",
+        title: t("integrations.posthogTitle"),
         breadcrumb: [
-          { name: "Settings", href: `/project/${projectId}/settings` },
+          {
+            name: t("common.settings"),
+            href: `/project/${projectId}/settings`,
+          },
         ],
         actionButtonsLeft: <>{status && <StatusBadge type={status} />}</>,
         actionButtonsRight: (
           <Button
             href="https://langfuse.com/integrations/analytics/posthog"
-            text="Integration Docs"
+            text={t("common.integrationDocs")}
             variant="secondary"
           />
         ),
       }}
     >
       <p className="text-primary mb-4 text-sm">
-        We have teamed up with{" "}
-        <Link href="https://posthog.com" className="underline">
-          PostHog
-        </Link>{" "}
-        (OSS product analytics) to make Langfuse events/metrics available in
-        your PostHog dashboards. Upon activation, all historical data from your
-        project will be synced. After the initial sync, new data is
-        automatically synced every hour to keep your PostHog dashboards up to
-        date.
+        <Trans
+          t={t}
+          i18nKey="integrations.posthogDescription"
+          components={{
+            link: <Link href="https://posthog.com" className="underline" />,
+          }}
+        />
       </p>
       {!hasAccess && (
-        <p className="text-sm">
-          You current role does not grant you access to these settings, please
-          reach out to your project admin or owner.
-        </p>
+        <p className="text-sm">{t("integrations.accessDeniedTypo")}</p>
       )}
       {hasAccess && (
         <>
-          <Header title="Configuration" />
+          <Header title={t("common.configuration")} />
           <Card className="p-3">
             <PostHogLogo className="text-foreground mb-4 w-36" />
             {!state.data || !project ? (

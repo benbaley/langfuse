@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 /* eslint-disable @repo/no-style-props */
 import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
@@ -10,7 +11,10 @@ const Breadcrumb = React.forwardRef<
   React.ComponentPropsWithoutRef<"nav"> & {
     separator?: React.ReactNode;
   }
->(({ ...props }, ref) => <nav ref={ref} aria-label="breadcrumb" {...props} />);
+>(({ ...props }, ref) =>{
+const { t: tUi } = useTranslation("uiMore");
+return (<nav ref={ref} aria-label={tUi("breadcrumb")} {...props} />);
+});
 Breadcrumb.displayName = "Breadcrumb";
 
 const BreadcrumbList = React.forwardRef<
@@ -92,17 +96,18 @@ BreadcrumbSeparator.displayName = "BreadcrumbSeparator";
 const BreadcrumbEllipsis = ({
   className,
   ...props
-}: React.ComponentProps<"span">) => (
-  <span
+}: React.ComponentProps<"span">) =>{
+const { t: tUi } = useTranslation("uiMore");
+return (<span
     role="presentation"
     aria-hidden="true"
     className={cn("flex h-9 w-9 items-center justify-center", className)}
     {...props}
   >
     <MoreHorizontal className="h-4 w-4" />
-    <span className="sr-only">More</span>
-  </span>
-);
+    <span className="sr-only">{tUi("more")}</span>
+  </span>);
+};
 BreadcrumbEllipsis.displayName = "BreadcrumbElipssis";
 
 export {

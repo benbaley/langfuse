@@ -4,6 +4,7 @@
 
 import { ErrorPage } from "@/src/components/error-page";
 import { useRouter } from "next/router";
+import { useTranslation } from "react-i18next";
 
 const TraceRedirectPage = ({
   notFound,
@@ -12,18 +13,19 @@ const TraceRedirectPage = ({
   notFound?: boolean;
   duplicatesFound?: boolean;
 }) => {
+  const { t: tFeatures } = useTranslation("features");
   const router = useRouter();
   if (router.isFallback) {
-    return <div className="p-3">Loading...</div>;
+    return <div className="p-3">{tFeatures("ui.loading")}</div>;
   }
 
   if (notFound) {
     return (
       <ErrorPage
-        title="Trace not found"
-        message="The trace is either still being processed or has been deleted."
+        title={tFeatures("ui.traceNotFound")}
+        message={tFeatures("errors.traceMissing")}
         additionalButton={{
-          label: "Retry",
+          label: tFeatures("ui.retry"),
           onClick: () => window.location.reload(),
         }}
       />
@@ -33,13 +35,13 @@ const TraceRedirectPage = ({
   if (duplicatesFound) {
     return (
       <ErrorPage
-        title="Trace not found"
-        message="Please upgrade the SDK as the URL schema has changed."
+        title={tFeatures("ui.traceNotFound")}
+        message={tFeatures("errors.sdkUpgrade")}
       />
     );
   }
 
-  return <div>Redirecting...</div>;
+  return <div>{tFeatures("ui.redirecting")}</div>;
 };
 
 export default TraceRedirectPage;

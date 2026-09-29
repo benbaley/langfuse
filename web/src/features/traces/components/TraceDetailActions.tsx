@@ -1,6 +1,7 @@
 import { api } from "@/src/utils/api";
 import { PublishTraceSwitch } from "@/src/components/publish-object-switch";
 import { DeleteTraceButton } from "@/src/components/deleteButton";
+import { useTranslation } from "react-i18next";
 
 /**
  * Trace-level header actions (publish / delete) shared by the peek and
@@ -46,6 +47,7 @@ export function TraceDetailActions({
   size?: "icon" | "icon-xs";
   layout?: "toolbar" | "menu";
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const utils = api.useUtils();
   const isMenu = layout === "menu";
 
@@ -68,7 +70,7 @@ export function TraceDetailActions({
           timestamp={timestamp}
           isPublic={isPublic}
           shareUrl={shareUrl}
-          label="Share"
+          label={tFeatures("ui.share")}
         />
         <DeleteTraceButton
           itemId={traceId}
@@ -93,7 +95,9 @@ export function TraceDetailActions({
         isPublic={isPublic}
         shareUrl={shareUrl}
         size={size}
-        tooltip={isPublic ? "Shared (public)" : "Share"}
+        tooltip={
+          isPublic ? tFeatures("ui.sharedPublic") : tFeatures("ui.share")
+        }
       />
       <DeleteTraceButton
         itemId={traceId}

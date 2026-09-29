@@ -5,8 +5,10 @@ import Page from "@/src/components/layouts/page";
 import { SessionsOnboarding } from "@/src/components/onboarding/SessionsOnboarding";
 import { api } from "@/src/utils/api";
 import { useReadPath } from "@/src/features/events";
+import { Trans, useTranslation } from "react-i18next";
 
 export default function SessionsPage() {
+  const { t: tFeatures } = useTranslation("features");
   const router = useRouter();
   const projectId = router.query.projectId as string;
   const { isV4 } = useReadPath();
@@ -45,24 +47,24 @@ export default function SessionsPage() {
   return (
     <Page
       headerProps={{
-        title: "Sessions",
+        title: tFeatures("ui.sessions"),
         help: {
           description: (
-            <>
-              A session is a collection of related traces, such as a
-              conversation or thread. To begin, add a sessionId to the trace.
-              See{" "}
-              <a
-                href="https://langfuse.com/docs/observability/features/sessions"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="decoration-primary/30 hover:decoration-primary underline"
-                onClick={(e) => e.stopPropagation()}
-              >
-                docs
-              </a>{" "}
-              to learn more.
-            </>
+            <Trans
+              t={tFeatures}
+              i18nKey="help.sessions"
+              components={{
+                docs: (
+                  <a
+                    href="https://langfuse.com/docs/observability/features/sessions"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="decoration-primary/30 hover:decoration-primary underline"
+                    onClick={(e) => e.stopPropagation()}
+                  />
+                ),
+              }}
+            />
           ),
           href: "https://langfuse.com/docs/observability/features/sessions",
         },

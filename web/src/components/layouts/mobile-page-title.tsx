@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 /* eslint-disable no-nested-ternary */
 import { ItemBadge } from "@/src/components/ItemBadge";
 import BreadcrumbComponent from "@/src/components/layouts/breadcrumb";
@@ -37,6 +38,8 @@ export const MobilePageTitle = ({
 }: {
   headerProps: Omit<PageHeaderProps, "container">;
 }) => {
+const { t: tUi } = useTranslation("uiMore");
+
   const {
     title,
     titleContent,
@@ -147,7 +150,7 @@ export const MobilePageTitle = ({
                 variant="outline"
                 size="icon"
                 ref={menuTriggerRef}
-                aria-label="More actions"
+                aria-label={tUi("moreActions")}
                 className="ml-auto shrink-0"
               >
                 <MoreHorizontal className="h-4 w-4" />

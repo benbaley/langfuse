@@ -15,6 +15,7 @@ import {
   PlusIcon,
   SquarePen,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 type TraceScores =
   RouterOutputs["sessions"]["byIdWithScores"]["traces"][number]["scores"];
@@ -40,6 +41,7 @@ export function SessionTraceActionButtons({
   density?: "default" | "compact";
   className?: string;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const size = density === "compact" ? "xs" : "default";
   const commentCount = getNumberFromMap(traceCommentCounts, traceId);
   // SessionIO already fetches the trace, so this doesn't add an extra request
@@ -80,7 +82,7 @@ export function SessionTraceActionButtons({
               {...getTriggerProps()}
             >
               <PlusIcon className="h-4 w-4" />
-              <span>Add to</span>
+              <span>{tFeatures("ui.addTo")}</span>
               <ChevronDown className="h-3 w-3" />
             </Button>
           )}
@@ -114,7 +116,7 @@ export function SessionTraceActionButtons({
               ) : (
                 <SquarePen className="mr-1.5 h-4 w-4" />
               )}
-              <span>Annotate</span>
+              <span>{tFeatures("ui.annotate")}</span>
             </Button>
           )}
         </AnnotateDrawerController>
@@ -140,7 +142,11 @@ export function SessionTraceActionButtons({
             ) : (
               <>
                 <MessageSquare className="h-4 w-4" />
-                <span>{commentCount ? "Comments" : "Comment"}</span>
+                <span>
+                  {commentCount
+                    ? tFeatures("ui.comments")
+                    : tFeatures("ui.comment")}
+                </span>
                 {!!commentCount ? (
                   <ActionButtonCountBadge count={commentCount} />
                 ) : null}

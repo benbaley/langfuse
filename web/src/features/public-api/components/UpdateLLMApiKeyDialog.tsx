@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { type ComponentProps } from "react";
 import { DialogController } from "@/src/components/design-system/DialogController/DialogController";
 import {
@@ -20,6 +21,7 @@ export function UpdateLLMApiKeyDialog({
     typeof DialogController<LlmApiKeyListItem>
   >["children"];
 }) {
+  const { t } = useTranslation("settings");
   const uiCustomization = useUiCustomization();
 
   return (
@@ -27,7 +29,7 @@ export function UpdateLLMApiKeyDialog({
       renderDialog={({ state: apiKey, closeDialog }) => (
         <DialogContent className="max-h-[90%] min-w-[40vw] overflow-auto">
           <DialogHeader>
-            <DialogTitle>Update LLM Connection</DialogTitle>
+            <DialogTitle>{t("updateLlmConnection")}</DialogTitle>
           </DialogHeader>
           <CreateLLMApiKeyForm
             key={apiKey.id}

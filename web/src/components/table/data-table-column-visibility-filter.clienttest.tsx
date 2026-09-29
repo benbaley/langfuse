@@ -1,5 +1,9 @@
+import { createInstance } from "i18next";
+import { I18nextProvider } from "react-i18next";
+import en from "@/src/features/i18n/locales/en/common.json";
+import zhCN from "@/src/features/i18n/locales/zh-CN/common.json";
 import { StrictMode, useState } from "react";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import { type VisibilityState } from "@tanstack/react-table";
 import { DataTableColumnVisibilityFilter } from "@/src/components/table/data-table-column-visibility-filter";
 import {
@@ -196,6 +200,37 @@ describe("DataTableColumnVisibilityFilter", () => {
     localStorage.clear();
     h.capture.mockClear();
     h.onColumnGroupToggle.mockClear();
+  });
+
+  it("preserves column visibility and an open picker when the language changes", async () => {
+    const i18n = createInstance();
+    await i18n.init({
+      lng: "en",
+      fallbackLng: "en",
+      resources: { en: { common: en }, "zh-CN": { common: zhCN } },
+    });
+    render(
+      <I18nextProvider i18n={i18n}>
+        <ColumnVisibilityFilterHarness />
+      </I18nextProvider>,
+      { wrapper: LayerProvider },
+    );
+    fireEvent.click(screen.getByRole("button", { name: /columns/i }));
+    fireEvent.click(screen.getByText("Input"));
+    expect(screen.getByRole("checkbox", { name: "Input" })).not.toBeChecked();
+
+    await act(() => i18n.changeLanguage("zh-CN"));
+    expect(
+      screen.getByRole("button", { name: /^选择所有列 / }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("checkbox", { name: "Input" })).not.toBeChecked();
+    expect(h.capture).toHaveBeenCalledTimes(1);
+
+    await act(() => i18n.changeLanguage("en"));
+    expect(
+      screen.getByRole("button", { name: /^Select All Columns / }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("checkbox", { name: "Input" })).not.toBeChecked();
   });
 
   it("toggles a hideable column when its label is clicked", () => {

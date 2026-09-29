@@ -15,16 +15,19 @@ export const evaluatorFilterConfig: FilterConfig = {
       type: "categorical" as const,
       column: "status",
       label: "Status",
+      labelKey: "field.status",
     },
     {
       type: "categorical" as const,
       column: "target",
       label: "Target",
+      labelKey: "field.target",
     },
     {
       type: "categorical" as const,
       column: "timeScope",
       label: "Time Scope",
+      labelKey: "field.time_scope",
     },
   ],
 };

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { type Flag } from "@/src/features/feature-flags/types";
 import { type ProjectScope } from "@langfuse/shared";
 import {
@@ -50,6 +51,7 @@ export enum RouteGroup {
 
 export type Route = {
   title: string;
+  titleKey?: string;
   menuNode?: ReactNode;
   featureFlag?: Flag;
   label?: string | ReactNode;
@@ -82,6 +84,7 @@ export type Route = {
 export const ROUTES: Route[] = [
   {
     title: "Go to...",
+    titleKey: "goTo",
     href: "", // Empty pathname since this is a dropdown
     icon: Search,
     menuNode: <CommandMenuTrigger />,
@@ -89,6 +92,7 @@ export const ROUTES: Route[] = [
   },
   {
     title: "Organizations",
+    titleKey: "organizations",
     href: "/",
     icon: Grid2X2,
     show: ({ organization }) => organization === undefined,
@@ -96,18 +100,21 @@ export const ROUTES: Route[] = [
   },
   {
     title: "Projects",
+    titleKey: "projects",
     href: "/organization/[organizationId]",
     icon: Grid2X2,
     section: RouteSection.Main,
   },
   {
     title: "Home",
+    titleKey: "home",
     href: `/project/[projectId]`,
     icon: Home,
     section: RouteSection.Main,
   },
   {
     title: "Dashboards",
+    titleKey: "dashboards",
     href: `/project/[projectId]/dashboards`,
     isActive: matchesPathname([
       `/project/[projectId]/dashboards`,
@@ -119,6 +126,7 @@ export const ROUTES: Route[] = [
   },
   {
     title: "Tracing",
+    titleKey: "tracing",
     icon: ListTree,
     productModule: "tracing",
     group: RouteGroup.Observability,
@@ -131,6 +139,7 @@ export const ROUTES: Route[] = [
   },
   {
     title: "Sessions",
+    titleKey: "sessions",
     icon: Clock,
     productModule: "tracing",
     group: RouteGroup.Observability,
@@ -139,6 +148,7 @@ export const ROUTES: Route[] = [
   },
   {
     title: "Users",
+    titleKey: "users",
     href: `/project/[projectId]/users`,
     icon: UsersIcon,
     productModule: "tracing",
@@ -147,6 +157,7 @@ export const ROUTES: Route[] = [
   },
   {
     title: "Alerts",
+    titleKey: "alerts",
     href: "/project/[projectId]/alerts",
     icon: BellRing,
     projectRbacScopes: ["alerts:read"],
@@ -156,6 +167,7 @@ export const ROUTES: Route[] = [
   },
   {
     title: "Prompts",
+    titleKey: "prompts",
     href: "/project/[projectId]/prompts",
     icon: FileJson,
     projectRbacScopes: ["prompts:read"],
@@ -165,6 +177,7 @@ export const ROUTES: Route[] = [
   },
   {
     title: "Playground",
+    titleKey: "playground",
     href: "/project/[projectId]/playground",
     icon: TerminalIcon,
     productModule: "playground",
@@ -173,6 +186,7 @@ export const ROUTES: Route[] = [
   },
   {
     title: "Scores",
+    titleKey: "scores",
     href: `/project/[projectId]/scores`,
     group: RouteGroup.Evaluation,
     section: RouteSection.Main,
@@ -180,6 +194,7 @@ export const ROUTES: Route[] = [
   },
   {
     title: "Evaluators",
+    titleKey: "evaluators",
     icon: Lightbulb,
     productModule: "evaluation",
     projectRbacScopes: ["evaluator:read", "evaluationRule:read"],
@@ -190,6 +205,7 @@ export const ROUTES: Route[] = [
   },
   {
     title: "Human Annotation",
+    titleKey: "humanAnnotation",
     href: `/project/[projectId]/annotation-queues`,
     projectRbacScopes: ["annotationQueues:read"],
     group: RouteGroup.Evaluation,
@@ -198,6 +214,7 @@ export const ROUTES: Route[] = [
   },
   {
     title: "Datasets",
+    titleKey: "datasets",
     href: `/project/[projectId]/datasets`,
     icon: Database,
     productModule: "datasets",
@@ -207,6 +224,7 @@ export const ROUTES: Route[] = [
   },
   {
     title: "Experiments",
+    titleKey: "experiments",
     href: `/project/[projectId]/experiments`,
     icon: Beaker,
     featureFlag: "experimentsV4Enabled",
@@ -217,6 +235,7 @@ export const ROUTES: Route[] = [
     // Keep Action required first in the secondary nav so it is not sandwiched
     // between regular items like Upgrade Plan and Settings.
     title: "Update",
+    titleKey: "update",
     href: "",
     section: RouteSection.Secondary,
     show: ({ projectId, v4UpgradeUiAvailable }) =>
@@ -225,6 +244,7 @@ export const ROUTES: Route[] = [
   },
   {
     title: "Cloud Status",
+    titleKey: "cloudStatus",
     section: RouteSection.Secondary,
     href: "",
     show: ({ isLangfuseCloud, hasActiveCloudIncident }) =>
@@ -233,6 +253,7 @@ export const ROUTES: Route[] = [
   },
   {
     title: "V4 Preview",
+    titleKey: "v4Preview",
     href: "",
     section: RouteSection.Secondary,
     featureFlag: "v4BetaToggleVisible",
@@ -243,6 +264,7 @@ export const ROUTES: Route[] = [
   },
   {
     title: "Upgrade Plan",
+    titleKey: "upgradePlan",
     icon: Sparkle,
     href: "/project/[projectId]/settings/billing",
     section: RouteSection.Secondary,
@@ -252,6 +274,7 @@ export const ROUTES: Route[] = [
   },
   {
     title: "Upgrade Plan",
+    titleKey: "upgradePlan",
     icon: Sparkle,
     href: "/organization/[organizationId]/settings/billing",
     section: RouteSection.Secondary,
@@ -261,24 +284,28 @@ export const ROUTES: Route[] = [
   },
   {
     title: "Settings",
+    titleKey: "settings",
     href: "/project/[projectId]/settings",
     icon: Settings,
     section: RouteSection.Secondary,
   },
   {
     title: "Settings",
+    titleKey: "settings",
     href: "/organization/[organizationId]/settings",
     icon: Settings,
     section: RouteSection.Secondary,
   },
   {
     title: "Book a call",
+    titleKey: "bookCall",
     section: RouteSection.Secondary,
     href: "",
     menuNode: <BookACallButton />,
   },
   {
     title: "Support",
+    titleKey: "support",
     icon: LifeBuoy,
     section: RouteSection.Secondary,
     href: "", // Empty pathname since this is a dropdown
@@ -287,6 +314,7 @@ export const ROUTES: Route[] = [
 ];
 
 function CommandMenuTrigger() {
+  const { t } = useTranslation("navigation");
   const { setOpen } = useCommandMenu();
   const capture = usePostHogClientCapture();
 
@@ -301,7 +329,7 @@ function CommandMenuTrigger() {
       className="whitespace-nowrap"
     >
       <Search className="h-4 w-4" />
-      Go to...
+      {t("goTo")}
       <span className="ml-auto hidden md:inline-flex">
         <KeyboardShortcut keys={["Mod", "K"]} />
       </span>

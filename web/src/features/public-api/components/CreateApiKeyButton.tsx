@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Button } from "@/src/components/ui/button";
 import { Dialog, DialogTrigger } from "@/src/components/ui/dialog";
 import { api, reportNonTrpcError } from "@/src/utils/api";
@@ -13,6 +14,7 @@ export function CreateApiKeyButton(props: {
   entityId: string;
   scope: ApiKeyScope;
 }) {
+  const { t } = useTranslation("settings");
   const utils = api.useUtils();
   const capture = usePostHogClientCapture();
 
@@ -77,7 +79,7 @@ export function CreateApiKeyButton(props: {
       <DialogTrigger asChild>
         <Button variant="secondary">
           <PlusIcon className="mr-1.5 -ml-0.5 h-5 w-5" aria-hidden="true" />
-          Create new API keys
+          {t("createNewApiKeys")}
         </Button>
       </DialogTrigger>
       <ApiKeyCreateDialogContent

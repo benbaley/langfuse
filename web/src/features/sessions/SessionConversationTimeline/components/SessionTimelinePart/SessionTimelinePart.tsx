@@ -13,14 +13,16 @@ import { MarkdownView } from "@/src/components/ui/MarkdownViewer";
 import { PrettyJsonView } from "@/src/components/ui/PrettyJsonView";
 import { getSafeImageUrl, getSafeLinkUrl } from "@/src/components/ui/safe-url";
 import { decodeUnicodeEscapesOnly } from "@/src/utils/unicode";
+import { useTranslation } from "react-i18next";
 
 function SessionTimelineReasoning({ part }: { part: ReasoningPart }) {
+  const { t: tFeatures } = useTranslation("features");
   const content = part.content;
 
   if (content.kind === "text") {
     return (
       <SessionTimelineCollapsiblePart
-        label="Reasoning"
+        label={tFeatures("ui.reasoning")}
         variant="plain"
         alignment="row"
       >
@@ -35,7 +37,7 @@ function SessionTimelineReasoning({ part }: { part: ReasoningPart }) {
   if (content.kind === "data") {
     return (
       <SessionTimelineCollapsiblePart
-        label="Reasoning data"
+        label={tFeatures("ui.reasoningData")}
         variant="plain"
         alignment="row"
       >
@@ -48,8 +50,8 @@ function SessionTimelineReasoning({ part }: { part: ReasoningPart }) {
     <SessionTimelineCollapsiblePart
       label={
         content.kind === "redacted"
-          ? "Redacted reasoning"
-          : "Encrypted reasoning"
+          ? tFeatures("ui.redactedReasoning")
+          : tFeatures("ui.encryptedReasoning")
       }
       variant="plain"
       alignment="row"
@@ -62,6 +64,7 @@ function SessionTimelineReasoning({ part }: { part: ReasoningPart }) {
 }
 
 function SessionTimelineFile({ part }: { part: FilePart }) {
+  const { t: tFeatures } = useTranslation("features");
   const source = part.providerMetadata?.source;
   const safeUrl =
     part.content.kind === "url" ? getSafeLinkUrl(part.content.url) : null;
@@ -80,7 +83,7 @@ function SessionTimelineFile({ part }: { part: FilePart }) {
     <div className="border-border/70 bg-background flex w-fit max-w-full flex-col gap-2 rounded-md border p-3">
       <div className="text-muted-foreground flex items-center gap-2 text-xs font-bold">
         <FileIcon className="h-3.5 w-3.5" />
-        {part.filename ?? part.mediaType ?? "File"}
+        {part.filename ?? part.mediaType ?? tFeatures("ui.file")}
       </div>
       {reference ? (
         <LangfuseMediaView mediaReferenceString={reference} variant="preview" />
@@ -115,11 +118,14 @@ export function SessionTimelinePart({
 }: {
   part: SessionTimelineConversationMessage["parts"][number];
 }) {
+  const { t: tFeatures } = useTranslation("features");
   if (part.type === "text") {
     return (
       <div className="flex flex-col gap-1">
         {part.refusal ? (
-          <span className="text-dark-red text-[11px] font-bold">Refusal</span>
+          <span className="text-dark-red text-[11px] font-bold">
+            {tFeatures("ui.refusal")}
+          </span>
         ) : null}
         <MarkdownView
           markdown={decodeUnicodeEscapesOnly(part.text, true)}

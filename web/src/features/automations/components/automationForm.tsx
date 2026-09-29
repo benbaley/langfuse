@@ -1,4 +1,5 @@
 /* eslint-disable no-nested-ternary */
+import { Trans, useTranslation } from "react-i18next";
 import { showSuccessToast, showErrorToast } from "@/src/features/notifications";
 import React from "react";
 import {
@@ -222,6 +223,7 @@ const EventSourceField = ({
   onSourceChange: (value: TriggerEventSource) => void;
   disabled: boolean;
 }) => {
+  const { t } = useTranslation("settingsMore");
   const { isLangfuseCloud } = useLangfuseCloudRegion();
   return (
     <FormField
@@ -229,7 +231,7 @@ const EventSourceField = ({
       name="eventSource"
       render={({ field }) => (
         <FormItem>
-          <FormLabel>Event Source</FormLabel>
+          <FormLabel>{t("automation.eventSource")}</FormLabel>
           <Select
             onValueChange={(value) =>
               onSourceChange(value as TriggerEventSource)
@@ -239,25 +241,25 @@ const EventSourceField = ({
           >
             <FormControl>
               <SelectTrigger>
-                <SelectValue placeholder="Select an event source" />
+                <SelectValue placeholder={t("automation.selectSource")} />
               </SelectTrigger>
             </FormControl>
             <SelectContent>
-              <SelectItem value={TriggerEventSource.Prompt}>Prompt</SelectItem>
+              <SelectItem value={TriggerEventSource.Prompt}>
+                {t("automation.prompt")}
+              </SelectItem>
               {(isLangfuseCloud ||
                 field.value === TriggerEventSource.Monitor) && (
                 <SelectItem value={TriggerEventSource.Monitor}>
-                  Alert
+                  {t("automation.alert")}
                 </SelectItem>
               )}
               <SelectItem disabled={true} value="planned">
-                More coming soon...
+                {t("automation.moreSoon")}
               </SelectItem>
             </SelectContent>
           </Select>
-          <FormDescription>
-            The event that triggers this automation.
-          </FormDescription>
+          <FormDescription>{t("automation.sourceHint")}</FormDescription>
           <FormMessage />
         </FormItem>
       )}
@@ -275,6 +277,7 @@ const PromptTriggerFields = ({
   control: Control<FormValues>;
   disabled: boolean;
 }) => {
+  const { t } = useTranslation("settingsMore");
   const [optionsOpened, setOptionsOpened] = React.useState(false);
   const { data: filterOptions, isFetching: optionsLoading } =
     api.prompts.filterOptions.useQuery(
@@ -289,26 +292,28 @@ const PromptTriggerFields = ({
         name="eventAction"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Event Action</FormLabel>
+            <FormLabel>{t("automation.eventAction")}</FormLabel>
             <FormControl>
               <MultiSelect
-                title="Event Actions"
-                label="Actions"
+                title={t("automation.eventActions")}
+                label={t("automation.actions")}
                 values={field.value}
                 onValueChange={field.onChange}
                 options={[
                   {
                     value: "created",
-                    description: "Whenever a new prompt version is created",
+                    displayValue: t("automation.actionCreated"),
+                    description: t("automation.promptCreated"),
                   },
                   {
                     value: "updated",
-                    description:
-                      "Whenever tags or labels on a prompt version are updated",
+                    displayValue: t("automation.actionUpdated"),
+                    description: t("automation.promptUpdated"),
                   },
                   {
                     value: "deleted",
-                    description: "Whenever a prompt version is deleted",
+                    displayValue: t("automation.actionDeleted"),
+                    description: t("automation.promptDeleted"),
                   },
                 ]}
                 className="my-0 w-auto overflow-hidden"
@@ -316,9 +321,7 @@ const PromptTriggerFields = ({
                 labelTruncateCutOff={4}
               />
             </FormControl>
-            <FormDescription>
-              The actions on the event source that trigger this automation.
-            </FormDescription>
+            <FormDescription>{t("automation.actionsHint")}</FormDescription>
             <FormMessage />
           </FormItem>
         )}
@@ -328,7 +331,7 @@ const PromptTriggerFields = ({
         name="filter"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Filter</FormLabel>
+            <FormLabel>{t("automation.filter")}</FormLabel>
             <FormControl>
               <InlineFilterBuilder
                 columns={webhookActionFilterOptions(filterOptions)}
@@ -344,9 +347,7 @@ const PromptTriggerFields = ({
                 disabled={disabled}
               />
             </FormControl>
-            <FormDescription>
-              Add conditions to narrow down when this trigger fires.
-            </FormDescription>
+            <FormDescription>{t("automation.filterHint")}</FormDescription>
             <FormMessage />
           </FormItem>
         )}
@@ -356,21 +357,28 @@ const PromptTriggerFields = ({
 };
 
 /** MonitorTriggerFields renders an info card explaining that monitors connect to this automation via the create-monitor page. */
-const MonitorTriggerFields = ({ projectId }: { projectId: string }) => (
-  <Alert icon={Info}>
-    <Alert.Title>How Alerts Connect</Alert.Title>
-    <Alert.Description>
-      Add this automation to an alert from the{" "}
-      <Link
-        href={`/project/${projectId}/alerts/new`}
-        className="text-primary underline underline-offset-2"
-      >
-        create alerts page
-      </Link>
-      .
-    </Alert.Description>
-  </Alert>
-);
+const MonitorTriggerFields = ({ projectId }: { projectId: string }) => {
+  const { t } = useTranslation("settingsMore");
+  return (
+    <Alert icon={Info}>
+      <Alert.Title>{t("automation.alertConnection")}</Alert.Title>
+      <Alert.Description>
+        <Trans
+          t={t}
+          i18nKey="automation.alertHint"
+          components={{
+            link: (
+              <Link
+                href={`/project/${projectId}/alerts/new`}
+                className="text-primary underline underline-offset-2"
+              />
+            ),
+          }}
+        />
+      </Alert.Description>
+    </Alert>
+  );
+};
 
 interface AutomationFormProps {
   projectId: string;
@@ -401,6 +409,7 @@ export const AutomationForm = ({
   lockedEventSource,
   allowedActionTypes,
 }: AutomationFormProps) => {
+  const { t } = useTranslation("settingsMore");
   const router = useRouter();
   const hasAccess = useHasProjectAccess({
     projectId,
@@ -468,7 +477,7 @@ export const AutomationForm = ({
         isEditing && automation
           ? automation.name
           : resolvedEventSource === TriggerEventSource.ProjectNotification
-            ? "Project notification"
+            ? t("automation.projectNotification")
             : "",
       eventSource: resolvedEventSource,
       eventAction: resolvedEventAction,
@@ -579,8 +588,8 @@ export const AutomationForm = ({
       });
 
       showSuccessToast({
-        title: "Automation Updated",
-        description: `Successfully updated automation "${resolvedName}".`,
+        title: t("automation.updated"),
+        description: t("automation.updatedHint", { name: resolvedName }),
       });
 
       onSuccess?.(automation.id);
@@ -598,8 +607,8 @@ export const AutomationForm = ({
       });
 
       showSuccessToast({
-        title: "Automation Created",
-        description: `Successfully created automation "${resolvedName}".`,
+        title: t("automation.created"),
+        description: t("automation.createdHint", { name: resolvedName }),
       });
 
       onSuccess?.(
@@ -612,7 +621,7 @@ export const AutomationForm = ({
 
   // Update button text based on if we're editing an existing automation
   const submitButtonText =
-    isEditing && automation ? "Update Automation" : "Save Automation";
+    isEditing && automation ? t("automation.update") : t("automation.save");
 
   // Update required fields based on action type
   const handleActionTypeChange = (value: ActionTypes) => {
@@ -695,7 +704,7 @@ export const AutomationForm = ({
                   <FormItem>
                     <FormControl>
                       <Input
-                        placeholder="Automation name"
+                        placeholder={t("automation.name")}
                         {...field}
                         autoFocus={!automation}
                         disabled={!hasAccess || !isEditing}
@@ -712,7 +721,9 @@ export const AutomationForm = ({
               name="status"
               render={({ field }) => (
                 <FormItem className="flex flex-row items-center gap-2">
-                  <FormLabel className="text-sm font-bold">Active</FormLabel>
+                  <FormLabel className="text-sm font-bold">
+                    {t("automation.active")}
+                  </FormLabel>
                   <FormControl>
                     <Switch
                       checked={field.value === "ACTIVE"}
@@ -732,10 +743,8 @@ export const AutomationForm = ({
         {!hideTriggerCard && (
           <Card>
             <CardHeader>
-              <CardTitle>Trigger</CardTitle>
-              <CardDescription>
-                Configure when this automation should run.
-              </CardDescription>
+              <CardTitle>{t("automation.trigger")}</CardTitle>
+              <CardDescription>{t("automation.triggerHint")}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               {!lockedEventSource && (
@@ -760,10 +769,8 @@ export const AutomationForm = ({
 
         <Card>
           <CardHeader>
-            <CardTitle>Action</CardTitle>
-            <CardDescription>
-              Configure what happens when the trigger fires.
-            </CardDescription>
+            <CardTitle>{t("common.action")}</CardTitle>
+            <CardDescription>{t("automation.actionHint")}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <FormField
@@ -771,7 +778,7 @@ export const AutomationForm = ({
               name="actionType"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Action Type</FormLabel>
+                  <FormLabel>{t("batch.actionType")}</FormLabel>
                   <Select
                     onValueChange={handleActionTypeChange}
                     value={field.value}
@@ -779,7 +786,9 @@ export const AutomationForm = ({
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select an action type" />
+                        <SelectValue
+                          placeholder={t("automation.selectAction")}
+                        />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -794,16 +803,16 @@ export const AutomationForm = ({
                               ? "Slack"
                               : actionType === "GITHUB_DISPATCH"
                                 ? "GitHub Dispatch"
-                                : "Annotation Queue"}
+                                : t("automation.annotationQueue")}
                         </SelectItem>
                       ))}
                       <SelectItem disabled={true} value="planned">
-                        More coming soon...
+                        {t("automation.moreSoon")}
                       </SelectItem>
                     </SelectContent>
                   </Select>
                   <FormDescription>
-                    The type of action to perform when the trigger fires.
+                    {t("automation.actionTypeHint")}
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -845,7 +854,9 @@ export const AutomationForm = ({
                         disabled={disabled !== undefined}
                         onClick={openDialog}
                       >
-                        <span className="text-dark-red">Delete</span>
+                        <span className="text-dark-red">
+                          {t("common.delete")}
+                        </span>
                       </Button>
                     )}
                   </DeleteAutomationDialogController>
@@ -854,7 +865,7 @@ export const AutomationForm = ({
             <div className="grow"></div>
             <div className="flex gap-3">
               <Button type="button" variant="outline" onClick={handleCancel}>
-                Cancel
+                {t("common.cancel")}
               </Button>
               <Button
                 type="submit"

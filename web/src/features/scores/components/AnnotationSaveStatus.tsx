@@ -7,6 +7,7 @@ import type { AnnotateFormSchemaType } from "@/src/features/scores/types";
 import { annotationFieldKey } from "@/src/features/scores/lib/annotationConfigSelection";
 import { hasChangedAnnotationValue } from "@/src/features/scores/state/annotationSaveStore";
 import { cn } from "@/src/utils/tailwind";
+import { useTranslation } from "react-i18next";
 
 export function AnnotationSaveStatus({
   form,
@@ -15,6 +16,7 @@ export function AnnotationSaveStatus({
   form: UseFormReturn<AnnotateFormSchemaType>;
   actions: AnnotationFormActions;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const fields = useWatch({ control: form.control, name: "scoreData" });
   const { errors } = useFormState({ control: form.control, name: "scoreData" });
   const state = useStore(actions.saveStore);
@@ -37,7 +39,7 @@ export function AnnotationSaveStatus({
           <div
             key={itemStatus}
             role={active ? "status" : undefined}
-            aria-label={active ? "Score save status" : undefined}
+            aria-label={active ? tFeatures("ui.scoreSaveStatus") : undefined}
             aria-hidden={!active}
             className={cn(
               "col-start-1 row-start-1 flex items-center justify-end gap-1 text-xs transition-[opacity,transform] duration-200 ease-out motion-reduce:transition-none",

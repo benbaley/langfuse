@@ -11,6 +11,7 @@ import { Spinner } from "@/src/components/design-system/Spinner/Spinner";
 import { ConfirmDialog } from "@/src/components/ui/confirm-dialog";
 import { EvaluatorVersionHistoryList } from "./components/EvaluatorVersionHistoryList/EvaluatorVersionHistoryList";
 import type { EvaluatorVersion } from "./types";
+import { useTranslation } from "react-i18next";
 
 export function EvaluatorVersionHistorySheet({
   open,
@@ -41,6 +42,7 @@ export function EvaluatorVersionHistorySheet({
   isLoadingMore: boolean;
   onLoadMore: () => void;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const [versionToRestore, setVersionToRestore] =
     useState<EvaluatorVersion | null>(null);
   const [expandedVersionId, setExpandedVersionId] = useState<string | null>(
@@ -79,7 +81,7 @@ export function EvaluatorVersionHistorySheet({
     >
       <SheetContent className="flex flex-col gap-5 overflow-y-auto sm:max-w-2xl">
         <SheetHeader>
-          <SheetTitle>Evaluator versions</SheetTitle>
+          <SheetTitle>{tFeatures("ui.evaluatorVersions")}</SheetTitle>
           <SheetDescription>
             Review or restore saved definition versions for {evaluatorName}.
           </SheetDescription>
@@ -104,7 +106,9 @@ export function EvaluatorVersionHistorySheet({
             {isLoadingMore ? (
               <>
                 <Spinner size="sm" variant="muted" />
-                <span className="sr-only">Loading more versions</span>
+                <span className="sr-only">
+                  {tFeatures("ui.loadingMoreVersions")}
+                </span>
               </>
             ) : null}
           </div>

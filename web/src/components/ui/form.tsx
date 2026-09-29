@@ -186,10 +186,13 @@ function getFieldErrorMessage(error: unknown): string | undefined {
 
 const FormMessage = React.forwardRef<
   HTMLParagraphElement,
-  React.HTMLAttributes<HTMLParagraphElement>
->(({ className, children, ...props }, ref) => {
+  React.HTMLAttributes<HTMLParagraphElement> & {
+    translateError?: (message: unknown) => React.ReactNode;
+  }
+>(({ className, children, translateError, ...props }, ref) => {
   const { error, formMessageId } = useFormField();
-  const body = getFieldErrorMessage(error) ?? children;
+  const message = getFieldErrorMessage(error);
+  const body = translateError?.(message) ?? message ?? children;
 
   if (!body) {
     return null;

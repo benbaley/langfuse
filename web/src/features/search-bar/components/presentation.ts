@@ -2,14 +2,15 @@
 // the autocomplete popover. A separate module (not a component file) so the
 // component files keep Fast Refresh eligibility.
 
+import type { TFunction } from "i18next";
 import type { ComposerSegment } from "@/src/features/search-bar/lib/composer-segments";
 import type { FieldRegistry } from "@/src/features/search-bar/lib/fields";
 
 /** Per-view: the examples have to name fields the view actually has. */
-export function composerPlaceholder(registry: FieldRegistry): string {
+export function composerPlaceholder(registry: FieldRegistry, t?: TFunction): string {
   return registry.searchExamples.length > 0
-    ? `Search — e.g. ${registry.searchExamples.join(", ")}`
-    : "Search";
+    ? (t?.("filters:ui.searchExamples", { examples: registry.searchExamples.join(", ") }) ?? `Search — e.g. ${registry.searchExamples.join(", ")}`)
+    : (t?.("filters:ui.search") ?? "Search");
 }
 
 /** DOM id for an option row — referenced by aria-activedescendant. Option ids

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Alert } from "@/src/components/design-system/Alert/Alert";
 import { Dialog } from "@/src/components/design-system/Dialog/Dialog";
@@ -37,16 +38,17 @@ export function TransferProjectDialog({
   isPending,
   onConfirm,
 }: TransferProjectDialogProps) {
+  const { t } = useTranslation("settings");
   const formId = useId();
   const confirmMessage = `${organizationName}/${projectName}`
     .replaceAll(" ", "-")
     .toLowerCase();
   const formSchema = z.object({
     name: z.string().includes(confirmMessage, {
-      message: `Please confirm with "${confirmMessage}"`,
+      message: t("confirmWith", { value: confirmMessage }),
     }),
     organizationId: z.string().min(1, {
-      message: "Please select an organization",
+      message: t("organizationRequired"),
     }),
   });
   const form = useForm<z.infer<typeof formSchema>>({
@@ -59,10 +61,10 @@ export function TransferProjectDialog({
 
   return (
     <Dialog
-      title="Transfer Project"
+      title={t("transferProject")}
       actions={[
         {
-          label: "Transfer project",
+          label: t("transferProjectAction"),
           type: "submit",
           form: formId,
           variant: "destructive",
@@ -80,21 +82,12 @@ export function TransferProjectDialog({
         >
           <Dialog.Body>
             <Alert variant="warning" icon={TriangleAlert}>
-              <Alert.Title>Warning</Alert.Title>
+              <Alert.Title>{t("warning")}</Alert.Title>
               <Alert.Description>
-                Transferring the project will move it to a different
-                organization:
+                {t("transferWarning")}
                 <ul className="list-disc pl-4">
-                  <li>
-                    Members who are not part of the new organization will lose
-                    access.
-                  </li>
-                  <li>
-                    The project remains fully operational as API keys, settings,
-                    and data will remain unchanged. All features (e.g. tracing,
-                    prompt management) will continue to work without
-                    interruption.
-                  </li>
+                  <li>{t("transferMembersWarning")}</li>
+                  <li>{t("transferUnchanged")}</li>
                 </ul>
               </Alert.Description>
             </Alert>
@@ -103,24 +96,21 @@ export function TransferProjectDialog({
               name="organizationId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Select New Organization</FormLabel>
+                  <FormLabel>{t("selectNewOrganization")}</FormLabel>
                   <FormControl>
                     <SelectInput
                       onValueChange={field.onChange}
                       value={field.value}
                       disabled={isPending}
-                      placeholder="Select organization"
-                      emptyMessage="No eligible organizations available. You need owner or admin access to another organization to transfer this project."
+                      placeholder={t("selectOrganization")}
+                      emptyMessage={t("noTransferOrganizations")}
                       options={organizations.map((organization) => ({
                         value: organization.id,
                         label: organization.name,
                       }))}
                     />
                   </FormControl>
-                  <FormDescription>
-                    Transfer this project to another organization where you have
-                    the ability to create projects.
-                  </FormDescription>
+                  <FormDescription>{t("transferDescription")}</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -130,12 +120,12 @@ export function TransferProjectDialog({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Confirm</FormLabel>
+                  <FormLabel>{t("confirm")}</FormLabel>
                   <FormControl>
                     <Input placeholder={confirmMessage} {...field} />
                   </FormControl>
                   <FormDescription>
-                    {`To confirm, type "${confirmMessage}" in the input box `}
+                    {t("typeConfirmation", { value: confirmMessage })}
                   </FormDescription>
                   <FormMessage />
                 </FormItem>

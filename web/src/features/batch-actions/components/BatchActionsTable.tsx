@@ -1,4 +1,5 @@
 /* eslint-disable no-nested-ternary */
+import { useTranslation } from "react-i18next";
 import { DataTable } from "@/src/components/table/data-table";
 import { type LangfuseColumnDef } from "@/src/components/table/types";
 import { api } from "@/src/utils/api";
@@ -35,6 +36,7 @@ type BatchActionRow = {
 };
 
 export function BatchActionsTable(props: { projectId: string }) {
+  const { t } = useTranslation("settingsMore");
   const [paginationState, setPaginationState] = useQueryParams({
     pageIndex: withDefault(NumberParam, 0),
     pageSize: withDefault(NumberParam, 10),
@@ -49,22 +51,30 @@ export function BatchActionsTable(props: { projectId: string }) {
   const columns: LangfuseColumnDef<BatchActionRow>[] = [
     createTextTableColumn<BatchActionRow>({
       accessorKey: "actionType",
-      header: "Action Type",
+      header: t("batch.actionType"),
       size: 200,
       mapValue: (value) =>
         value
-          ?.split("-")
-          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-          .join(" "),
+          ? t(`batch.action.${value}`, {
+              defaultValue: value
+                .split("-")
+                .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                .join(" "),
+            })
+          : value,
     }),
     {
       accessorKey: "tableName",
       id: "tableName",
-      header: "Table",
+      header: t("batch.table"),
       size: 120,
       cell: ({ row }) => {
         const tableName = row.getValue("tableName") as string;
-        return <span className="capitalize">{tableName}</span>;
+        return (
+          <span className="capitalize">
+            {t(`batch.table.${tableName}`, { defaultValue: tableName })}
+          </span>
+        );
       },
     },
     createStatusTableColumn<BatchActionRow, string>({
@@ -79,13 +89,13 @@ export function BatchActionsTable(props: { projectId: string }) {
 
         return status.toLowerCase();
       },
-      header: "Status",
+      header: t("common.status"),
       size: 110,
     }),
     {
       accessorKey: "progress",
       id: "progress",
-      header: "Progress",
+      header: t("batch.progress"),
       size: 150,
       cell: ({ row }) => {
         const totalCount = row.original.totalCount;
@@ -102,7 +112,7 @@ export function BatchActionsTable(props: { projectId: string }) {
             </div>
             {failedCount > 0 && (
               <div className="text-destructive text-xs">
-                {failedCount} failed
+                {t("batch.failedCount", { count: failedCount })}
               </div>
             )}
           </div>
@@ -111,25 +121,25 @@ export function BatchActionsTable(props: { projectId: string }) {
     },
     createDateTableColumn<BatchActionRow>({
       accessorKey: "createdAt",
-      header: "Created",
+      header: t("common.created"),
       size: 150,
     }),
     createDateTableColumn<BatchActionRow>({
       accessorKey: "finishedAt",
-      header: "Finished",
+      header: t("common.finished"),
       size: 150,
     }),
     createUserTableColumn<BatchActionRow>({
       accessorKey: "user",
-      header: "Created By",
+      header: t("common.createdBy"),
       size: 150,
       variant: "avatar",
-      emptyValue: "Unknown",
+      emptyValue: t("common.unknown"),
     }),
     {
       accessorKey: "log",
       id: "log",
-      header: "Log",
+      header: t("batch.log"),
       size: 300,
       cell: ({ row }) => {
         const log = row.getValue("log") as string | null;

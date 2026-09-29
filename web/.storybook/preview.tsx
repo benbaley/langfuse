@@ -1,3 +1,4 @@
+import { UiLanguageProvider } from "../src/features/i18n";
 import { definePreview } from "@storybook/nextjs-vite";
 import addonA11y from "@storybook/addon-a11y";
 import addonDocs from "@storybook/addon-docs";
@@ -56,7 +57,9 @@ function StorybookThemeProvider({
         className="bg-background text-foreground"
         style={{ height: fullHeight ? "100vh" : "auto" }}
       >
-        <div>{children}</div>
+        <UiLanguageProvider>
+          <div>{children}</div>
+        </UiLanguageProvider>
       </div>
     </ThemeProvider>
   );

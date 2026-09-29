@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useForm } from "react-hook-form";
@@ -32,9 +33,10 @@ export function DeleteOrganizationDialogContent({
   isPending,
   onConfirm,
 }: DeleteOrganizationDialogContentProps) {
+  const { t } = useTranslation("settings");
   const formSchema = z.object({
     name: z.string().includes(confirmMessage, {
-      message: `Please confirm with "${confirmMessage}"`,
+      message: t("confirmWith", { value: confirmMessage }),
     }),
   });
   const form = useForm({
@@ -53,12 +55,12 @@ export function DeleteOrganizationDialogContent({
     <>
       <DialogHeader>
         <DialogTitle className="text-lg font-bold">
-          Delete Organization
+          {t("deleteOrganization")}
         </DialogTitle>
         <DialogDescription>
           {hasProjects
-            ? "You can only delete an organization if it has no projects associated with it. Please delete or transfer all projects first. Deleting projects may take a few minutes."
-            : `To confirm, type "${confirmMessage}" in the input box `}
+            ? t("organizationHasProjects")
+            : t("typeConfirmation", { value: confirmMessage })}
         </DialogDescription>
       </DialogHeader>
       <Form {...form}>
@@ -87,7 +89,7 @@ export function DeleteOrganizationDialogContent({
               disabled={hasProjects}
               className="w-full"
             >
-              Delete Organization
+              {t("deleteOrganization")}
             </Button>
           </DialogFooter>
         </form>

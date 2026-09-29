@@ -78,6 +78,11 @@ import {
 } from "@/src/components/ui/PromptReferences";
 import { PromptVariableListPreview } from "@/src/features/prompts/components/PromptVariableListPreview";
 import { createBreadcrumbItems } from "@/src/features/folders";
+import {
+  Trans,
+  useTranslation,
+  useTranslation as useNavigationTranslation,
+} from "react-i18next";
 
 const getPythonCode = (
   name: string,
@@ -122,6 +127,9 @@ await langfuse.prompt.get("${name}", { version: ${version} })
 export const PromptDetail = ({
   promptName: promptNameProp,
 }: { promptName?: string } = {}) => {
+  const { t: tNavigation } = useNavigationTranslation("navigation");
+  const { t: tFeatures } = useTranslation("features");
+  const { t: tMore } = useTranslation("coreMore");
   const projectId = useProjectIdFromURL();
   const capture = usePostHogClientCapture();
   const router = useRouter();
@@ -224,10 +232,10 @@ export const PromptDetail = ({
     utils.datasets.baseRunDataByDatasetId.invalidate();
     utils.datasets.runsByDatasetId.invalidate();
     showSuccessToast({
-      title: "Experiment triggered successfully",
-      description: "Waiting for experiment to complete...",
+      title: tFeatures("ui.experimentTriggeredSuccessfully"),
+      description: tMore("experiments.waiting"),
       link: {
-        text: "View experiment",
+        text: tMore("experiments.view"),
         href: `/project/${projectId}/datasets/${data.datasetId}/compare?runs=${data.runId}`,
       },
     });
@@ -271,7 +279,7 @@ export const PromptDetail = ({
   }, [prompt?.id]);
 
   if (!promptHistory.data || !prompt) {
-    return <div className="p-3">Loading...</div>;
+    return <div className="p-3">{tFeatures("ui.loading")}</div>;
   }
 
   const extractedVariables = prompt
@@ -294,8 +302,7 @@ export const PromptDetail = ({
           "Prompt names cannot be changed. Instead, duplicate this prompt to a different name.",
         itemType: "PROMPT",
         help: {
-          description:
-            "You can use this prompt within your application through the Langfuse SDKs and integrations. Refer to the documentation for more information.",
+          description: tMore("prompts.sdkHelp"),
           href: "https://langfuse.com/docs/prompts",
         },
         breadcrumb: [
@@ -309,7 +316,11 @@ export const PromptDetail = ({
           })),
         ],
         tabsProps: {
-          tabs: getPromptTabs(projectId as string, promptName as string),
+          tabs: getPromptTabs(
+            projectId as string,
+            promptName as string,
+            tNavigation,
+          ),
           activeTab: PROMPT_TABS.VERSIONS,
         },
         actionButtonsLeft: (
@@ -348,7 +359,7 @@ export const PromptDetail = ({
           <div className="mt-3 flex items-center justify-between">
             <CommandInput
               showBorder={false}
-              placeholder="Search..."
+              placeholder={tFeatures("ui.search")}
               className="text-muted-foreground h-fit border-none py-0 text-sm focus:ring-0"
             />
 
@@ -363,7 +374,9 @@ export const PromptDetail = ({
                 href={`/project/${projectId}/prompts/new?promptId=${encodeURIComponent(prompt.id)}`}
               >
                 <Plus className="h-4 w-4 md:mr-2" />
-                <span className="hidden lg:inline">New version</span>
+                <span className="hidden lg:inline">
+                  {tFeatures("ui.newVersion")}
+                </span>
               </Link>
             </Button>
           </div>
@@ -472,7 +485,9 @@ export const PromptDetail = ({
                         )}
                       >
                         <Terminal className="h-4 w-4" />
-                        <span className="hidden md:inline">Playground</span>
+                        <span className="hidden md:inline">
+                          {tFeatures("ui.playground")}
+                        </span>
                         <ChevronDown className="h-3 w-3" />
                       </Button>
                     </Trigger>
@@ -491,7 +506,7 @@ export const PromptDetail = ({
                       >
                         <FlaskConical className="h-4 w-4" />
                         <span className="hidden md:ml-2 md:inline">
-                          Run experiment
+                          {tFeatures("ui.runExperiment")}
                         </span>
                       </Button>
                     </DialogTrigger>
@@ -541,7 +556,7 @@ export const PromptDetail = ({
                       ) : (
                         <>
                           <MessageSquare className="h-4 w-4" />
-                          <span>Add comment</span>
+                          <span>{tFeatures("ui.addComment")}</span>
                           {getNumberFromMap(commentCounts, prompt.id) ? (
                             <ActionButtonCountBadge
                               count={
@@ -582,12 +597,18 @@ export const PromptDetail = ({
             onValueChange={(value) => setCurrentTab(value)}
           >
             <TabsBarList className="max-w-full min-w-0 justify-start overflow-x-auto">
-              <TabsBarTrigger value="prompt">Prompt</TabsBarTrigger>
-              <TabsBarTrigger value="config">Config</TabsBarTrigger>
-              <TabsBarTrigger value="linked-generations">
-                Linked Generations
+              <TabsBarTrigger value="prompt">
+                {tFeatures("ui.prompt")}
               </TabsBarTrigger>
-              <TabsBarTrigger value="use-prompt">Use Prompt</TabsBarTrigger>
+              <TabsBarTrigger value="config">
+                {tFeatures("ui.config")}
+              </TabsBarTrigger>
+              <TabsBarTrigger value="linked-generations">
+                {tFeatures("ui.linkedGenerations")}
+              </TabsBarTrigger>
+              <TabsBarTrigger value="use-prompt">
+                {tFeatures("ui.usePrompt")}
+              </TabsBarTrigger>
             </TabsBarList>
             <TabsBarContent
               value="linked-generations"
@@ -629,12 +650,12 @@ export const PromptDetail = ({
                         <Tabs.Trigger
                           value="resolved"
                           size="sm"
-                          label="Resolved prompt"
+                          label={tFeatures("ui.resolvedPrompt")}
                         />
                         <Tabs.Trigger
                           value="tagged"
                           size="sm"
-                          label="Tagged prompt"
+                          label={tFeatures("ui.taggedPrompt")}
                         />
                       </Tabs.List>
                     </Tabs>
@@ -656,17 +677,20 @@ export const PromptDetail = ({
                     promptGraph.data?.resolvedPrompt ? (
                       <CodeView
                         content={String(promptGraph.data.resolvedPrompt)}
-                        title="Text Prompt (resolved)"
+                        title={tFeatures("ui.textPromptResolved")}
                       />
                     ) : (
                       <CodeView
                         content={renderRichPromptContent(prompt.prompt)}
                         originalContent={prompt.prompt}
-                        title="Text Prompt"
+                        title={tFeatures("ui.textPrompt")}
                       />
                     )
                   ) : (
-                    <JSONView json={prompt.prompt} title="Prompt" />
+                    <JSONView
+                      json={prompt.prompt}
+                      title={tFeatures("ui.prompt")}
+                    />
                   )}
                 </PromptReferenceProvider>
                 {extractedVariables.length > 0 && (
@@ -681,7 +705,7 @@ export const PromptDetail = ({
               <div className="flex max-h-full min-h-0 w-full flex-col overflow-y-auto pb-4">
                 <JSONView
                   json={prompt.config}
-                  title="Config"
+                  title={tFeatures("ui.config")}
                   className="pb-2"
                 />
               </div>
@@ -694,17 +718,20 @@ export const PromptDetail = ({
                 {pythonCode && <CodeView content={pythonCode} title="Python" />}
                 {jsCode && <CodeView content={jsCode} title="JS/TS" />}
                 <p className="text-muted-foreground pl-1 text-xs">
-                  See{" "}
-                  <a
-                    href="https://langfuse.com/docs/prompts"
-                    className="underline"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    documentation
-                  </a>{" "}
-                  for more details on how to use prompts in frameworks such as
-                  Langchain.
+                  <Trans
+                    ns="coreMore"
+                    i18nKey="prompts.frameworkHelp"
+                    components={{
+                      docs: (
+                        <a
+                          href="https://langfuse.com/docs/prompts"
+                          className="underline"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        />
+                      ),
+                    }}
+                  />
                 </p>
               </div>
             </TabsBarContent>

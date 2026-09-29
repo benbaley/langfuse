@@ -8,8 +8,10 @@ import { Textarea } from "@/src/components/ui/textarea";
 import { Label } from "@/src/components/ui/label";
 import { showSuccessToast, showErrorToast } from "@/src/features/notifications";
 import { useHasProjectAccess } from "@/src/features/rbac";
+import { useTranslation } from "react-i18next";
 
 export default function NewDashboardPage() {
+  const { t: tApp } = useTranslation("app");
   const router = useRouter();
   const { projectId } = router.query as { projectId: string };
 
@@ -27,7 +29,7 @@ export default function NewDashboardPage() {
   const createDashboard = api.dashboard.createDashboard.useMutation({
     onSuccess: (data) => {
       showSuccessToast({
-        title: "Dashboard created",
+        title: tApp("ui.DashboardCreated"),
         description: "Your new dashboard has been created successfully",
       });
       // Navigate to the newly created dashboard
@@ -55,7 +57,7 @@ export default function NewDashboardPage() {
     <Page
       withPadding
       headerProps={{
-        title: "Create Dashboard",
+        title: tApp("ui.CreateDashboard"),
         help: {
           description: "Create a new dashboard for your project",
         },
@@ -65,7 +67,7 @@ export default function NewDashboardPage() {
               variant="outline"
               onClick={() => router.push(`/project/${projectId}/dashboards`)}
             >
-              Cancel
+              {tApp("ui.cancel")}
             </Button>
             <Button
               onClick={handleCreateDashboard}
@@ -76,7 +78,7 @@ export default function NewDashboardPage() {
               }
               loading={createDashboard.isPending}
             >
-              Create
+              {tApp("ui.Create")}
             </Button>
           </>
         ),
@@ -84,35 +86,40 @@ export default function NewDashboardPage() {
     >
       <div className="mx-auto my-8 max-w-xl space-y-6">
         <div className="space-y-2">
-          <Label htmlFor="dashboard-name">Dashboard Name</Label>
+          <Label htmlFor="dashboard-name">{tApp("ui.DashboardName")}</Label>
           <Input
             id="dashboard-name"
             value={dashboardName}
             onChange={(e) => {
               setDashboardName(e.target.value);
             }}
-            placeholder="Enter dashboard name"
+            placeholder={tApp("ui.EnterDashboardName")}
             required
           />
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="dashboard-description">Description</Label>
+          <Label htmlFor="dashboard-description">
+            {tApp("ui.description")}
+          </Label>
           <Textarea
             id="dashboard-description"
             value={dashboardDescription}
             onChange={(e) => {
               setDashboardDescription(e.target.value);
             }}
-            placeholder="Describe the purpose of this dashboard. Optional, but very helpful."
+            placeholder={tApp(
+              "ui.DescribeThePurposeOfThisDashboardOptionalButVeryHelpful",
+            )}
             rows={4}
           />
         </div>
 
         <div className="text-muted-foreground text-sm">
           <p>
-            After creating the dashboard, you can add widgets to visualize your
-            data.
+            {tApp(
+              "ui.AfterCreatingTheDashboardYouCanAddWidgetsToVisualizeYourData",
+            )}
           </p>
         </div>
       </div>

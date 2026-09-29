@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import {
   BookOpen,
   LockIcon,
@@ -40,7 +41,8 @@ import {
 } from "@/src/features/v4-migration/V4MigrationBanner";
 import { V4MigrationProjectChip } from "@/src/features/v4-migration/V4MigrationProjectChip";
 import { api } from "@/src/utils/api";
-import { formatCompactRelativeTime } from "@/src/utils/dates";
+import { formatDistanceToNowStrict } from "date-fns";
+import { enUS, zhCN } from "date-fns/locale";
 import { useV4UpgradeUiEnabled } from "@/src/features/v4-migration/useV4UpgradeUiEnabled";
 import { useAccountV4MigrationData } from "@/src/features/v4-migration/hooks/useV4MigrationData";
 import { getProjectMigrationReadiness } from "@/src/features/v4-migration/migrationData";
@@ -53,6 +55,7 @@ const OrganizationProjectTiles = ({
   org: NonNullable<Session["user"]>["organizations"][number];
   search?: string;
 }) => {
+  const { t, i18n } = useTranslation("settings");
   const v4UpgradeUiEnabled = useV4UpgradeUiEnabled();
   const lastTraceQuery = api.organizations.lastTraceByProject.useQuery(
     { orgId: org.id },
@@ -91,7 +94,7 @@ const OrganizationProjectTiles = ({
                 <Link
                   href={`/project/${project.id}`}
                   className="absolute inset-0"
-                  aria-label={`Go to project ${project.name}`}
+                  aria-label={t("goToNamedProject", { name: project.name })}
                 />
               )}
               <CardHeader>
@@ -121,8 +124,19 @@ const OrganizationProjectTiles = ({
                             (t) => t.projectId === project.id,
                           )?.lastTraceAt;
                           return lastTraceAt
-                            ? `Last trace ${formatCompactRelativeTime(new Date(lastTraceAt))}`
-                            : "No traces in the last 30d";
+                            ? t("lastTrace", {
+                                time: formatDistanceToNowStrict(
+                                  new Date(lastTraceAt),
+                                  {
+                                    addSuffix: true,
+                                    locale:
+                                      i18n.resolvedLanguage === "zh-CN"
+                                        ? zhCN
+                                        : enUS,
+                                  },
+                                ),
+                              })
+                            : t("noRecentTraces");
                         })()
                       : null}
                   </p>
@@ -130,7 +144,7 @@ const OrganizationProjectTiles = ({
               )}
               {project.deletedAt && (
                 <CardContent>
-                  <CardDescription>Project is being deleted</CardDescription>
+                  <CardDescription>{t("projectDeleting")}</CardDescription>
                 </CardContent>
               )}
             </Card>
@@ -144,7 +158,9 @@ const OrganizationProjectTiles = ({
               {!project.deletedAt ? (
                 <CardFooter className="gap-2">
                   <Button asChild variant="secondary">
-                    <Link href={`/project/${project.id}`}>Go to project</Link>
+                    <Link href={`/project/${project.id}`}>
+                      {t("goToProject")}
+                    </Link>
                   </Button>
                   <Button asChild variant="ghost">
                     <Link href={`/project/${project.id}/settings`}>
@@ -154,7 +170,7 @@ const OrganizationProjectTiles = ({
                 </CardFooter>
               ) : (
                 <CardContent>
-                  <CardDescription>Project is being deleted</CardDescription>
+                  <CardDescription>{t("projectDeleting")}</CardDescription>
                 </CardContent>
               )}
             </Card>
@@ -165,17 +181,15 @@ const OrganizationProjectTiles = ({
 };
 
 const DemoOrganizationTile = () => {
+  const { t } = useTranslation("settings");
   const capture = usePostHogClientCapture();
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Try Langfuse Demo</CardTitle>
+        <CardTitle>{t("tryDemo")}</CardTitle>
       </CardHeader>
-      <CardContent>
-        We have built a Q&A chatbot that answers questions based on the Langfuse
-        Docs. Interact with it to see traces in Langfuse.
-      </CardContent>
+      <CardContent>{t("demoDescription")}</CardContent>
       <CardFooter>
         <Button asChild variant="secondary">
           <Link
@@ -186,7 +200,7 @@ const DemoOrganizationTile = () => {
               })
             }
           >
-            View Demo Project
+            {t("viewDemoProject")}
           </Link>
         </Button>
       </CardFooter>
@@ -201,6 +215,7 @@ const OrganizationActionButtons = ({
   orgId: string;
   primaryButtonVariant?: "default" | "secondary";
 }) => {
+  const { t } = useTranslation("settings");
   const membersViewAccess = useHasOrganizationAccess({
     organizationId: orgId,
     scope: "organizationMembers:read",
@@ -228,13 +243,13 @@ const OrganizationActionButtons = ({
         <Button asChild variant={primaryButtonVariant}>
           <Link href={createProjectRoute(orgId)}>
             <PlusIcon className="mr-2 h-4 w-4" aria-hidden="true" />
-            New project
+            {t("newProject")}
           </Link>
         </Button>
       ) : (
         <Button disabled variant={primaryButtonVariant}>
           <LockIcon className="mr-2 h-4 w-4" aria-hidden="true" />
-          New project
+          {t("newProject")}
         </Button>
       )}
     </>
@@ -248,6 +263,7 @@ const SingleOrganizationPage = ({
   org: NonNullable<Session["user"]>["organizations"][number];
   search?: string;
 }) => {
+  const { t } = useTranslation("settings");
   const isDemoOrg =
     env.NEXT_PUBLIC_DEMO_ORG_ID === org.id &&
     org.projects.some((p) => p.id === env.NEXT_PUBLIC_DEMO_PROJECT_ID);
@@ -256,7 +272,7 @@ const SingleOrganizationPage = ({
     return (
       <ContainerPage
         headerProps={{
-          title: "Demo Organization",
+          title: t("demoOrganization"),
         }}
       >
         <DemoOrganizationTile />
@@ -283,6 +299,7 @@ const SingleOrganizationProjectOverviewTile = ({
   org: NonNullable<Session["user"]>["organizations"][number];
   search?: string;
 }) => {
+  const { t } = useTranslation("settings");
   const isDemoOrg =
     env.NEXT_PUBLIC_DEMO_ORG_ID === org.id &&
     org.projects.some((p) => p.id === env.NEXT_PUBLIC_DEMO_PROJECT_ID);
@@ -301,7 +318,9 @@ const SingleOrganizationProjectOverviewTile = ({
         title={org.name}
         className="truncate"
         labelBadge={
-          org.id === env.NEXT_PUBLIC_DEMO_ORG_ID ? "Demo Org" : undefined
+          org.id === env.NEXT_PUBLIC_DEMO_ORG_ID
+            ? t("demoOrganization")
+            : undefined
         }
         label={
           isCloudPlan(org.plan)
@@ -324,6 +343,7 @@ const SingleOrganizationProjectOverviewTile = ({
 };
 
 export const OrganizationProjectOverview = () => {
+  const { t } = useTranslation("settings");
   const router = useRouter();
   const queryOrgId = router.query.organizationId;
   const session = useSession();
@@ -334,7 +354,7 @@ export const OrganizationProjectOverview = () => {
   const v4MigrationBannerState = useV4MigrationBannerState(v4UpgradeUiEnabled);
 
   if (organizations === undefined) {
-    return "loading...";
+    return t("loading");
   }
 
   const showOnboarding =
@@ -347,8 +367,8 @@ export const OrganizationProjectOverview = () => {
     if (!org) {
       return (
         <ErrorPage
-          title="Organization not found"
-          message="This organization does not exist or you do not have access to it."
+          title={t("organizationNotFound")}
+          message={t("organizationNotFoundDescription")}
         />
       );
     }
@@ -359,15 +379,14 @@ export const OrganizationProjectOverview = () => {
   return (
     <ContainerPage
       headerProps={{
-        title: "Organizations",
+        title: t("organizations"),
         help: {
-          description:
-            "Organizations help you manage access to projects. Each organization can have multiple projects and team members with different roles.",
+          description: t("organizationsDescription"),
           href: "https://langfuse.com/docs/rbac",
         },
         breadcrumb: [
           {
-            name: "Organizations",
+            name: t("organizations"),
             href: "/",
           },
         ],
@@ -375,14 +394,14 @@ export const OrganizationProjectOverview = () => {
           <>
             <Input
               className="mr-1 w-36 lg:w-56"
-              placeholder="Search projects"
+              placeholder={t("searchProjects")}
               onChange={(e) => setQueryParams({ search: e.target.value })}
             />
             {canCreateOrg && (
               <Button data-testid="create-organization-btn" asChild>
                 <Link href={createOrganizationRoute}>
                   <PlusIcon className="mr-1.5 h-4 w-4" aria-hidden="true" />
-                  New Organization
+                  {t("newOrganization")}
                 </Link>
               </Button>
             )}
@@ -431,20 +450,21 @@ export const OrganizationProjectOverview = () => {
 };
 
 const Onboarding = () => {
+  const { t } = useTranslation("settings");
   const session = useSession();
   const canCreateOrgs = session.data?.user?.canCreateOrganizations;
   return (
     <Card className="mt-5">
       <CardHeader>
         <CardTitle data-testid="create-new-project-title">
-          Get Started
+          {t("getStarted")}
         </CardTitle>
       </CardHeader>
       <CardContent>
         <CardDescription>
           {canCreateOrgs
-            ? "Create an organization to get started. Alternatively, ask your organization admin to invite you."
-            : "You need to get invited to an organization to get started with Langfuse."}
+            ? t("createOrganizationOnboarding")
+            : t("inviteOnboarding")}
         </CardDescription>
       </CardContent>
       <CardFooter className="flex gap-4">
@@ -452,20 +472,20 @@ const Onboarding = () => {
           <Button data-testid="create-project-btn" asChild>
             <Link href={createOrganizationRoute}>
               <PlusIcon className="mr-2 h-4 w-4" aria-hidden="true" />
-              New Organization
+              {t("newOrganization")}
             </Link>
           </Button>
         )}
         <Button variant="secondary" asChild>
           <Link href="https://langfuse.com/docs" target="_blank">
             <BookOpen className="mr-2 h-4 w-4" aria-hidden="true" />
-            Docs
+            {t("docs")}
           </Link>
         </Button>
         <Button variant="secondary" asChild>
           <Link href="https://langfuse.com/docs/ask-ai" target="_blank">
             <MessageSquareText className="mr-2 h-4 w-4" aria-hidden="true" />
-            Ask AI
+            {t("askAi")}
           </Link>
         </Button>
       </CardFooter>

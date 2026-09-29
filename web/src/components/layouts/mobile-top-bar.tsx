@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { type ReactNode } from "react";
 import { useSession } from "next-auth/react";
 import { Menu } from "lucide-react";
@@ -28,6 +29,7 @@ export const MobileTopBar = ({
   showSidebarTrigger?: boolean;
   leadingControl?: ReactNode;
 }) => {
+  const { t } = useTranslation("navigation");
   const { toggleSidebar } = useSidebar();
   const session = useSession();
   const hasAppSidebar = useHasAppSidebar();
@@ -44,7 +46,7 @@ export const MobileTopBar = ({
             variant="ghost"
             size="icon"
             className="h-9 w-9"
-            aria-label="Open menu"
+            aria-label={t("openMenu")}
             onClick={() => toggleSidebar()}
           >
             <Menu className="size-5" />

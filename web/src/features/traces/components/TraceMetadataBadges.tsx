@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 /**
  * TraceMetadataBadges - Extracted badge components for trace metadata
  *
@@ -66,13 +67,16 @@ export function TargetTraceBadge({
 }
 
 export function EnvironmentBadge({ environment }: { environment: string }) {
-  return <Badge text={`Env: ${environment}`} />;
+  const { t: tMore } = useTranslation("coreMore");
+  return <Badge text={tMore("traces.environment", { value: environment })} />;
 }
 
 export function ReleaseBadge({ release }: { release: string }) {
-  return <Badge text={`Release: ${release}`} />;
+  const { t: tMore } = useTranslation("coreMore");
+  return <Badge text={tMore("traces.release", { value: release })} />;
 }
 
 export function VersionBadge({ version }: { version: string }) {
-  return <Badge text={`Version: ${version}`} />;
+  const { t: tMore } = useTranslation("coreMore");
+  return <Badge text={tMore("traces.version", { value: version })} />;
 }

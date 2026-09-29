@@ -1,9 +1,11 @@
 /* eslint-disable no-nested-ternary */
+import { useTranslation } from "react-i18next";
 import { DataTable } from "@/src/components/table/data-table";
 import { type LangfuseColumnDef } from "@/src/components/table/types";
 import { api, type RouterOutputs } from "@/src/utils/api";
 import { safeExtract } from "@/src/utils/map-utils";
 import { formatDistanceToNow } from "date-fns";
+import { enUS, zhCN } from "date-fns/locale";
 import { StatusBadge } from "@/src/components/ui/StatusBadge/StatusBadge";
 import { NumberParam, useQueryParams, withDefault } from "use-query-params";
 import { ActionButton } from "@/src/components/ActionButton";
@@ -32,6 +34,7 @@ import { createUserTableColumn } from "@/src/components/design-system/table/colu
 type BatchExportRow = RouterOutputs["batchExport"]["all"]["exports"][number];
 
 export function BatchExportsTable(props: { projectId: string }) {
+  const { t, i18n } = useTranslation("settingsMore");
   const [paginationState, setPaginationState] = useQueryParams({
     pageIndex: withDefault(NumberParam, 0),
     pageSize: withDefault(NumberParam, 10),
@@ -67,7 +70,7 @@ export function BatchExportsTable(props: { projectId: string }) {
     {
       accessorKey: "name",
       id: "name",
-      header: "Name",
+      header: t("common.name"),
       size: 200,
       cell: ({ row }) => {
         const name = row.getValue("name") as string;
@@ -82,14 +85,24 @@ export function BatchExportsTable(props: { projectId: string }) {
                 </TooltipTrigger>
                 <TooltipContent>
                   <div className="space-y-1">
-                    <div>Created: {new Date(createdAt).toLocaleString()}</div>
                     <div>
-                      Finished:{" "}
-                      {finishedAt ? new Date(finishedAt).toLocaleString() : "-"}
+                      {t("batch.createdAt", {
+                        date: new Date(createdAt).toLocaleString(i18n.language),
+                      })}
                     </div>
                     <div>
-                      Download expires:{" "}
-                      {expiresAt ? new Date(expiresAt).toLocaleString() : "-"}
+                      {t("batch.finishedAt", {
+                        date: finishedAt
+                          ? new Date(finishedAt).toLocaleString(i18n.language)
+                          : "-",
+                      })}
+                    </div>
+                    <div>
+                      {t("batch.downloadExpires", {
+                        date: expiresAt
+                          ? new Date(expiresAt).toLocaleString(i18n.language)
+                          : "-",
+                      })}
                     </div>
                   </div>
                 </TooltipContent>
@@ -102,7 +115,7 @@ export function BatchExportsTable(props: { projectId: string }) {
     {
       accessorKey: "status",
       id: "status",
-      header: "Status",
+      header: t("common.status"),
       size: 90,
       cell: ({ row }) => {
         const { status, log } = row.original;
@@ -128,7 +141,7 @@ export function BatchExportsTable(props: { projectId: string }) {
     {
       accessorKey: "isDownloadable",
       id: "action",
-      header: "Action",
+      header: t("common.action"),
       size: 130,
       // One state-dependent action per row: Cancel while queued/processing,
       // Download (or Expired) once completed — the states never coexist.
@@ -160,12 +173,14 @@ export function BatchExportsTable(props: { projectId: string }) {
                 );
               }}
             >
-              Download
+              {t("batch.download")}
             </ActionButton>
           );
         }
         if (status === "COMPLETED" && isExpired) {
-          return <span className="text-muted-foreground">Expired</span>;
+          return (
+            <span className="text-muted-foreground">{t("batch.expired")}</span>
+          );
         }
         if (status === "QUEUED" || status === "PROCESSING") {
           return (
@@ -187,19 +202,18 @@ export function BatchExportsTable(props: { projectId: string }) {
                     setCancelDialogOpen(true);
                   }}
                 >
-                  Cancel
+                  {t("common.cancel")}
                 </ActionButton>
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Cancel batch export?</AlertDialogTitle>
+                  <AlertDialogTitle>{t("batch.cancelTitle")}</AlertDialogTitle>
                   <AlertDialogDescription>
-                    Are you sure you want to cancel this batch export? This
-                    action cannot be undone.
+                    {t("batch.cancelHint")}
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel>No, keep it</AlertDialogCancel>
+                  <AlertDialogCancel>{t("batch.keep")}</AlertDialogCancel>
                   <AlertDialogAction
                     onClick={() => {
                       cancelBatchExport.mutate({
@@ -208,7 +222,7 @@ export function BatchExportsTable(props: { projectId: string }) {
                       });
                     }}
                   >
-                    Yes, cancel export
+                    {t("batch.confirmCancel")}
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
@@ -221,7 +235,7 @@ export function BatchExportsTable(props: { projectId: string }) {
     {
       accessorKey: "expiresAt",
       id: "expiresAt",
-      header: "Expires",
+      header: t("batch.expires"),
       size: 130,
       cell: ({ row }) => {
         const { status, expiresAt, isExpired } = row.original;
@@ -232,8 +246,11 @@ export function BatchExportsTable(props: { projectId: string }) {
           return null;
         }
         return (
-          <span title={new Date(expiresAt).toLocaleString()}>
-            {formatDistanceToNow(new Date(expiresAt), { addSuffix: true })}
+          <span title={new Date(expiresAt).toLocaleString(i18n.language)}>
+            {formatDistanceToNow(new Date(expiresAt), {
+              addSuffix: true,
+              locale: i18n.language === "zh-CN" ? zhCN : enUS,
+            })}
           </span>
         );
       },
@@ -241,15 +258,15 @@ export function BatchExportsTable(props: { projectId: string }) {
     {
       accessorKey: "format",
       id: "format",
-      header: "Format",
+      header: t("batch.format"),
       size: 70,
     },
     createUserTableColumn<BatchExportRow>({
       accessorKey: "user",
-      header: "Created By",
+      header: t("common.createdBy"),
       size: 150,
       variant: "avatar",
-      emptyValue: "Unknown",
+      emptyValue: t("common.unknown"),
     }),
   ] as LangfuseColumnDef<BatchExportRow>[];
 

@@ -11,6 +11,7 @@ import { Input } from "@/src/components/ui/input";
 import { Label } from "@/src/components/ui/label";
 import { Textarea } from "@/src/components/ui/textarea";
 import { showErrorToast } from "@/src/features/notifications";
+import { useTranslation } from "react-i18next";
 
 interface EditDialogDashboardContentProps {
   closeDialog: () => void;
@@ -27,6 +28,7 @@ export function EditDialogDashboardContent({
   initialName,
   initialDescription,
 }: EditDialogDashboardContentProps) {
+  const { t: tApp } = useTranslation("app");
   const [name, setName] = useState(initialName);
   const [description, setDescription] = useState(initialDescription);
   const utils = api.useUtils();
@@ -58,26 +60,26 @@ export function EditDialogDashboardContent({
   return (
     <>
       <DialogHeader>
-        <DialogTitle>Edit Dashboard</DialogTitle>
+        <DialogTitle>{tApp("ui.EditDashboard")}</DialogTitle>
       </DialogHeader>
       <DialogBody>
         <div className="grid gap-4 py-4">
           <div className="grid gap-2">
-            <Label htmlFor="name">Name</Label>
+            <Label htmlFor="name">{tApp("ui.name")}</Label>
             <Input
               id="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Dashboard name"
+              placeholder={tApp("ui.DashboardName")}
             />
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="description">Description</Label>
+            <Label htmlFor="description">{tApp("ui.description")}</Label>
             <Textarea
               id="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Dashboard description"
+              placeholder={tApp("ui.DashboardDescription")}
               rows={3}
             />
           </div>
@@ -86,14 +88,14 @@ export function EditDialogDashboardContent({
       <DialogFooter>
         <div className="flex gap-2">
           <Button onClick={closeDialog} variant="outline" type="button">
-            Cancel
+            {tApp("ui.cancel")}
           </Button>
           <Button
             onClick={handleSave}
             type="button"
             loading={updateDashboard.isPending}
           >
-            Save Changes
+            {tApp("ui.SaveChanges")}
           </Button>
         </div>
       </DialogFooter>

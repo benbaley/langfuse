@@ -1,5 +1,6 @@
 /* eslint-disable no-nested-ternary */
 /* eslint-disable @repo/no-style-props, @repo/no-margin-on-root-elements */
+import { useTranslation } from "react-i18next";
 import {
   type default as React,
   createContext,
@@ -215,6 +216,7 @@ export function DataTableControls({
   blockedColumnReason,
   layout = "panel",
 }: DataTableControlsProps) {
+  const { t } = useTranslation("common");
   const { setOpen, tableName, isMobile } = useDataTableControls();
   const { isLangfuseCloud } = useLangfuseCloudRegion();
   const capture = usePostHogClientCapture();
@@ -530,7 +532,7 @@ export function DataTableControls({
           label={filter.label}
           tooltip={filter.tooltip}
           help={filter.help}
-          summary={getFacetSummary(filter)}
+          summary={getFacetSummary(filter, t)}
           summaryIcon={
             summaryValue !== null
               ? filter.renderIcon?.(summaryValue)
@@ -569,7 +571,7 @@ export function DataTableControls({
           label={filter.label}
           tooltip={filter.tooltip}
           help={filter.help}
-          summary={getFacetSummary(filter)}
+          summary={getFacetSummary(filter, t)}
           expanded={filter.expanded}
           loading={filter.loading}
           min={filter.min}
@@ -595,7 +597,7 @@ export function DataTableControls({
           label={filter.label}
           tooltip={filter.tooltip}
           help={filter.help}
-          summary={getFacetSummary(filter)}
+          summary={getFacetSummary(filter, t)}
           expanded={filter.expanded}
           loading={filter.loading}
           value={filter.value}
@@ -616,7 +618,7 @@ export function DataTableControls({
           label={filter.label}
           tooltip={filter.tooltip}
           help={filter.help}
-          summary={getFacetSummary(filter)}
+          summary={getFacetSummary(filter, t)}
           expanded={filter.expanded}
           loading={filter.loading}
           keyOptions={filter.keyOptions}
@@ -641,7 +643,7 @@ export function DataTableControls({
           label={filter.label}
           tooltip={filter.tooltip}
           help={filter.help}
-          summary={getFacetSummary(filter)}
+          summary={getFacetSummary(filter, t)}
           expanded={filter.expanded}
           loading={filter.loading}
           keyOptions={filter.keyOptions}
@@ -665,7 +667,7 @@ export function DataTableControls({
           label={filter.label}
           tooltip={filter.tooltip}
           help={filter.help}
-          summary={getFacetSummary(filter)}
+          summary={getFacetSummary(filter, t)}
           expanded={filter.expanded}
           loading={filter.loading}
           keyOptions={filter.keyOptions}
@@ -689,7 +691,7 @@ export function DataTableControls({
           label={filter.label}
           tooltip={filter.tooltip}
           help={filter.help}
-          summary={getFacetSummary(filter)}
+          summary={getFacetSummary(filter, t)}
           expanded={filter.expanded}
           loading={filter.loading}
           keyOptions={filter.keyOptions}
@@ -791,7 +793,9 @@ export function DataTableControls({
           query hides like the rest. */}
       {facetSearchQuery !== "" && visibleFilters.length === 0 && (
         <p className="text-muted-foreground px-3 pt-6 text-center text-xs break-words">
-          {`No filters match "${facetSearchQuery}"`}
+          {t("noFiltersMatchQuery", {
+            query: facetSearchQuery,
+          })}
         </p>
       )}
 
@@ -808,7 +812,7 @@ export function DataTableControls({
         >
           {visibleFilters.length === 0 && (
             <p className="text-muted-foreground pb-2 text-xs">
-              No active filters.
+              {t("noActiveFilters")}
             </p>
           )}
           {/* Popover + command list, not a DropdownMenu: the catalog runs to
@@ -828,13 +832,13 @@ export function DataTableControls({
                 disabled={addableFilters.length === 0}
               >
                 <Plus className="mr-1.5 h-3.5 w-3.5" />
-                Add filter
+                {t("addFilter")}
               </Button>
             </PopoverTrigger>
             <PopoverContent align="start" className="w-56 p-0">
               <InputCommand shouldFilter={false}>
                 <InputCommandInput
-                  placeholder="Search filters"
+                  placeholder={t("searchFilters")}
                   variant="bottom"
                   value={addFilterSearch}
                   onValueChange={(query) => {
@@ -845,7 +849,9 @@ export function DataTableControls({
                 <InputCommandList className="max-h-72">
                   {rankedAddableFilters.length === 0 ? (
                     <p className="text-muted-foreground px-2 py-6 text-center text-xs">
-                      No filters match &quot;{addFilterSearch.trim()}&quot;
+                      {t("noFiltersMatchQuery", {
+                        query: addFilterSearch.trim(),
+                      })}
                     </p>
                   ) : (
                     <InputCommandGroup>
@@ -901,13 +907,13 @@ export function DataTableControls({
                   setOpen(true);
                   emitSidebarToggled(true, "rail");
                 }}
-                aria-label="Show filters"
+                aria-label={t("showFilters")}
                 className="h-6 w-6"
               >
                 <PanelLeftOpen className="h-3.5 w-3.5" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="right">Show filters</TooltipContent>
+            <TooltipContent side="right">{t("showFilters")}</TooltipContent>
           </Tooltip>
         </div>
         {activeFilterCount > 0 && (
@@ -942,7 +948,7 @@ export function DataTableControls({
                 .slice(0, 6)
                 .map((filter) => {
                   const line = `${filter.label}: ${
-                    getFacetSummary(filter) ?? "filtered"
+                    getFacetSummary(filter, t) ?? "filtered"
                   }`;
                   return (
                     <p key={filter.column} className="truncate" title={line}>
@@ -983,7 +989,7 @@ export function DataTableControls({
                   setOpen(false);
                   emitSidebarToggled(false, "header");
                 }}
-                aria-label="Close filters"
+                aria-label={t("closeFilters")}
                 className="-ml-1 h-6 w-6"
               >
                 <X className="h-4 w-4" />
@@ -998,17 +1004,17 @@ export function DataTableControls({
                       setOpen(false);
                       emitSidebarToggled(false, "header");
                     }}
-                    aria-label="Hide filters"
+                    aria-label={t("hideFilters")}
                     className="-ml-1 h-6 w-6"
                   >
                     <PanelLeftClose className="h-3.5 w-3.5" />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent>Hide filters</TooltipContent>
+                <TooltipContent>{t("hideFilters")}</TooltipContent>
               </Tooltip>
             )}
             {layout !== "inline" && (
-              <span className="text-sm font-bold">Filters</span>
+              <span className="text-sm font-bold">{t("filters")}</span>
             )}
             {/* Inline: the count already shows on the sheet's Filters trigger
                 and footer, so a bare number here (title hidden) is just noise. */}
@@ -1029,7 +1035,7 @@ export function DataTableControls({
                       </Button>
                     </PopoverTrigger>
                   </TooltipTrigger>
-                  <TooltipContent>Filter with AI</TooltipContent>
+                  <TooltipContent>{t("filterWithAI")}</TooltipContent>
                 </Tooltip>
                 <PopoverContent align="center" className="w-[400px]">
                   <DataTableAIFilters
@@ -1073,8 +1079,8 @@ export function DataTableControls({
                   }}
                   aria-label={
                     expandedVisibleCount === 0
-                      ? "Expand all filters"
-                      : "Collapse all filters"
+                      ? t("expandAllFilters")
+                      : t("collapseAllFilters")
                   }
                 >
                   {expandedVisibleCount === 0 ? (
@@ -1086,8 +1092,8 @@ export function DataTableControls({
               </TooltipTrigger>
               <TooltipContent>
                 {expandedVisibleCount === 0
-                  ? "Expand all filters"
-                  : "Collapse all filters"}
+                  ? t("expandAllFilters")
+                  : t("collapseAllFilters")}
               </TooltipContent>
             </Tooltip>
             <DropdownMenu>
@@ -1098,13 +1104,13 @@ export function DataTableControls({
                       variant="ghost"
                       size="icon"
                       className="h-6 w-6"
-                      aria-label="Filter options"
+                      aria-label={t("filterOptions")}
                     >
                       <MoreVertical className="h-3.5 w-3.5" />
                     </Button>
                   </DropdownMenuTrigger>
                 </TooltipTrigger>
-                <TooltipContent>Filter options</TooltipContent>
+                <TooltipContent>{t("filterOptions")}</TooltipContent>
               </Tooltip>
               <DropdownMenuContent align="end" className="w-48">
                 <DropdownMenuItem
@@ -1121,7 +1127,7 @@ export function DataTableControls({
                   }}
                   className="cursor-pointer"
                 >
-                  Clear all filters
+                  {t("clearAllFilters")}
                 </DropdownMenuItem>
                 {/* Plain item with a TRAILING check instead of
                     DropdownMenuCheckboxItem: its reserved leading indicator
@@ -1146,7 +1152,7 @@ export function DataTableControls({
                     });
                   }}
                 >
-                  Show only active
+                  {t("showOnlyActive")}
                   {showOnlyActive && <Check className="ml-auto h-3.5 w-3.5" />}
                 </DropdownMenuItem>
                 {/* "Collapse sidebar" is desktop-rail chrome — there's no rail
@@ -1163,7 +1169,7 @@ export function DataTableControls({
                       }}
                       className="cursor-pointer"
                     >
-                      Collapse sidebar
+                      {t("collapseSidebar")}
                     </DropdownMenuItem>
                   </>
                 )}
@@ -1189,8 +1195,8 @@ export function DataTableControls({
             <div className="relative">
               <Search className="text-muted-foreground absolute top-1/2 left-2 h-3.5 w-3.5 -translate-y-1/2" />
               <Input
-                placeholder="Search filters"
-                aria-label="Search filters"
+                placeholder={t("searchFilters")}
+                aria-label={t("searchFilters")}
                 value={facetSearch}
                 onChange={(event) => {
                   setFacetSearch(event.target.value);
@@ -1220,7 +1226,7 @@ export function DataTableControls({
                     setFacetSearch("");
                     noteFacetSearch("facet_list", "");
                   }}
-                  aria-label="Clear filter search"
+                  aria-label={t("clearFilterSearch")}
                   className="absolute top-1/2 right-0.5 h-5 w-5 -translate-y-1/2"
                 >
                   <IconX className="h-3 w-3" />
@@ -1741,6 +1747,7 @@ function CategoricalSelectContent({
   | "operator"
   | "onOperatorChange"
 >) {
+  const { t } = useTranslation("common");
   // "Show more values" reveals the next PORTION (it does what it says — not
   // expand-everything: value lists can run to 1000+ user IDs); "Show fewer
   // values" collapses back to the cap. Resets by unmounting on collapse.
@@ -1968,7 +1975,7 @@ function CategoricalSelectContent({
               <div className="relative">
                 <Search className="text-muted-foreground absolute top-1/2 left-2 h-3.5 w-3.5 -translate-y-1/2" />
                 <Input
-                  placeholder="Filter values"
+                  placeholder={t("filterValues")}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="h-8 pl-7 text-xs"
@@ -2269,6 +2276,7 @@ function StringFacet({
   disabledReason,
   onReset,
 }: StringFacetProps) {
+  const { t } = useTranslation("common");
   const [localValue, setLocalValue] = useState<string>(value);
   // Same render-time adoption as NumericFacet above (no mirror effect).
   const [lastValue, setLastValue] = useState<string>(value);
@@ -2327,7 +2335,7 @@ function StringFacet({
             type="text"
             id={`string-${filterKey}`}
             value={localValue}
-            placeholder="Search"
+            placeholder={t("search")}
             onChange={handleInputChange}
             className="h-8"
           />
@@ -2568,6 +2576,7 @@ function TextFilterSection({
   onAdd?: (op: "contains" | "does not contain", val: string) => void;
   onRemove?: (op: "contains" | "does not contain", val: string) => void;
 }) {
+  const { t } = useTranslation("common");
   const [inputValue, setInputValue] = useState("");
   const [selectedOperator, setSelectedOperator] = useState<
     "contains" | "does not contain"
@@ -2616,7 +2625,7 @@ function TextFilterSection({
               handleAdd();
             }
           }}
-          placeholder="Enter value..."
+          placeholder={t("enterValue")}
           className="h-7 flex-1 text-xs"
         />
         <Button
@@ -2690,6 +2699,7 @@ function FilterValueCheckbox({
   totalSelected,
   disabled = false,
 }: FilterValueCheckboxProps) {
+  const { i18n } = useTranslation("common");
   // Show "All" when clicking would reverse selection (only one item selected)
   const labelText = checked && totalSelected === 1 ? "All" : "Only";
 
@@ -2749,7 +2759,7 @@ function FilterValueCheckbox({
 
         {count > 0 ? (
           <span className="text-muted-foreground ml-auto w-7 shrink-0 pl-1 text-right text-xs">
-            {compactNumberFormatter(count, 0)}
+            {compactNumberFormatter(count, 0, i18n.resolvedLanguage)}
           </span>
         ) : null}
       </div>

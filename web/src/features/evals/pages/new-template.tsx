@@ -2,8 +2,10 @@ import Page from "@/src/components/layouts/page";
 import { EvalTemplateForm } from "@/src/features/evals/components/template-form";
 import { useHasProjectAccess } from "@/src/features/rbac";
 import { useRouter } from "next/router";
+import { useTranslation } from "react-i18next";
 
 export default function NewTemplatesPage() {
+  const { t: tFeatures } = useTranslation("features");
   const router = useRouter();
   const projectId = router.query.projectId as string;
 
@@ -13,7 +15,7 @@ export default function NewTemplatesPage() {
   });
 
   if (!hasAccess) {
-    return <div>You do not have access to this page.</div>;
+    return <div>{tFeatures("ui.youDoNotHaveAccessToThisPage")}</div>;
   }
 
   return (

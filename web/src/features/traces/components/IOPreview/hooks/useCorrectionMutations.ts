@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useState, useCallback } from "react";
 import { api } from "@/src/utils/api";
 import { useCorrectionCache } from "@/src/features/corrections";
@@ -26,6 +27,7 @@ export function useCorrectionMutations({
   environment,
   effectiveCorrection,
 }: UseCorrectionMutationsParams) {
+  const { t: tMore } = useTranslation("coreMore");
   const correctionCache = useCorrectionCache();
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved">(
     "idle",
@@ -80,7 +82,7 @@ export function useCorrectionMutations({
       return { previousValue, correctionId: effectiveCorrection.id };
     },
     onError: (error, _, context) => {
-      toast.error("Failed to delete correction");
+      toast.error(tMore("io.deleteCorrectionFailed"));
       // Rollback delete - restore to cache if we had a previous value
       if (context?.correctionId) {
         correctionCache.rollbackDelete(

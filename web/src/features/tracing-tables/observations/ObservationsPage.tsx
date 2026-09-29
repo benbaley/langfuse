@@ -9,8 +9,11 @@ import { useReadPath } from "@/src/features/events";
 import ObservationsEventsTable from "@/src/features/events/components/EventsTable";
 import { useQueryProject } from "@/src/features/projects";
 import { V4MigrationDelayBadge } from "@/src/features/v4-migration/V4MigrationDelayBadge";
+import { useTranslation, useTranslation as useNavigationTranslation } from "react-i18next";
 
 export default function ObservationsPage() {
+  const { t: tNavigation } = useNavigationTranslation("navigation");
+  const { t: tFeatures } = useTranslation("features");
   const router = useRouter();
   const projectId = router.query.projectId as string;
   const { isV4, isResolved } = useReadPath();
@@ -39,22 +42,21 @@ export default function ObservationsPage() {
   return (
     <Page
       headerProps={{
-        title: "Tracing",
+        title: tFeatures("ui.tracing"),
         // Match traces/index.tsx: no delay badge while onboarding tells the
         // user to set up tracing for the first time.
         titleBadges: showOnboarding ? undefined : (
           <V4MigrationDelayBadge page="observations" />
         ),
         help: {
-          description:
-            "An observation captures a single function call in an application. See docs to learn more.",
+          description: tFeatures("help.observations"),
           href: "https://langfuse.com/docs/observability/data-model",
         },
         tabsProps:
           isV4 || !isResolved
             ? undefined
             : {
-                tabs: getTracingTabs(projectId),
+                tabs: getTracingTabs(projectId, tNavigation),
                 activeTab: TRACING_TABS.OBSERVATIONS,
               },
       }}

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Switch } from "@/src/components/design-system/Switch/Switch";
 import { Tooltip } from "@/src/components/design-system/Tooltip/Tooltip";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics";
@@ -16,6 +17,7 @@ export function RuleActiveSwitchCell({
   projectId: string;
   hasWriteAccess: boolean;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const capture = usePostHogClientCapture();
   const utils = api.useUtils();
   const setEnabled = api.evalsV2.rules.setEnabled.useMutation({
@@ -38,7 +40,7 @@ export function RuleActiveSwitchCell({
   const isLegacy = isLegacyEvalTarget(rule.targetObject);
   const legacyDisabledReason =
     isLegacy && !rule.enabled
-      ? "Legacy rules cannot be re-enabled because trace- and dataset-level evaluations are deprecated. Create an observation-based rule instead."
+      ? tFeatures("evalsMore:rules.legacyDisabled")
       : null;
 
   const switchControl = (

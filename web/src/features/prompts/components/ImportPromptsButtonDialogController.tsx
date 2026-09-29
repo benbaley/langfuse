@@ -16,27 +16,41 @@ import { api } from "@/src/utils/api";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics";
 import { CreatePromptSchema } from "@langfuse/shared";
 import { z } from "zod";
+import { useTranslation } from "react-i18next";
 
 type ImportItem = z.infer<typeof CreatePromptSchema>;
 
 const IMPORT_MAX = 500;
 
-const importPayloadSchema = z
-  .array(CreatePromptSchema)
-  .min(1, "File contains an empty array.")
-  .max(
-    IMPORT_MAX,
-    `File contains more than ${IMPORT_MAX} prompts — maximum per import is ${IMPORT_MAX}. Split the file and import in batches.`,
-  );
+const importPayloadSchema = z.array(CreatePromptSchema);
+
+type LocalImportErrorKey =
+  | "prompts.importArray"
+  | "prompts.importEmpty"
+  | "prompts.importTooMany"
+  | "prompts.importInvalid"
+  | "prompts.importRead"
+  | "prompts.importParse"
+  | "prompts.importFailed";
+
+type ImportError = { key: LocalImportErrorKey } | { message: string };
+
+class ImportValidationError extends Error {
+  constructor(readonly key: LocalImportErrorKey) {
+    super(key);
+  }
+}
 
 function validateImportPayload(raw: unknown): ImportItem[] {
   if (!Array.isArray(raw)) {
-    throw new Error("File must contain a JSON array of prompts.");
+    throw new ImportValidationError("prompts.importArray");
   }
+  if (raw.length === 0) throw new ImportValidationError("prompts.importEmpty");
+  if (raw.length > IMPORT_MAX)
+    throw new ImportValidationError("prompts.importTooMany");
   const result = importPayloadSchema.safeParse(raw);
   if (!result.success) {
-    const firstIssue = result.error.issues[0];
-    throw new Error(firstIssue?.message ?? "Invalid import payload.");
+    throw new ImportValidationError("prompts.importInvalid");
   }
   return result.data;
 }
@@ -49,8 +63,13 @@ type ImportResult = {
 
 type ImportState =
   | { step: "idle" }
-  | { step: "parsed"; file: File; items: ImportItem[]; importError?: string }
-  | { step: "error"; file?: File; error: string }
+  | {
+      step: "parsed";
+      file: File;
+      items: ImportItem[];
+      importError?: ImportError;
+    }
+  | { step: "error"; file?: File; error: ImportError }
   | { step: "done"; results: ImportResult[] };
 
 const ImportPromptsDialogContent: React.FC<{
@@ -58,6 +77,9 @@ const ImportPromptsDialogContent: React.FC<{
   onClose: () => void;
   onImport: (items: ImportItem[]) => Promise<{ results: ImportResult[] }>;
 }> = ({ isImportPending, onClose, onImport }) => {
+  const { t: tMore } = useTranslation("coreMore");
+  const { t: tFeatures } = useTranslation("features");
+  const { t: tCore } = useTranslation("core");
   const capture = usePostHogClientCapture();
   const [state, setState] = useState<ImportState>({ step: "idle" });
 
@@ -71,7 +93,8 @@ const ImportPromptsDialogContent: React.FC<{
     reader.onload = (event) => {
       try {
         const text = event.target?.result;
-        if (typeof text !== "string") throw new Error("Failed to read file.");
+        if (typeof text !== "string")
+          throw new ImportValidationError("prompts.importRead");
         const raw = JSON.parse(text) as unknown;
         const items = validateImportPayload(raw);
         setState({ step: "parsed", file, items });
@@ -79,10 +102,17 @@ const ImportPromptsDialogContent: React.FC<{
         setState({
           step: "error",
           file,
-          error: err instanceof Error ? err.message : "Failed to parse file.",
+          error: {
+            key:
+              err instanceof ImportValidationError
+                ? err.key
+                : "prompts.importParse",
+          },
         });
       }
     };
+    reader.onerror = () =>
+      setState({ step: "error", file, error: { key: "prompts.importRead" } });
     reader.readAsText(file);
   };
 
@@ -99,7 +129,9 @@ const ImportPromptsDialogContent: React.FC<{
       setState({
         ...parsedState,
         importError:
-          error instanceof Error ? error.message : "Failed to import prompts.",
+          error instanceof Error
+            ? { message: error.message }
+            : { key: "prompts.importFailed" },
       });
     }
   };
@@ -113,7 +145,10 @@ const ImportPromptsDialogContent: React.FC<{
         <DialogBody className="flex flex-col gap-4">
           <div className="flex flex-col gap-2">
             <p className="text-sm font-bold">
-              Import complete — {successCount} succeeded, {failCount} failed.
+              {tCore("prompts.importComplete", {
+                succeeded: successCount,
+                failed: failCount,
+              })}
             </p>
             <div className="max-h-64 overflow-y-auto rounded-md border p-2 text-sm">
               {state.results.map((r, index) => (
@@ -140,7 +175,7 @@ const ImportPromptsDialogContent: React.FC<{
 
         <DialogFooter>
           <Button onClick={onClose} className="w-full">
-            Done
+            {tFeatures("ui.done")}
           </Button>
         </DialogFooter>
       </>
@@ -161,12 +196,10 @@ const ImportPromptsDialogContent: React.FC<{
     <>
       <DialogBody className="flex flex-col gap-4">
         <p className="text-muted-foreground text-sm">
-          Upload a JSON file exported from Langfuse. Each prompt will be created
-          as a new version if the name already exists.
+          {tCore("prompts.importDescription")}
         </p>
         <p className="text-muted-foreground text-sm">
-          The production label is not imported. The newest imported version is
-          automatically labeled latest.
+          {tCore("prompts.importProductionLabel")}
         </p>
         <Dropzone
           accept={{ "application/json": [".json"] }}
@@ -175,21 +208,24 @@ const ImportPromptsDialogContent: React.FC<{
           maxSize={undefined}
           minSize={undefined}
           onDrop={handleFiles}
-          onError={(error) => setState({ step: "error", error: error.message })}
+          onError={(error) =>
+            setState({ step: "error", error: { message: error.message } })
+          }
           src={selectedFile ? [selectedFile] : undefined}
           variant="panel"
         />
 
         {error && (
           <p role="alert" className="text-destructive text-sm">
-            {error}
+            {"key" in error
+              ? tMore(error.key, { max: IMPORT_MAX })
+              : error.message}
           </p>
         )}
 
         {parsedItems && (
           <p className="text-muted-foreground text-sm">
-            {parsedItems.length} prompt
-            {parsedItems.length !== 1 ? "s" : ""} ready to import.
+            {tCore("prompts.importReady", { count: parsedItems.length })}
           </p>
         )}
       </DialogBody>
@@ -203,10 +239,10 @@ const ImportPromptsDialogContent: React.FC<{
           {isImportPending ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Importing…
+              {tFeatures("ui.importing")}
             </>
           ) : (
-            "Import"
+            tFeatures("ui.import")
           )}
         </Button>
       </DialogFooter>
@@ -224,6 +260,8 @@ export function ImportPromptsButtonDialogController({
     openDialog: () => void;
   }) => ReactNode;
 }) {
+  const { t: tMore } = useTranslation("coreMore");
+  const { t: tFeatures } = useTranslation("features");
   const [open, setOpen] = useState(false);
   const hasAccess = useHasProjectAccess({
     projectId,
@@ -236,7 +274,7 @@ export function ImportPromptsButtonDialogController({
 
   const disabled = hasAccess
     ? undefined
-    : { reason: "You don't have permission to import prompts." };
+    : { reason: tMore("prompts.importPermission") };
 
   const openDialog = () => {
     if (!hasAccess) return;
@@ -255,7 +293,7 @@ export function ImportPromptsButtonDialogController({
       {children({ disabled, openDialog })}
       <DialogContent className="max-h-[90vh] min-h-0 sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Import prompts</DialogTitle>
+          <DialogTitle>{tFeatures("ui.importPrompts")}</DialogTitle>
         </DialogHeader>
         <ImportPromptsDialogContent
           isImportPending={importMutation.isPending}

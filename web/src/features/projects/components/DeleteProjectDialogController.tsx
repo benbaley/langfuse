@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { ExternalLink } from "lucide-react";
 import { type ReactNode } from "react";
 import { useRouter } from "next/router";
@@ -21,6 +22,7 @@ type DeleteProjectDialogControllerProps = {
 export function DeleteProjectDialogController({
   children,
 }: DeleteProjectDialogControllerProps) {
+  const { t } = useTranslation("settings");
   const router = useRouter();
   const capture = usePostHogClientCapture();
   const { project, organization } = useQueryProject();
@@ -60,11 +62,11 @@ export function DeleteProjectDialogController({
         ) {
           return (
             <Dialog
-              title="Project cannot be deleted"
-              text="This project is used as the AI Gateway ingestion project. Select another ingestion project before deleting it."
+              title={t("projectProtected")}
+              text={t("projectProtectedDescription")}
               actions={[
                 {
-                  label: "Open AI Gateway settings",
+                  label: t("openGatewaySettings"),
                   icon: ExternalLink,
                   onClick: () =>
                     router.push(

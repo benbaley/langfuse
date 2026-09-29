@@ -10,6 +10,7 @@ import { BarListChartArea } from "@/src/features/dashboard/components/cards/BarL
 import { traceViewQuery } from "@/src/features/dashboard/lib/dashboard-utils";
 import { useScheduledDashboardExecuteQuery } from "@/src/features/dashboard/hooks/useDashboardQueryScheduler";
 import { cn } from "@/src/utils/tailwind";
+import { useTranslation } from "react-i18next";
 
 // Cap on bars fetched and rendered; the top list scrolls within the tile when
 // they don't all fit.
@@ -34,6 +35,7 @@ export const TracesBarListChart = ({
   metricsVersion: ViewVersion;
   schedulerId?: string;
 }) => {
+  const { t: tApp } = useTranslation("app");
   const isV2 = metricsVersion === "v2";
   const traceNameField = isV2 ? "traceName" : "name";
   const countField = isV2 ? "uniq_traceId" : "count_count";
@@ -116,7 +118,7 @@ export const TracesBarListChart = ({
       // overflowing the tile.
       className={cn(className, "h-full")}
       cardContentClassName="min-h-0"
-      title="Traces"
+      title={tApp("ui.traces")}
       description={null}
       isLoading={isLoading || traces.isPending || totalTraces.isPending}
     >
@@ -127,7 +129,7 @@ export const TracesBarListChart = ({
               ? Number(totalTraces.data[0][countField])
               : 0,
           )}
-          description="Total traces tracked"
+          description={tApp("ui.TotalTracesTracked")}
         />
         {transformedTraces.length > 0 ? (
           <BarListChartArea
@@ -140,7 +142,9 @@ export const TracesBarListChart = ({
         ) : (
           <NoDataOrLoading
             isLoading={isLoading || traces.isPending || totalTraces.isPending}
-            description="Traces contain details about LLM applications and can be created using the SDK."
+            description={tApp(
+              "ui.TracesContainDetailsAboutLlmApplicationsAndCanBeCreatedUsingTheSdk",
+            )}
             href="https://langfuse.com/docs/get-started"
             className="h-auto grow"
           />

@@ -2,6 +2,7 @@ import { Tabs } from "@/src/components/design-system/Tabs/Tabs";
 import { Switch } from "@/src/components/design-system/Switch/Switch";
 import { useJsonBetaToggle } from "@/src/features/traces/hooks/useJsonBetaToggle";
 import { type JsonViewPreference } from "@/src/components/ui/jsonViewPreference";
+import { useTranslation } from "react-i18next";
 
 export type ViewMode = JsonViewPreference;
 
@@ -16,6 +17,8 @@ export function ViewModeToggle({
   onViewChange,
   compensateScrollRef,
 }: ViewModeToggleProps) {
+  const { t: tMore } = useTranslation("coreMore");
+  const { t: tFeatures } = useTranslation("features");
   const {
     jsonBetaEnabled,
     selectedViewTab,
@@ -32,7 +35,11 @@ export function ViewModeToggle({
           onValueChange={handleViewTabChange}
         >
           <Tabs.List size="sm">
-            <Tabs.Trigger value="pretty" size="sm" label="Formatted" />
+            <Tabs.Trigger
+              value="pretty"
+              size="sm"
+              label={tFeatures("ui.formatted")}
+            />
             <Tabs.Trigger value="json" size="sm" label="JSON" />
           </Tabs.List>
         </Tabs>
@@ -44,7 +51,9 @@ export function ViewModeToggle({
             checked={jsonBetaEnabled}
             onCheckedChange={handleBetaToggle}
           />
-          <span className="text-muted-foreground text-xs">Beta</span>
+          <span className="text-muted-foreground text-xs">
+            {tMore("ui.beta")}
+          </span>
         </div>
       )}
     </div>

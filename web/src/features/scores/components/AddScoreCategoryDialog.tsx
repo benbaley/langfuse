@@ -17,6 +17,7 @@ import { api } from "@/src/utils/api";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics";
 import { validateNewCategoryLabel } from "@/src/features/scores/lib/annotationFormHelpers";
 import { type AnnotationAnalyticsContext } from "@/src/features/scores/lib/annotationAnalytics";
+import { useTranslation } from "react-i18next";
 
 export function AddScoreCategoryDialog({
   projectId,
@@ -35,6 +36,7 @@ export function AddScoreCategoryDialog({
   onCategoryAdded: (label: string, numericValue: number) => void;
   isActive?: boolean;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const capture = usePostHogClientCapture();
   const utils = api.useUtils();
   const [label, setLabel] = useState(initialLabel);
@@ -84,7 +86,7 @@ export function AddScoreCategoryDialog({
         }}
       >
         <DialogHeader variant="action">
-          <DialogTitle>Add category</DialogTitle>
+          <DialogTitle>{tFeatures("ui.addCategory")}</DialogTitle>
           <DialogDescription>
             This adds a category to{" "}
             <span className="text-foreground font-bold">{config.name}</span> for
@@ -99,13 +101,15 @@ export function AddScoreCategoryDialog({
         >
           <DialogBody>
             <div className="grid gap-2">
-              <Label htmlFor="new-score-category-label">Category name</Label>
+              <Label htmlFor="new-score-category-label">
+                {tFeatures("ui.categoryName")}
+              </Label>
               <Input
                 id="new-score-category-label"
                 value={label}
                 autoFocus
                 onChange={(event) => setLabel(event.target.value)}
-                placeholder="Enter a category name"
+                placeholder={tFeatures("ui.enterACategoryName")}
               />
               {label.trim() && validationError ? (
                 <p className="text-destructive text-sm">{validationError}</p>
@@ -119,14 +123,14 @@ export function AddScoreCategoryDialog({
               onClick={onClose}
               disabled={appendCategory.isPending}
             >
-              Cancel
+              {tFeatures("ui.cancel")}
             </Button>
             <Button
               type="submit"
               disabled={!!validationError}
               loading={appendCategory.isPending}
             >
-              Add category
+              {tFeatures("ui.addCategory")}
             </Button>
           </DialogFooter>
         </form>

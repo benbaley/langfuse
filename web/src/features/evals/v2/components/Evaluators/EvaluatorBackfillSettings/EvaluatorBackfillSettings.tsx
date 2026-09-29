@@ -12,6 +12,7 @@ import {
 } from "@/src/components/ui/select";
 import { numberFormatter } from "@/src/utils/numbers";
 import { cn } from "@/src/utils/tailwind";
+import { Trans, useTranslation } from "react-i18next";
 
 export type EvaluatorBackfillWindow =
   | "24-hours"
@@ -24,38 +25,6 @@ export type EvaluatorBackfillRange = {
   from: Date;
   to: Date;
 };
-
-const windowOptions: Array<{
-  value: EvaluatorBackfillWindow;
-  label: string;
-  summaryLabel: string;
-}> = [
-  {
-    value: "24-hours",
-    label: "Last 24 hours",
-    summaryLabel: "the last 24 hours",
-  },
-  {
-    value: "7-days",
-    label: "Last 7 days",
-    summaryLabel: "the last 7 days",
-  },
-  {
-    value: "30-days",
-    label: "Last 30 days",
-    summaryLabel: "the last 30 days",
-  },
-  {
-    value: "90-days",
-    label: "Last 90 days",
-    summaryLabel: "the last 90 days",
-  },
-  {
-    value: "custom",
-    label: "Custom range",
-    summaryLabel: "the selected range",
-  },
-];
 
 export function EvaluatorBackfillSettings({
   enabled,
@@ -84,6 +53,38 @@ export function EvaluatorBackfillSettings({
   onRangeChange: (range: EvaluatorBackfillRange) => void;
   onMaxItemsChange: (maxItems: number) => void;
 }) {
+  const { t: tFeatures } = useTranslation("features");
+  const windowOptions: Array<{
+    value: EvaluatorBackfillWindow;
+    label: string;
+    summaryLabel: string;
+  }> = [
+    {
+      value: "24-hours",
+      label: tFeatures("evalsMore:backfill.24hours"),
+      summaryLabel: tFeatures("evalsMore:backfill.summary24hours"),
+    },
+    {
+      value: "7-days",
+      label: tFeatures("evalsMore:backfill.7days"),
+      summaryLabel: tFeatures("evalsMore:backfill.summary7days"),
+    },
+    {
+      value: "30-days",
+      label: tFeatures("evalsMore:backfill.30days"),
+      summaryLabel: tFeatures("evalsMore:backfill.summary30days"),
+    },
+    {
+      value: "90-days",
+      label: tFeatures("evalsMore:backfill.90days"),
+      summaryLabel: tFeatures("evalsMore:backfill.summary90days"),
+    },
+    {
+      value: "custom",
+      label: tFeatures("evalsMore:backfill.custom"),
+      summaryLabel: tFeatures("evalsMore:backfill.summaryCustom"),
+    },
+  ];
   const cappedCount = Math.min(matchingObservations, maxItems);
   const rangeDays = Math.max(
     1,
@@ -96,8 +97,9 @@ export function EvaluatorBackfillSettings({
   );
   const rangeDescription =
     selectedWindow === "custom"
-      ? `the selected range (${rangeDays} days)`
-      : (selectedWindowOption?.summaryLabel ?? "the selected range");
+      ? tFeatures("evalsMore:backfill.customDays", { days: rangeDays })
+      : (selectedWindowOption?.summaryLabel ??
+        tFeatures("evalsMore:backfill.summaryCustom"));
 
   return (
     <section className="ml-6 max-w-full min-w-0">
@@ -116,52 +118,63 @@ export function EvaluatorBackfillSettings({
             canEnable ? "cursor-pointer" : "text-muted-foreground",
           )}
         >
-          Run evaluator on past observations matching these filters
+          {tFeatures("ui.runEvaluatorOnPastObservationsMatchingTheseFilters")}
         </label>
       </div>
 
       {enabled ? (
         <div className="mt-3 ml-9 max-w-full min-w-0 space-y-2">
           <div className="flex min-w-0 flex-wrap items-center gap-2 text-sm">
-            <span>Score the newest</span>
-            <Input
-              id="evaluator-backfill-max-items"
-              aria-label="Max items"
-              type="number"
-              min={1}
-              max={maxAllowedItems}
-              className="w-20 text-right font-mono text-sm"
-              value={maxItems}
-              onChange={(event) => {
-                const value = Number(event.target.value);
-                if (!Number.isFinite(value)) return;
-                onMaxItemsChange(
-                  Math.min(maxAllowedItems, Math.max(1, Math.floor(value))),
-                );
+            <Trans
+              t={tFeatures}
+              i18nKey="evalsMore:backfill.sentence"
+              components={{
+                limit: (
+                  <Input
+                    id="evaluator-backfill-max-items"
+                    aria-label={tFeatures("ui.maxItems")}
+                    type="number"
+                    min={1}
+                    max={maxAllowedItems}
+                    className="w-20 text-right font-mono text-sm"
+                    value={maxItems}
+                    onChange={(event) => {
+                      const value = Number(event.target.value);
+                      if (!Number.isFinite(value)) return;
+                      onMaxItemsChange(
+                        Math.min(
+                          maxAllowedItems,
+                          Math.max(1, Math.floor(value)),
+                        ),
+                      );
+                    }}
+                  />
+                ),
+                window: (
+                  <Select
+                    value={selectedWindow}
+                    onValueChange={(value) =>
+                      onWindowChange(value as EvaluatorBackfillWindow)
+                    }
+                  >
+                    <SelectTrigger
+                      aria-label={tFeatures("ui.backfillTimeWindow")}
+                      className="w-fit max-w-full whitespace-nowrap"
+                      disableValueLineClamp
+                    >
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {windowOptions.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                ),
               }}
             />
-            <span>matches from the</span>
-            <Select
-              value={selectedWindow}
-              onValueChange={(value) =>
-                onWindowChange(value as EvaluatorBackfillWindow)
-              }
-            >
-              <SelectTrigger
-                aria-label="Backfill time window"
-                className="w-fit max-w-full whitespace-nowrap"
-                disableValueLineClamp
-              >
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {windowOptions.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
           </div>
 
           {selectedWindow === "custom" ? (
@@ -172,8 +185,8 @@ export function EvaluatorBackfillSettings({
               }}
               min={format(subMonths(new Date(), 6), "yyyy-MM-dd")}
               max={format(new Date(), "yyyy-MM-dd")}
-              fromAriaLabel="Backfill start date"
-              toAriaLabel="Backfill end date"
+              fromAriaLabel={tFeatures("evalsMore:backfill.startDate")}
+              toAriaLabel={tFeatures("evalsMore:backfill.endDate")}
               onValueChange={(value) =>
                 onRangeChange({
                   from: new Date(`${value.from}T00:00:00`),
@@ -185,10 +198,17 @@ export function EvaluatorBackfillSettings({
 
           <p className="text-muted-foreground text-xs break-words">
             {isEstimating
-              ? "Counting matching observations..."
+              ? tFeatures("ui.countingMatchingObservations")
               : matchingObservations > maxItems
-                ? `${numberFormatter(matchingObservations, 0)} observations in ${rangeDescription} — capping at ${numberFormatter(cappedCount, 0)}, newest first.`
-                : `${numberFormatter(matchingObservations, 0)} observations in ${rangeDescription}, all within your limit.`}
+                ? tFeatures("evalsMore:backfill.capped", {
+                    total: numberFormatter(matchingObservations, 0),
+                    range: rangeDescription,
+                    limit: numberFormatter(cappedCount, 0),
+                  })
+                : tFeatures("evalsMore:backfill.withinLimit", {
+                    total: numberFormatter(matchingObservations, 0),
+                    range: rangeDescription,
+                  })}
           </p>
         </div>
       ) : null}

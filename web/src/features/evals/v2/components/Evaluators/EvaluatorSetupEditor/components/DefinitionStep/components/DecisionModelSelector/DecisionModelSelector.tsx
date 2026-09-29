@@ -5,6 +5,7 @@ import { Button } from "@/src/components/ui/button";
 import { SelectInput } from "@/src/components/design-system/SelectInput/SelectInput";
 import type { EvaluatorSetupStore } from "@/src/features/evals/v2/store/evaluatorSetupStore/evaluatorSetupStore";
 import { api } from "@/src/utils/api";
+import { useTranslation } from "react-i18next";
 
 const SEPARATOR = "::";
 
@@ -22,6 +23,7 @@ export function DecisionModelSelector({
   store: EvaluatorSetupStore;
   onConfigureProviders: () => void;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const selectedModel = useStore(store, (state) => state.selectedModel);
   const selectModel = store.getState().actions.selectModel;
   const connections = api.llmApiKey.all.useQuery({
@@ -44,7 +46,7 @@ export function DecisionModelSelector({
   if (connections.isSuccess && options.length === 0) {
     return (
       <Button type="button" variant="outline" onClick={onConfigureProviders}>
-        Add a TypeSafe connection
+        {tFeatures("ui.addATypesafeConnection")}
       </Button>
     );
   }
@@ -52,8 +54,8 @@ export function DecisionModelSelector({
   return (
     <div className="max-w-xs min-w-56">
       <SelectInput
-        aria-label="Decision model"
-        placeholder="Select a decision model"
+        aria-label={tFeatures("ui.decisionModel")}
+        placeholder={tFeatures("ui.selectADecisionModel")}
         value={
           selectedModel
             ? `${selectedModel.provider}${SEPARATOR}${selectedModel.model}`

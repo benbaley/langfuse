@@ -78,7 +78,7 @@ export function SpendAlertsTable({ orgId }: SpendAlertsTableProps) {
       id: "limit",
       header: "Limit (USD)",
       size: 140,
-      formatter: costFormatter,
+      formatter: (value) => costFormatter(value),
     }),
     createStatusTableColumn<AlertRow, Date>({
       id: "status",

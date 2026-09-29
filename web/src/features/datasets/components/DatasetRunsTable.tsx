@@ -66,6 +66,7 @@ import useSessionStorage from "@/src/components/useSessionStorage";
 import { NoDataOrLoading } from "@/src/components/NoDataOrLoading";
 import { useHasProjectAccess } from "@/src/features/rbac";
 import { ConfirmationDialogController } from "@/src/components/design-system/ConfirmationDialogController/ConfirmationDialogController";
+import { useTranslation } from "react-i18next";
 
 type DatasetRunRowData = {
   id: string;
@@ -93,6 +94,8 @@ const DatasetRunTableMultiSelectAction = ({
   datasetId: string;
   setRowSelection: (value: Record<string, boolean>) => void;
 }) => {
+  const { t: tMore } = useTranslation("coreMore");
+  const { t: tFeatures } = useTranslation("features");
   const capture = usePostHogClientCapture();
   const utils = api.useUtils();
   const mutDelete = api.datasets.deleteDatasetRuns.useMutation({
@@ -104,9 +107,9 @@ const DatasetRunTableMultiSelectAction = ({
 
   return (
     <ConfirmationDialogController
-      title="Please confirm"
-      text={`This action cannot be undone and removes all the data associated with ${selectedRunIds.length} dataset run${selectedRunIds.length > 1 ? "s" : ""}.`}
-      confirmLabel="Delete Experiments"
+      title={tFeatures("ui.pleaseConfirm")}
+      text={tMore("datasets.deleteRuns", { count: selectedRunIds.length })}
+      confirmLabel={tMore("datasets.deleteExperiments")}
       variant="destructive"
       loading={mutDelete.isPending}
       onConfirm={async () => {
@@ -125,7 +128,9 @@ const DatasetRunTableMultiSelectAction = ({
               disabled={selectedRunIds.length < 1}
               onClick={() => capture("dataset_run:compare_view_click")}
             >
-              Actions ({selectedRunIds.length} selected)
+              {tMore("datasets.selectedActions", {
+                count: selectedRunIds.length,
+              })}
               <ChevronDown className="h-5 w-5" />
             </Button>
           </DropdownMenuTrigger>
@@ -139,12 +144,12 @@ const DatasetRunTableMultiSelectAction = ({
             >
               <DropdownMenuItem>
                 <Columns3 className="mr-2 h-4 w-4" />
-                <span>Compare</span>
+                <span>{tFeatures("ui.compare")}</span>
               </DropdownMenuItem>
             </Link>
             <DropdownMenuItem key="delete" onClick={openDialog}>
               <Trash className="mr-2 h-4 w-4" />
-              <span>Delete</span>
+              <span>{tFeatures("ui.delete")}</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -165,6 +170,7 @@ function DatasetRunsTableInternal(
     openDeleteDatasetRunDialog: (datasetRunId: string) => void;
   },
 ) {
+  const { t: tFeatures } = useTranslation("features");
   const [paginationState, setPaginationState] = useQueryParams({
     pageIndex: withDefault(NumberParam, 0),
     pageSize: withDefault(NumberParam, 50),
@@ -349,7 +355,7 @@ function DatasetRunsTableInternal(
                   setSelectedRows({});
                 }
               }}
-              aria-label="Select all"
+              aria-label={tFeatures("ui.selectAll")}
               variant="muted"
             />
           </div>
@@ -360,7 +366,7 @@ function DatasetRunsTableInternal(
           <Checkbox
             checked={row.getIsSelected()}
             onCheckedChange={(value) => row.toggleSelected(!!value)}
-            aria-label="Select row"
+            aria-label={tFeatures("ui.selectRow")}
             variant="muted"
           />
         );
@@ -368,7 +374,7 @@ function DatasetRunsTableInternal(
     },
     createLinkTableColumn<DatasetRunRowData>({
       accessorKey: "name",
-      header: "Name",
+      header: tFeatures("ui.name"),
       size: 150,
       isFixedPosition: true,
       isPinnedLeft: true,
@@ -402,13 +408,13 @@ function DatasetRunsTableInternal(
     }),
     createTextTableColumn<DatasetRunRowData>({
       accessorKey: "description",
-      header: "Description",
+      header: tFeatures("ui.description"),
       size: 300,
       enableHiding: true,
     }),
     createNumberTableColumn<DatasetRunRowData, bigint>({
       accessorKey: "countRunItems",
-      header: "Run Items",
+      header: tFeatures("ui.runItems"),
       size: 90,
       enableHiding: true,
       formatter: (value) => String(value),
@@ -419,7 +425,7 @@ function DatasetRunsTableInternal(
     }),
     createNumberTableColumn<DatasetRunRowData>({
       accessorKey: "avgLatency",
-      header: "Latency (avg)",
+      header: tFeatures("ui.latencyAvg"),
       size: 120,
       enableHiding: true,
       formatter: (value) => formatIntervalSeconds(value),
@@ -430,7 +436,7 @@ function DatasetRunsTableInternal(
     }),
     createNumberTableColumn<DatasetRunRowData>({
       accessorKey: "avgTotalCost",
-      header: "Trace Cost (avg)",
+      header: tFeatures("ui.traceCostAvg"),
       size: 130,
       enableHiding: true,
       formatter: (value) => usdFormatter(value),
@@ -441,7 +447,7 @@ function DatasetRunsTableInternal(
     }),
     createNumberTableColumn<DatasetRunRowData>({
       accessorKey: "totalCost",
-      header: "Trace Cost (sum)",
+      header: tFeatures("ui.traceCostSum"),
       size: 130,
       enableHiding: true,
       formatter: (value) => usdFormatter(value),
@@ -452,7 +458,7 @@ function DatasetRunsTableInternal(
     }),
     {
       accessorKey: "runScores",
-      header: "Run-Level Scores",
+      header: tFeatures("ui.runLevelScores"),
       id: "runScores",
       enableHiding: true,
       defaultHidden: true,
@@ -465,7 +471,7 @@ function DatasetRunsTableInternal(
     },
     {
       accessorKey: "runItemScores",
-      header: "Run Item Scores",
+      header: tFeatures("ui.runItemScores"),
       id: "runItemScores",
       enableHiding: true,
       defaultHidden: true,
@@ -476,13 +482,13 @@ function DatasetRunsTableInternal(
     },
     createDateTableColumn<DatasetRunRowData>({
       accessorKey: "createdAt",
-      header: "Created",
+      header: tFeatures("ui.created"),
       size: 150,
       enableHiding: true,
     }),
     createIOTableColumn<DatasetRunRowData>({
       accessorKey: "metadata",
-      header: "Metadata",
+      header: tFeatures("ui.metadata"),
       size: 200,
       enableHiding: true,
       getCell: (value) => value || undefined,
@@ -491,18 +497,18 @@ function DatasetRunsTableInternal(
     createDropdownTableColumn<DatasetRunRowData, DatasetRunRowData["id"]>({
       id: "actions",
       accessorFn: (row) => row.id,
-      header: "Actions",
+      header: tFeatures("ui.actions"),
       size: 70,
       renderMenu: (id) =>
         id ? (
           <>
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <DropdownMenuLabel>{tFeatures("ui.actions")}</DropdownMenuLabel>
             <DropdownMenuItem
               disabled={!hasDeleteAccess}
               onSelect={() => props.openDeleteDatasetRunDialog(id)}
             >
               <Trash className="mr-2 h-4 w-4" />
-              Delete
+              {tFeatures("ui.delete")}
             </DropdownMenuItem>
           </>
         ) : null,
@@ -612,7 +618,9 @@ function DatasetRunsTableInternal(
                         </span>
                         <NoDataOrLoading
                           isLoading={runsMetrics.isPending}
-                          description="No chart data available for the selected runs."
+                          description={tFeatures(
+                            "ui.noChartDataAvailableForTheSelectedRuns",
+                          )}
                           className="min-h-[200px]"
                         />
                       </div>
@@ -783,6 +791,7 @@ function DatasetRunsTableInternal(
 }
 
 export function DatasetRunsTable(props: DatasetRunsTableProps) {
+  const { t: tFeatures } = useTranslation("features");
   const [datasetRunIdToDelete, setDatasetRunIdToDelete] = useState<
     string | null
   >(null);
@@ -794,8 +803,10 @@ export function DatasetRunsTable(props: DatasetRunsTableProps) {
 
   return (
     <ConfirmationDialogController
-      title="Please confirm"
-      text="This action cannot be undone. Traces linked to this run must be deleted manually."
+      title={tFeatures("ui.pleaseConfirm")}
+      text={tFeatures(
+        "ui.thisActionCannotBeUndoneTracesLinkedToThisRunMustBeDeletedManually",
+      )}
       confirmLabel="Delete Dataset Run"
       variant="destructive"
       loading={deleteDatasetRun.isPending}

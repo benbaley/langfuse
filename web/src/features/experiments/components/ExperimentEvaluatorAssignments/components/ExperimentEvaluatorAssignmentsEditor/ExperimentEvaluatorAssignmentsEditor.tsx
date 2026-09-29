@@ -10,6 +10,7 @@ import {
   type RuleEvaluatorOption,
 } from "@/src/features/evals";
 import type { ExperimentEvaluatorAssignmentsHandle } from "@/src/features/experiments/components/ExperimentEvaluatorAssignments/types/experimentEvaluatorAssignmentsHandle";
+import { useTranslation } from "react-i18next";
 
 export const ExperimentEvaluatorAssignmentsEditor = forwardRef<
   ExperimentEvaluatorAssignmentsHandle,
@@ -38,6 +39,7 @@ export const ExperimentEvaluatorAssignmentsEditor = forwardRef<
   },
   ref,
 ) {
+  const { t: tFeatures } = useTranslation("features");
   const [store] = useState(() =>
     createRuleSetupStore({
       name: "Experiment evaluators",
@@ -92,7 +94,7 @@ export const ExperimentEvaluatorAssignmentsEditor = forwardRef<
               });
             }}
           >
-            Save
+            {tFeatures("ui.save")}
           </Button>
         </div>
       ) : null}

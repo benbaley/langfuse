@@ -32,6 +32,7 @@ import {
 import { cn } from "@/src/utils/tailwind";
 import { Spinner } from "@/src/components/design-system/Spinner/Spinner";
 import { type JsonViewPreference } from "@/src/components/ui/jsonViewPreference";
+import { useTranslation } from "react-i18next";
 
 export interface LogViewToolbarProps {
   /** Current search query */
@@ -91,6 +92,8 @@ export const LogViewToolbar = memo(function LogViewToolbar({
   showMilliseconds = false,
   onToggleMilliseconds,
 }: LogViewToolbarProps) {
+  const { t: tMore } = useTranslation("coreMore");
+  const { t: tFeatures } = useTranslation("features");
   const [isCopied, setIsCopied] = useState(false);
 
   const handleCopyClick = () => {
@@ -108,7 +111,7 @@ export const LogViewToolbar = memo(function LogViewToolbar({
         <HoverCard openDelay={200}>
           <HoverCardTrigger asChild>
             <span className="cursor-help rounded bg-yellow-100 px-1.5 py-0.5 text-xs font-bold text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300">
-              Large Trace
+              {tFeatures("ui.largeTrace")}
             </span>
           </HoverCardTrigger>
           <HoverCardContent
@@ -116,15 +119,23 @@ export const LogViewToolbar = memo(function LogViewToolbar({
             className="w-72 text-sm"
             sideOffset={8}
           >
-            <p className="font-bold">Optimized for performance</p>
+            <p className="font-bold">
+              {tFeatures("ui.optimizedForPerformance")}
+            </p>
             <p className="text-muted-foreground mt-1.5">
-              This trace has {observationCount?.toLocaleString() ?? "many"}{" "}
-              observations. To keep things smooth:
+              {tMore("traces.largeHelp", {
+                count:
+                  observationCount?.toLocaleString() ?? tMore("traces.many"),
+              })}
             </p>
             <ul className="text-muted-foreground mt-1.5 list-inside list-disc space-y-0.5">
-              <li>Content loads as you scroll</li>
-              <li>JSON view is disabled</li>
-              <li>Download/copy includes I/O for cached observations only</li>
+              <li>{tFeatures("ui.contentLoadsAsYouScroll")}</li>
+              <li>{tFeatures("ui.jsonViewIsDisabled")}</li>
+              <li>
+                {tFeatures(
+                  "ui.downloadCopyIncludesIOForCachedObservationsOnly",
+                )}
+              </li>
             </ul>
           </HoverCardContent>
         </HoverCard>
@@ -137,7 +148,7 @@ export const LogViewToolbar = memo(function LogViewToolbar({
         <Command className="flex-1 rounded-none border-0 bg-transparent">
           <CommandInput
             showBorder={false}
-            placeholder="Search observations..."
+            placeholder={tFeatures("ui.searchObservations")}
             className="h-7 border-0 focus:ring-0"
             value={searchQuery}
             onValueChange={onSearchChange}
@@ -166,8 +177,8 @@ export const LogViewToolbar = memo(function LogViewToolbar({
                   indentDisabled
                     ? undefined
                     : indentEnabled
-                      ? "Hide indentation"
-                      : "Show indentation"
+                      ? tFeatures("ui.hideIndentation")
+                      : tFeatures("ui.showIndentation")
                 }
               >
                 <IndentIncrease className="h-3.5 w-3.5" />
@@ -175,9 +186,13 @@ export const LogViewToolbar = memo(function LogViewToolbar({
             </HoverCardTrigger>
             {indentDisabled && (
               <HoverCardContent className="w-56 text-sm" sideOffset={8}>
-                <p className="font-bold">Indentation unavailable</p>
+                <p className="font-bold">
+                  {tFeatures("ui.indentationUnavailable")}
+                </p>
                 <p className="text-muted-foreground mt-1">
-                  Disabled for deeply nested trees to maintain readability.
+                  {tFeatures(
+                    "ui.disabledForDeeplyNestedTreesToMaintainReadability",
+                  )}
                 </p>
               </HoverCardContent>
             )}
@@ -194,7 +209,11 @@ export const LogViewToolbar = memo(function LogViewToolbar({
               showMilliseconds && "bg-primary text-primary-foreground",
             )}
             onClick={onToggleMilliseconds}
-            title={showMilliseconds ? "Hide milliseconds" : "Show milliseconds"}
+            title={
+              showMilliseconds
+                ? tFeatures("ui.hideMilliseconds")
+                : tFeatures("ui.showMilliseconds")
+            }
           >
             <Timer className="h-3.5 w-3.5" />
           </Button>
@@ -225,10 +244,10 @@ export const LogViewToolbar = memo(function LogViewToolbar({
             </TooltipTrigger>
             <TooltipContent>
               {isVirtualized
-                ? "Disabled for large traces"
+                ? tFeatures("ui.disabledForLargeTraces")
                 : allRowsExpanded
-                  ? "Collapse all"
-                  : "Expand all"}
+                  ? tFeatures("ui.collapseAll")
+                  : tFeatures("ui.expandAll")}
             </TooltipContent>
           </Tooltip>
         )}
@@ -259,27 +278,28 @@ export const LogViewToolbar = memo(function LogViewToolbar({
                 </TooltipTrigger>
                 <TooltipContent>
                   {isCopyOrDownloadLoading
-                    ? "Loading data..."
+                    ? tFeatures("ui.loadingData")
                     : isCopyOrDownloadCacheOnly
-                      ? "Copy as JSON (cache only)"
-                      : "Copy as JSON"}
+                      ? tFeatures("ui.copyAsJsonCacheOnly")
+                      : tFeatures("ui.copyAsJson")}
                 </TooltipContent>
               </Tooltip>
             </HoverCardTrigger>
             {isCopyOrDownloadCacheOnly && !isCopyOrDownloadLoading && (
               <HoverCardContent className="w-64 text-sm" sideOffset={8}>
-                <p className="font-bold">Cache-only mode</p>
+                <p className="font-bold">{tFeatures("ui.cacheOnlyMode")}</p>
                 <p className="text-muted-foreground mt-1">
-                  For large traces, only expanded observations include full I/O
-                  data.
+                  {tFeatures(
+                    "ui.forLargeTracesOnlyExpandedObservationsIncludeFullIOData",
+                  )}
                 </p>
                 {loadedObservationCount !== undefined &&
                   observationCount !== undefined && (
                     <p className="text-muted-foreground mt-1.5">
-                      <span className="font-bold">
-                        {loadedObservationCount} of {observationCount}
-                      </span>{" "}
-                      observations loaded
+                      {tMore("traces.loaded", {
+                        loaded: loadedObservationCount,
+                        total: observationCount,
+                      })}
                     </p>
                   )}
               </HoverCardContent>

@@ -29,6 +29,7 @@ import { formatMappingLabel } from "@/src/features/evals/v2/fns/variableMapping/
 import { sourceCodeLanguageLabel } from "@/src/features/evals/v2/fns/evaluators/sourceCodeLanguageLabel";
 import { toScoreOutputFormState } from "@/src/features/evals/v2/fns/scoreOutput/toScoreOutputFormState";
 import type { JudgeModel } from "@/src/features/evals/v2/judgeModel";
+import { useTranslation } from "react-i18next";
 
 export type EvaluatorDefinition =
   | {
@@ -62,6 +63,7 @@ function CodeEvaluatorDefinitionView({
 }: {
   definition: Extract<EvaluatorDefinition, { type: "CODE" }>;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const { sourceCode, sourceCodeLanguage } = definition;
 
   return (
@@ -78,11 +80,11 @@ function CodeEvaluatorDefinitionView({
             disabled
           />
         ) : (
-          <Badge variant="outline">Language unavailable</Badge>
+          <Badge variant="outline">{tFeatures("ui.languageUnavailable")}</Badge>
         )}
       </EvaluationTypeConfiguration>
       <section className="flex flex-col gap-2">
-        <Label>Code</Label>
+        <Label>{tFeatures("ui.code")}</Label>
         {/* The execution row above already names the language. */}
         <CodeBlock
           language={
@@ -104,6 +106,7 @@ function LlmEvaluatorDefinitionView({
 }: {
   definition: Extract<EvaluatorDefinition, { type: "LLM_AS_JUDGE" }>;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const { variableMappings, promptMessages } = definition;
   const mappings =
     variableMappings.state === "visible" ? variableMappings.mappings : [];
@@ -151,7 +154,7 @@ function LlmEvaluatorDefinitionView({
         </JudgeModelPicker>
       </EvaluationTypeConfiguration>
       <section className="flex min-w-0 flex-col gap-2">
-        <Label>Prompt</Label>
+        <Label>{tFeatures("ui.prompt")}</Label>
         {promptMessages.map((message, index) => (
           <PromptVariableEditor
             key={index}
@@ -177,7 +180,7 @@ function LlmEvaluatorDefinitionView({
       </section>
       {variableMappings.state === "visible" ? (
         <section className="flex flex-col gap-2">
-          <Label>Prompt variables</Label>
+          <Label>{tFeatures("ui.promptVariables")}</Label>
           <VariableMapping
             mode="read-only"
             mappings={mappings.map((mapping) => ({
@@ -203,6 +206,7 @@ function DecisionModelDefinitionView({
 }: {
   definition: Extract<EvaluatorDefinition, { type: "DECISION_MODEL" }>;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const questions = parseDecisionModelQuestions(definition.questions);
 
   return (
@@ -215,11 +219,11 @@ function DecisionModelDefinitionView({
         <Badge variant="outline" className="font-mono">
           {definition.selectedModel
             ? `${definition.selectedModel.provider}: ${definition.selectedModel.model}`
-            : "No model"}
+            : tFeatures("ui.noModel")}
         </Badge>
       </EvaluationTypeConfiguration>
       <section className="flex min-w-0 flex-col gap-2">
-        <Label>Questions</Label>
+        <Label>{tFeatures("evalsMore:decision.questions")}</Label>
         {questions.success ? (
           questions.data.map((question, index) => (
             <DecisionModelQuestionSummary
@@ -233,7 +237,7 @@ function DecisionModelDefinitionView({
         )}
       </section>
       <section className="flex flex-col gap-2">
-        <Label>State</Label>
+        <Label>{tFeatures("ui.state")}</Label>
         <VariableMapping
           mode="read-only"
           variableDisplay="stateKey"

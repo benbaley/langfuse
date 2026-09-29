@@ -22,6 +22,7 @@ import {
   gallerySidebarItems,
   visibleGallerySections,
 } from "../../fns/templateGallery/visibleGallerySections";
+import { useTranslation } from "react-i18next";
 
 function GallerySkeleton() {
   return (
@@ -77,6 +78,7 @@ export function EvaluatorGalleryView({
   decisionModelBannerDismissed: boolean;
   onDismissDecisionModelBanner: () => void;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const sidebarItems = gallerySidebarItems(navigationItems, sections);
   const resolvedSection =
     activeSection === EVALUATOR_GALLERY_ALL_SECTION_KEY ||
@@ -149,7 +151,7 @@ export function EvaluatorGalleryView({
                   ref={searchInputRef}
                   value={search}
                   onChange={(event) => onSearchChange(event.target.value)}
-                  placeholder="Search what you want to measure."
+                  placeholder={tFeatures("ui.searchWhatYouWantToMeasure")}
                   className="pl-8"
                 />
               </div>
@@ -163,7 +165,7 @@ export function EvaluatorGalleryView({
                   }
                 >
                   <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
-                  New LLM-as-a-judge
+                  {tFeatures("ui.newLlmAsAJudge")}
                 </Button>
                 <Button
                   type="button"
@@ -172,19 +174,19 @@ export function EvaluatorGalleryView({
                   onClick={() => onCreateFromScratch(EvalTemplateTypeEnum.CODE)}
                 >
                   <Code2 className="h-3.5 w-3.5" aria-hidden="true" />
-                  New code evaluator
+                  {tFeatures("ui.newCodeEvaluator")}
                 </Button>
                 <Button
                   type="button"
                   variant="secondary"
                   className="flex-1 shrink-0 gap-1.5 @2xl:flex-none"
-                  title="Ask TypeSafe Jev typed questions and get calibrated answers in one call. Experimental."
+                  title={tFeatures("evalsMore:gallery.decisionHint")}
                   onClick={() =>
                     onCreateFromScratch(EvalTemplateTypeEnum.DECISION_MODEL)
                   }
                 >
                   <Scale className="h-3.5 w-3.5" aria-hidden="true" />
-                  New decision model evaluator
+                  {tFeatures("ui.newDecisionModelEvaluator")}
                 </Button>
               </div>
             </div>
@@ -201,7 +203,7 @@ export function EvaluatorGalleryView({
               {isLoading ? <GallerySkeleton /> : null}
               {errorMessage ? (
                 <div className="text-destructive py-8 text-center text-sm">
-                  Error: {errorMessage}
+                  {tFeatures("ui.error")} {errorMessage}
                 </div>
               ) : null}
               {!isLoading && !errorMessage ? (
@@ -233,7 +235,7 @@ export function EvaluatorGalleryView({
                   ))
                 ) : (
                   <div className="text-muted-foreground py-8 text-center text-sm">
-                    No templates match your search.
+                    {tFeatures("ui.noTemplatesMatchYourSearch")}
                   </div>
                 )
               ) : null}
@@ -246,7 +248,7 @@ export function EvaluatorGalleryView({
                   role={isLoadingMoreProjectTemplates ? "status" : undefined}
                 >
                   {isLoadingMoreProjectTemplates
-                    ? "Loading more templates…"
+                    ? tFeatures("ui.loadingMoreTemplates")
                     : null}
                 </div>
               ) : null}

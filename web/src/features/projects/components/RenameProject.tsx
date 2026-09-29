@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Card } from "@/src/components/ui/card";
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
@@ -21,6 +22,7 @@ import { useSession } from "next-auth/react";
 import { useHasProjectAccess } from "@/src/features/rbac";
 
 export default function RenameProject() {
+  const { t } = useTranslation("settings");
   const { update: updateSession } = useSession();
   const utils = api.useUtils();
   const { project } = useQueryProject();
@@ -31,7 +33,24 @@ export default function RenameProject() {
   });
 
   const form = useForm({
-    resolver: zodResolver(projectNameSchema),
+    resolver: async (values, context, options) => {
+      const result = await zodResolver(projectNameSchema)(
+        values,
+        context,
+        options,
+      );
+      const error = result.errors.name;
+      if (error?.message) {
+        const translationKeys: Record<string, string> = {
+          "Must have at least 3 characters": "nameMinimum",
+          "Must have at most 60 characters": "nameMaximum",
+          "Text cannot contain HTML tags": "noHtml",
+        };
+        const key = translationKeys[error.message];
+        if (key) error.message = t(key);
+      }
+      return result;
+    },
     defaultValues: {
       name: "",
     },
@@ -62,20 +81,18 @@ export default function RenameProject() {
 
   return (
     <div>
-      <Header title="Project Name" />
+      <Header title={t("projectName")} />
       <Card className="mb-4 p-3">
         {form.getValues().name !== "" ? (
           <p className="text-primary mb-4 text-sm">
-            Your Project will be renamed from &quot;
-            {project?.name ?? ""}
-            &quot; to &quot;
-            <b>{form.watch().name}</b>&quot;.
+            {t("projectNameChanging", {
+              current: project?.name ?? "",
+              next: form.watch().name,
+            })}
           </p>
         ) : (
           <p className="text-primary mb-4 text-sm">
-            Your Project is currently named &quot;
-            <b>{project?.name ?? ""}</b>
-            &quot;.
+            {t("projectNameCurrent", { name: project?.name ?? "" })}
           </p>
         )}
         <Form {...form}>
@@ -98,7 +115,7 @@ export default function RenameProject() {
                         disabled={!hasAccess}
                       />
                       {!hasAccess && (
-                        <span title="No access">
+                        <span title={t("noAccess")}>
                           <LockIcon className="text-muted absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2 transform" />
                         </span>
                       )}
@@ -116,7 +133,7 @@ export default function RenameProject() {
                 disabled={form.getValues().name === "" || !hasAccess}
                 className="mt-4"
               >
-                Save
+                {t("save")}
               </Button>
             )}
           </form>

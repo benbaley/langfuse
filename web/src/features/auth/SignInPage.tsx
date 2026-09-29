@@ -1,3 +1,4 @@
+import { LanguageSelector } from "@/src/features/i18n";
 /* eslint-disable no-nested-ternary */
 import { LangfuseIcon } from "@/src/components/design-system/LangfuseIcon/LangfuseIcon";
 import { Button } from "@/src/components/ui/button";
@@ -12,6 +13,10 @@ import {
 import { Input } from "@/src/components/ui/input";
 import { env } from "@/src/env.mjs";
 import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  localizeAuthMessage,
+  localizeAuthResolver,
+} from "@/src/features/auth/lib/localizeAuthResolver";
 import {
   SiOkta,
   SiAuthentik,
@@ -49,6 +54,7 @@ import { cn } from "@/src/utils/tailwind";
 import { useLangfuseCloudRegion } from "@/src/features/organizations";
 import { getSafeRedirectPath } from "@/src/utils/redirect";
 import { Spinner } from "@/src/components/layouts/spinner";
+import { useTranslation } from "react-i18next";
 
 // The shared, intentionally-public demo identity created by the seed script
 // (packages/shared/scripts/seeder/seed-postgres.ts) and posted in every
@@ -142,11 +148,12 @@ export function SSOButtons({
   onProviderSelect,
 }: {
   authProviders: PageProps["authProviders"];
-  action?: string;
+  action?: "sign in" | "sign up";
   callbackUrl?: string;
   lastUsedMethod?: NextAuthProvider | null;
   onProviderSelect?: (provider: NextAuthProvider) => void;
 }) {
+  const { t: tApp } = useTranslation("app");
   const capture = usePostHogClientCapture();
   const [providerSigningIn, setProviderSigningIn] =
     useState<NextAuthProvider | null>(null);
@@ -190,7 +197,7 @@ export function SSOButtons({
               <div className="border-border my-6 border-t"></div>
             ) : (
               <div className="text-muted-foreground my-6 text-center text-xs">
-                or {action} with
+                {tApp("auth.orSignUpWith")}
               </div>
             )
           ) : null}
@@ -501,6 +508,8 @@ export default function SignInPage({
   signUpDisabled,
   runningOnHuggingFaceSpaces,
 }: PageProps) {
+  const { t: tAuth } = useTranslation("auth");
+  const { t: tApp } = useTranslation("app");
   const router = useRouter();
   useHuggingFaceRedirect(runningOnHuggingFaceSpaces);
 
@@ -572,7 +581,7 @@ export default function SignInPage({
 
   // Credentials
   const credentialsForm = useForm({
-    resolver: zodResolver(credentialAuthForm),
+    resolver: localizeAuthResolver(zodResolver(credentialAuthForm)),
     defaultValues: {
       email: emailParam ?? "",
       password: "",
@@ -600,7 +609,7 @@ export default function SignInPage({
         // or server state the server owns, not an app failure here). It then
         // navigates to the error page itself; when the server is up, that
         // lands on /auth/error?error=undefined, which still captures.
-        setCredentialsFormError("An unexpected error occurred.");
+        setCredentialsFormError("errors.unexpected");
         reportError(new Error("Sign in result is undefined"), {
           area: "auth.signIn.credentials",
           expected: true,
@@ -614,9 +623,7 @@ export default function SignInPage({
             { area: "auth.signIn.credentials" },
           );
         }
-        setCredentialsFormError(
-          result?.error ?? "An unexpected error occurred.",
-        );
+        setCredentialsFormError(result?.error ?? "errors.unexpected");
       }
     } catch (error) {
       if (isNextAuthMissingSignInUrlError(error)) {
@@ -630,7 +637,7 @@ export default function SignInPage({
       } else {
         captureUnknownError("auth.signIn.credentials", error);
       }
-      setCredentialsFormError("An unexpected error occurred.");
+      setCredentialsFormError("errors.unexpected");
     }
   }
 
@@ -713,7 +720,7 @@ export default function SignInPage({
     const email = emailSchema.safeParse(credentialsForm.getValues("email"));
     if (!email.success) {
       credentialsForm.setError("email", {
-        message: "Invalid email address",
+        message: "validation.email",
       });
       setContinueLoading(false);
       return;
@@ -769,9 +776,7 @@ export default function SignInPage({
         expected: isJsonParseSyntaxError(error),
         extra: { context: "auth.signIn.checkSso" },
       });
-      setCredentialsFormError(
-        "Unable to check SSO configuration. Please try again.",
-      );
+      setCredentialsFormError("errors.checkSso");
     } finally {
       setContinueLoading(false);
     }
@@ -788,20 +793,24 @@ export default function SignInPage({
           <div className="mx-auto w-fit">
             <LangfuseIcon alt="" />
           </div>
+          <div className="mt-4 flex justify-center">
+            <LanguageSelector />
+          </div>
           <h2 className="text-primary mt-4 text-center text-2xl leading-9 font-bold tracking-tight">
-            Sign in to your account
+            {tApp("ui.SignInToYourAccount")}
           </h2>
         </div>
 
         {isLangfuseCloud && (
           <div className="bg-card mt-4 -mb-4 rounded-lg p-3 text-center text-sm sm:mx-auto sm:w-full sm:max-w-[480px] sm:rounded-lg sm:px-6">
-            If you are experiencing issues signing in, please force refresh this
-            page (CMD + SHIFT + R) or clear your browser cache.{" "}
+            {tApp(
+              "ui.IfYouAreExperiencingIssuesSigningInPleaseForceRefreshThisPageCmdShiftROrClearYourBrowserCache",
+            )}{" "}
             <a
               href="mailto:support@langfuse.com"
               className="text-link hover:text-link-hover cursor-pointer text-xs font-bold whitespace-nowrap"
             >
-              (contact us)
+              {tApp("ui.ContactUs")}
             </a>
           </div>
         )}
@@ -831,7 +840,7 @@ export default function SignInPage({
                       name="email"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Email</FormLabel>
+                          <FormLabel>{tApp("ui.Email")}</FormLabel>
                           <FormControl>
                             <Input
                               placeholder="jsdoe@example.com"
@@ -840,7 +849,11 @@ export default function SignInPage({
                               {...field}
                             />
                           </FormControl>
-                          <FormMessage />
+                          <FormMessage
+                            translateError={(message) =>
+                              localizeAuthMessage(tAuth, message)
+                            }
+                          />
                         </FormItem>
                       )}
                     />
@@ -853,20 +866,24 @@ export default function SignInPage({
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>
-                              Password{" "}
+                              {tApp("ui.Password")}{" "}
                               <Link
                                 href="/auth/reset-password"
                                 className="text-link hover:text-link-hover ml-1 text-xs"
                                 tabIndex={-1}
-                                title="What is this?"
+                                title={tApp("ui.WhatIsThis")}
                               >
-                                (forgot password?)
+                                {tApp("ui.ForgotPassword")}
                               </Link>
                             </FormLabel>
                             <FormControl>
                               <PasswordInput {...field} />
                             </FormControl>
-                            <FormMessage />
+                            <FormMessage
+                              translateError={(message) =>
+                                localizeAuthMessage(tAuth, message)
+                              }
+                            />
                           </FormItem>
                         )}
                       />
@@ -888,7 +905,9 @@ export default function SignInPage({
                       }
                       data-testid="submit-email-password-sign-in-form"
                     >
-                      {showPasswordStep ? "Sign in" : "Continue"}
+                      {showPasswordStep
+                        ? tApp("ui.SignIn")
+                        : tApp("ui.Continue")}
                     </Button>
                   </form>
                 </Form>
@@ -901,17 +920,17 @@ export default function SignInPage({
                       : "hidden",
                   )}
                 >
-                  Last used
+                  {tApp("ui.LastUsed")}
                 </div>
               </div>
             )}
             {credentialsFormError ? (
               <div className="text-destructive text-center text-sm font-bold">
-                {credentialsFormError}
+                {localizeAuthMessage(tAuth, credentialsFormError)}
                 <br />
-                Contact support if this error is unexpected.{" "}
+                {tApp("ui.ContactSupportIfThisErrorIsUnexpected")}{" "}
                 {isLangfuseCloud &&
-                  "Make sure you are using the correct cloud data region."}
+                  tApp("ui.MakeSureYouAreUsingTheCorrectCloudDataRegion")}
               </div>
             ) : null}
             <SSOButtons
@@ -926,12 +945,12 @@ export default function SignInPage({
           env.NEXT_PUBLIC_SIGN_UP_DISABLED !== "true" &&
           authProviders.credentials ? (
             <p className="text-muted-foreground mt-10 text-center text-sm">
-              No account yet?{" "}
+              {tApp("ui.NoAccountYet")}{" "}
               <Link
                 href={`/auth/sign-up${router.asPath.includes("?") ? router.asPath.substring(router.asPath.indexOf("?")) : ""}`}
                 className="text-link hover:text-link-hover leading-6 font-bold"
               >
-                Sign up
+                {tApp("ui.SignUp")}
               </Link>
             </p>
           ) : null}

@@ -53,6 +53,7 @@ import { useLogViewColumns } from "./useLogViewColumns";
 import { flattenChronological } from "@/src/features/traces/components/TraceLogView/fns/flattenChronological";
 import { filterBySearch } from "@/src/features/traces/components/TraceLogView/fns/filterBySearch";
 import { flattenTreeOrder } from "@/src/features/traces/components/TraceLogView/fns/flattenTreeOrder";
+import { useTranslation } from "react-i18next";
 
 export interface TraceLogViewProps {
   traceId: string;
@@ -95,6 +96,8 @@ export const TraceLogView = ({
   currentView = "pretty",
   target = "trace",
 }: TraceLogViewProps) => {
+  const { t: tMore } = useTranslation("coreMore");
+  const { t: tFeatures } = useTranslation("features");
   const { roots, observations } = useTraceData();
   const { logViewMode, logViewTreeStyle } = useViewPreferences();
   const { formattedExpansion, setFormattedFieldExpansion } = useJsonExpansion();
@@ -354,7 +357,7 @@ export const TraceLogView = ({
       {hasNoObservations && (
         <div className="flex flex-1 items-center justify-center">
           <div className="text-muted-foreground text-sm">
-            No observations in this trace
+            {tFeatures("ui.noObservationsInThisTrace")}
           </div>
         </div>
       )}
@@ -362,7 +365,7 @@ export const TraceLogView = ({
       {hasNoSearchResults && (
         <div className="flex flex-1 items-center justify-center">
           <div className="text-muted-foreground text-sm">
-            No observations match &quot;{searchQuery}&quot;
+            {tMore("traces.noMatches", { query: searchQuery })}
           </div>
         </div>
       )}

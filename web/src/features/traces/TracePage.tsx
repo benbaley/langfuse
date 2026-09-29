@@ -13,6 +13,7 @@ import { Button } from "@/src/components/ui/button";
 import Link from "next/link";
 import { stripBasePath } from "@/src/utils/redirect";
 import { Badge } from "@/src/components/ui/badge";
+import { useTranslation } from "react-i18next";
 
 export function TracePage({
   traceId,
@@ -21,6 +22,7 @@ export function TracePage({
   traceId: string;
   timestamp?: Date;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const router = useRouter();
   const session = useSession();
   const routeProjectId = (router.query.projectId as string) ?? "";
@@ -38,21 +40,21 @@ export function TracePage({
   );
 
   if (trace.isUnauthorized)
-    return <ErrorPage message="You do not have access to this trace." />;
+    return <ErrorPage message={tFeatures("errors.traceAccess")} />;
 
   if (trace.isNotFound)
     return (
       <ErrorPage
-        title="Trace not found"
-        message="The trace is either still being processed or has been deleted."
+        title={tFeatures("ui.traceNotFound")}
+        message={tFeatures("errors.traceMissing")}
         additionalButton={{
-          label: "Retry",
+          label: tFeatures("ui.retry"),
           onClick: () => window.location.reload(),
         }}
       />
     );
 
-  if (!trace.data) return <div className="p-3">Loading...</div>;
+  if (!trace.data) return <div className="p-3">{tFeatures("ui.loading")}</div>;
 
   const isSharedTrace = trace.data.public;
   const showPublicIndicators = isSharedTrace && !hasProjectAccess;
@@ -65,7 +67,7 @@ export function TracePage({
         asChild
         size="sm"
         variant="outline"
-        title="Back to Langfuse"
+        title={tFeatures("ui.backToLangfuse")}
         className="px-3"
       >
         <Link href="/">Langfuse</Link>
@@ -75,18 +77,18 @@ export function TracePage({
         asChild
         size="sm"
         variant="default"
-        title="Sign in to Langfuse"
+        title={tFeatures("ui.signInToLangfuse")}
         className="px-3"
       >
         <Link href={`/auth/sign-in?targetPath=${encodedTargetPath}`}>
-          Sign in
+          {tFeatures("ui.signIn")}
         </Link>
       </Button>
     )
   ) : undefined;
   const sharedBadge = showPublicIndicators ? (
     <Badge variant="outline" className="text-xs font-bold">
-      Public
+      {tFeatures("ui.public")}
     </Badge>
   ) : undefined;
 

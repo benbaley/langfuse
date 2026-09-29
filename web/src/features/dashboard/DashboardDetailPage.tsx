@@ -88,6 +88,7 @@ import {
   RouteParamsPendingFallback,
   useReadyRouteParams,
 } from "@/src/hooks/useReadyRouteParams";
+import { useTranslation } from "react-i18next";
 
 // Position for a tile inserted "next to" an anchor tile: same size,
 // immediately to the right when that fits the 12-column grid, otherwise
@@ -106,6 +107,7 @@ function placementNextTo(anchor: DashboardPlacement) {
 // read path — an unresolved session used to read as v3 and fire a wave of
 // legacy-table queries that was thrown away once the session landed.
 export default function DashboardDetailPage() {
+  const { t: tApp } = useTranslation("app");
   const route = useReadyRouteParams(["projectId", "dashboardId"]);
   const { readPath } = useReadPath();
   if (!route.ready) {
@@ -118,7 +120,7 @@ export default function DashboardDetailPage() {
         withPadding
         scrollable
         headerProps={{
-          title: "Dashboard",
+          title: tApp("ui.Dashboard"),
           breadcrumb: [
             { name: "Dashboards", href: `/project/${projectId}/dashboards` },
           ],
@@ -132,6 +134,7 @@ export default function DashboardDetailPage() {
 }
 
 function DashboardDetailView({ readPath }: { readPath: ResolvedReadPath }) {
+  const { t: tApp } = useTranslation("app");
   const router = useRouter();
   const utils = api.useUtils();
   const capture = usePostHogClientCapture();
@@ -749,7 +752,7 @@ function DashboardDetailView({ readPath }: { readPath: ResolvedReadPath }) {
         }, 150);
 
         showSuccessToast({
-          title: "Dashboard imported",
+          title: tApp("ui.DashboardImported"),
           description: `Added ${newPlacements.length} widget${
             newPlacements.length === 1 ? "" : "s"
           } from "${imported.name}".`,
@@ -776,6 +779,7 @@ function DashboardDetailView({ readPath }: { readPath: ResolvedReadPath }) {
       }
     },
     [
+      tApp,
       createWidgetAsync,
       dashboardDefinitionRef,
       deleteWidgetAsync,
@@ -1194,7 +1198,7 @@ function DashboardDetailView({ readPath }: { readPath: ResolvedReadPath }) {
                         <InlineEditText
                           value={dashboard.data.name}
                           required
-                          aria-label="Rename dashboard"
+                          aria-label={tApp("ui.RenameDashboard")}
                           onSave={(name) => {
                             capture("dashboard:dashboard_renamed_inline", {
                               dashboard_id: dashboardId,
@@ -1222,7 +1226,7 @@ function DashboardDetailView({ readPath }: { readPath: ResolvedReadPath }) {
                     actionButtonsLeft: (
                       <>
                         <MultiSelect
-                          title="Environment"
+                          title={tApp("ui.environment")}
                           label="Env"
                           values={selectedEnvironments}
                           onValueChange={setSelectedEnvironmentsDebounced}
@@ -1248,9 +1252,9 @@ function DashboardDetailView({ readPath }: { readPath: ResolvedReadPath }) {
                           setHomeDashboard.isPending) && (
                           <span
                             className="flex items-center"
-                            title="Saving..."
+                            title={tApp("ui.Saving")}
                             role="status"
-                            aria-label="Saving"
+                            aria-label={tApp("ui.Saving")}
                           >
                             <Loader2 className="text-muted-foreground h-4 w-4 animate-spin" />
                           </span>
@@ -1262,14 +1266,14 @@ function DashboardDetailView({ readPath }: { readPath: ResolvedReadPath }) {
                             variant="outline"
                           >
                             {updateDashboardFilters.isPending
-                              ? "Saving..."
-                              : "Save Filters"}
+                              ? tApp("ui.Saving")
+                              : tApp("ui.SaveFilters")}
                           </Button>
                         )}
                         {hasRbacCUDAccess && (
                           <Button onClick={handleAddWidget}>
                             <PlusIcon size={16} className="mr-1 h-4 w-4" />
-                            Add Widget
+                            {tApp("ui.AddWidget")}
                           </Button>
                         )}
                         {hasCloneAccess && (
@@ -1279,7 +1283,7 @@ function DashboardDetailView({ readPath }: { readPath: ResolvedReadPath }) {
                             disabled={mutateCloneDashboard.isPending}
                           >
                             <Copy size={16} className="mr-1 h-4 w-4" />
-                            Clone
+                            {tApp("ui.clone")}
                           </Button>
                         )}
                         {hasRbacCUDAccess && (
@@ -1288,7 +1292,7 @@ function DashboardDetailView({ readPath }: { readPath: ResolvedReadPath }) {
                               <Button
                                 variant="ghost"
                                 size="icon"
-                                aria-label="More actions"
+                                aria-label={tApp("ui.MoreActions")}
                               >
                                 <MoreVertical className="h-4 w-4" />
                               </Button>
@@ -1302,7 +1306,7 @@ function DashboardDetailView({ readPath }: { readPath: ResolvedReadPath }) {
                                   }
                                 >
                                   <ClipboardPasteIcon className="mr-2 h-4 w-4" />
-                                  Paste widget
+                                  {tApp("ui.PasteWidget")}
                                 </DropdownMenuItem>
                               )}
                               <DropdownMenuItem
@@ -1328,13 +1332,13 @@ function DashboardDetailView({ readPath }: { readPath: ResolvedReadPath }) {
                               >
                                 <HomeIcon className="mr-2 h-4 w-4" />
                                 {isCurrentHome
-                                  ? "Shown on Home"
-                                  : "Use as Home"}
+                                  ? tApp("ui.ShownOnHome")
+                                  : tApp("ui.UseAsHome")}
                               </DropdownMenuItem>
                               {hasCUDAccess && (
                                 <DropdownMenuItem onSelect={openEditDialog}>
                                   <PencilIcon className="mr-2 h-4 w-4" />
-                                  Edit name & description
+                                  {tApp("ui.EditNameDescription")}
                                 </DropdownMenuItem>
                               )}
                             </DropdownMenuContent>
@@ -1367,9 +1371,9 @@ function DashboardDetailView({ readPath }: { readPath: ResolvedReadPath }) {
                     <Layer name="modal">
                       <div className="bg-background/80 pointer-events-none fixed inset-0 flex items-center justify-center backdrop-blur-xs">
                         <div className="border-primary bg-background rounded-lg border-2 border-dashed px-8 py-6 text-center shadow-lg">
-                          <p className="font-bold">Drop to import</p>
+                          <p className="font-bold">{tApp("ui.DropToImport")}</p>
                           <p className="text-muted-foreground text-sm">
-                            Langfuse dashboard or widget JSON
+                            {tApp("ui.LangfuseDashboardOrWidgetJson")}
                           </p>
                         </div>
                       </div>
@@ -1388,7 +1392,7 @@ function DashboardDetailView({ readPath }: { readPath: ResolvedReadPath }) {
                   ) : dashboard.isError ? (
                     <div className="flex h-64 items-center justify-center">
                       <div className="text-destructive">
-                        Error: {dashboard.error.message}
+                        {tApp("ui.error")} {dashboard.error.message}
                       </div>
                     </div>
                   ) : (

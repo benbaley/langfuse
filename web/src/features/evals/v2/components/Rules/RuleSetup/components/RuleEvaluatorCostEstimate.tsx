@@ -8,18 +8,20 @@ import { EvaluatorCostCalculationTooltipContent } from "@/src/features/evals/v2/
 import { formatEvaluatorCostCalculation } from "@/src/features/evals/v2/fns/formatEvaluatorCostCalculation";
 import type { RuleCostEstimate } from "@/src/features/evals/v2/hooks/useRuleCostEstimate";
 import { usdFormatter } from "@/src/utils/numbers";
+import { useTranslation } from "react-i18next";
 
 export function RuleEvaluatorCostEstimate({
   estimate,
 }: {
   estimate: RuleCostEstimate;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   return (
     <Tooltip>
       <TooltipTrigger asChild>
         <span className="cursor-help font-mono text-sm tabular-nums underline decoration-dotted underline-offset-4">
           {estimate.estimatedCostUsd === null
-            ? "Unavailable"
+            ? tFeatures("ui.unavailable")
             : estimate.period === "selection"
               ? `≈ ${usdFormatter(estimate.estimatedCostUsd, 2, 2)}`
               : `≈ ${usdFormatter(estimate.estimatedCostUsd, 2, 2)} / week`}

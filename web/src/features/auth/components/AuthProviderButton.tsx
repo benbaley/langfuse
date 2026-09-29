@@ -1,6 +1,7 @@
 import { Button } from "@/src/components/ui/button";
 import { cn } from "@/src/utils/tailwind";
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 interface AuthProviderButtonProps {
   icon: React.ReactNode;
@@ -17,6 +18,7 @@ export function AuthProviderButton({
   loading = false,
   showLastUsedBadge = false,
 }: AuthProviderButtonProps) {
+  const { t: tApp } = useTranslation("app");
   return (
     <div>
       <Button
@@ -34,7 +36,7 @@ export function AuthProviderButton({
           showLastUsedBadge ? "visible" : "invisible",
         )}
       >
-        Last used
+        {tApp("ui.LastUsed")}
       </div>
     </div>
   );

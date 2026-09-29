@@ -3,6 +3,7 @@
  * Implements memoization to prevent unnecessary recalculations
  */
 
+import { useTranslation } from "react-i18next";
 import { useRouter } from "next/router";
 import { useMemo } from "react";
 import type { Session } from "next-auth";
@@ -86,6 +87,7 @@ export function useFilteredNavigation(
   session: Session | null,
   organization: Organization,
 ) {
+  const { t } = useTranslation("navigation");
   const router = useRouter();
   const entitlements = useEntitlements();
   const uiCustomization = useUiCustomization();
@@ -163,6 +165,7 @@ export function useFilteredNavigation(
 
       return {
         ...route,
+        title: route.titleKey ? t(route.titleKey) : route.title,
         url,
         isActive: route.isActive
           ? route.isActive(router.pathname)
@@ -199,6 +202,7 @@ export function useFilteredNavigation(
     };
   }, [
     filteredRoutes,
+    t,
     routerProjectId,
     routerOrganizationId,
     router.pathname,

@@ -26,6 +26,7 @@ import { Popover, PopoverContent } from "@/src/components/ui/popover";
 import { selectTriggerClassName } from "@/src/components/ui/select";
 import type { JudgeModel } from "@/src/features/evals/v2/judgeModel";
 import { cn } from "@/src/utils/tailwind";
+import { useTranslation } from "react-i18next";
 
 type JudgeModelMode = "default" | "custom";
 
@@ -93,6 +94,7 @@ export const JudgeModelPickerTrigger = forwardRef<
     },
     forwardedRef,
   ) => {
+    const { t: tFeatures } = useTranslation("features");
     const customSelectionLabel = selectedModel
       ? `${selectedModel.provider} / ${selectedModel.model}`
       : "Select a model";
@@ -130,14 +132,14 @@ export const JudgeModelPickerTrigger = forwardRef<
                 {defaultModel.provider} / {defaultModel.model}
               </span>
               <Badge variant="secondary" size="sm" className="shrink-0">
-                Project default
+                {tFeatures("ui.projectDefault")}
               </Badge>
             </span>
           ) : (
             <span className="flex items-center gap-1.5">
               <TriangleAlert className="text-dark-yellow h-3.5 w-3.5 shrink-0" />
               <span className="text-muted-foreground">
-                {missingDefaultLabel ?? "Select a model"}
+                {missingDefaultLabel ?? tFeatures("ui.selectAModel")}
               </span>
             </span>
           )
@@ -148,7 +150,7 @@ export const JudgeModelPickerTrigger = forwardRef<
             </span>
             {customSelectionIsDefault ? (
               <Badge variant="secondary" size="sm" className="shrink-0">
-                Project default
+                {tFeatures("ui.projectDefault")}
               </Badge>
             ) : null}
           </span>
@@ -166,6 +168,7 @@ JudgeModelPickerTrigger.displayName = "JudgeModelPickerTrigger";
 
 /** A controlled model selection menu for evaluators and the project default. */
 export function JudgeModelPicker(props: JudgeModelPickerProps) {
+  const { t: tFeatures } = useTranslation("features");
   const {
     children,
     open,
@@ -201,9 +204,9 @@ export function JudgeModelPicker(props: JudgeModelPickerProps) {
         align={selectsProjectDefault ? "end" : "start"}
       >
         <Command>
-          <CommandInput placeholder="Find a model..." />
+          <CommandInput placeholder={tFeatures("ui.findAModel")} />
           <CommandList>
-            <CommandEmpty>No model found.</CommandEmpty>
+            <CommandEmpty>{tFeatures("ui.noModelFound")}</CommandEmpty>
             {!selectsProjectDefault && defaultModel ? (
               <>
                 <CommandGroup>
@@ -231,7 +234,7 @@ export function JudgeModelPicker(props: JudgeModelPickerProps) {
                       size="sm"
                       className="ml-auto shrink-0"
                     >
-                      Project default
+                      {tFeatures("ui.projectDefault")}
                     </Badge>
                   </CommandItem>
                 </CommandGroup>
@@ -278,7 +281,7 @@ export function JudgeModelPicker(props: JudgeModelPickerProps) {
                           size="sm"
                           className="text-muted-foreground font-regular ml-auto shrink-0"
                         >
-                          default
+                          {tFeatures("evalsMore:model.default")}
                         </Badge>
                       ) : null}
                     </CommandItem>
@@ -295,7 +298,7 @@ export function JudgeModelPicker(props: JudgeModelPickerProps) {
               onClick={() => selectAndClose(onConfigureProviders)}
             >
               <Plug className="text-muted-foreground mr-2 h-3.5 w-3.5" />
-              Configure AI providers
+              {tFeatures("ui.configureAiProviders")}
               <ExternalLink className="text-muted-foreground ml-auto h-3.5 w-3.5" />
             </Button>
             <Button
@@ -310,10 +313,10 @@ export function JudgeModelPicker(props: JudgeModelPickerProps) {
               onClick={() => selectAndClose(onConfigureModel)}
             >
               <Settings2 className="text-muted-foreground mr-2 h-3.5 w-3.5" />
-              Model configuration
+              {tFeatures("evalsMore:model.configuration")}
               {hasModelConfiguration ? (
                 <>
-                  <span className="sr-only">Customized</span>
+                  <span className="sr-only">{tFeatures("ui.customized")}</span>
                   <span
                     aria-hidden="true"
                     className="relative ml-auto inline-flex h-2.5 w-2.5"
@@ -338,7 +341,7 @@ export function JudgeModelPicker(props: JudgeModelPickerProps) {
                 onClick={() => selectAndClose(props.onSetProjectDefault)}
               >
                 <Sparkles className="text-muted-foreground mr-2 h-3.5 w-3.5" />
-                Set selected model as project default
+                {tFeatures("ui.setSelectedModelAsProjectDefault")}
               </Button>
             ) : null}
           </div>

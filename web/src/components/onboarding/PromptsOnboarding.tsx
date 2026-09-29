@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import {
   SplashScreen,
   type ValueProposition,
@@ -5,44 +6,42 @@ import {
 import { FileText, GitBranch, Zap, BarChart4 } from "lucide-react";
 
 export function PromptsOnboarding({ projectId }: { projectId: string }) {
+  const { t: tFeatures } = useTranslation("features");
+
   const valuePropositions: ValueProposition[] = [
     {
-      title: "Decoupled from code",
-      description:
-        "Deploy new prompts without application redeployment, making updates faster and easier",
+      title: tFeatures("evalsMore:onboarding.promptsDecoupled"),
+      description: tFeatures("evalsMore:onboarding.promptsDecoupledHelp"),
       icon: FileText,
     },
     {
-      title: "Edit in UI or programmatically",
-      description:
-        "Non-technical users can easily edit prompts in the UI. Developers can optionally update prompts programmatically via the API and SDKs",
+      title: tFeatures("evalsMore:onboarding.promptsEdit"),
+      description: tFeatures("evalsMore:onboarding.promptsEditHelp"),
       icon: GitBranch,
     },
     {
-      title: "Performance optimized",
-      description:
-        "Client-side caching prevents latency or availability issues for your applications",
+      title: tFeatures("evalsMore:onboarding.promptsPerformance"),
+      description: tFeatures("evalsMore:onboarding.promptsPerformanceHelp"),
       icon: Zap,
     },
     {
-      title: "Compare metrics",
-      description:
-        "Track latency, cost, and evaluation metrics across different prompt versions",
+      title: tFeatures("evalsMore:onboarding.promptsMetrics"),
+      description: tFeatures("evalsMore:onboarding.promptsMetricsHelp"),
       icon: BarChart4,
     },
   ];
 
   return (
     <SplashScreen
-      title="Get Started with Prompt Management"
-      description="Langfuse Prompt Management helps you centrally manage, version control, and collaboratively iterate on your prompts. Start using prompt management to improve your LLM application's performance and maintainability."
+      title={tFeatures("evalsMore:onboarding.promptsTitle")}
+      description={tFeatures("evalsMore:onboarding.promptsDescription")}
       valuePropositions={valuePropositions}
       primaryAction={{
-        label: "Create Prompt",
+        label: tFeatures("evalsMore:onboarding.createPrompt"),
         href: `/project/${projectId}/prompts/new`,
       }}
       secondaryAction={{
-        label: "Learn More",
+        label: tFeatures("evalsMore:onboarding.learnMore"),
         href: "https://langfuse.com/docs/prompt-management/get-started",
       }}
     />

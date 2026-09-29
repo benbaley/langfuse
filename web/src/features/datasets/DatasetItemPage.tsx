@@ -17,6 +17,7 @@ import {
   RouteParamsPendingFallback,
   useReadyRouteParams,
 } from "@/src/hooks/useReadyRouteParams";
+import { useTranslation } from "react-i18next";
 
 export default function DatasetItemPage() {
   const route = useReadyRouteParams(["projectId", "datasetId", "itemId"]);
@@ -39,6 +40,7 @@ function DatasetItemContent({
   datasetId: string;
   itemId: string;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const { selectedVersion, resetToLatest } = useDatasetVersion();
   const isViewingOldVersion = selectedVersion !== null;
 
@@ -131,19 +133,19 @@ function DatasetItemContent({
               onClick={() => setIsVersionPanelOpen(!isVersionPanelOpen)}
               title={
                 isVersionPanelOpen
-                  ? "Hide version history"
-                  : "Show version history"
+                  ? tFeatures("ui.hideVersionHistory")
+                  : tFeatures("ui.showVersionHistory")
               }
             >
               {isVersionPanelOpen ? (
                 <>
                   <History className="mr-2 h-4 w-4" />
-                  Hide Version History
+                  {tFeatures("ui.hideVersionHistoryTitle")}
                 </>
               ) : (
                 <>
                   <PanelRightOpen className="mr-2 h-4 w-4" />
-                  Show Version History
+                  {tFeatures("ui.showVersionHistoryTitle")}
                 </>
               )}
             </Button>
@@ -161,7 +163,7 @@ function DatasetItemContent({
                     onCheckedChange={setShowDiffMode}
                   />
                   <Label htmlFor="diff-mode" className="cursor-pointer text-sm">
-                    Show diff with latest version
+                    {tFeatures("ui.showDiffWithLatestVersion")}
                   </Label>
                 </div>
               </div>
@@ -172,7 +174,7 @@ function DatasetItemContent({
               selectedVersion &&
               !itemChangedAtVersion && (
                 <div className="text-muted-foreground mb-4 text-sm">
-                  Item unchanged in this version
+                  {tFeatures("ui.itemUnchangedInThisVersion")}
                 </div>
               )}
 

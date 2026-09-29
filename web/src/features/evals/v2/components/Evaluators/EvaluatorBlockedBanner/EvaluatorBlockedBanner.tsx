@@ -8,6 +8,7 @@ import Link from "next/link";
 import { Fragment } from "react";
 
 import { Button } from "@/src/components/ui/button";
+import { useTranslation } from "react-i18next";
 
 const DEFAULT_BLOCK_MESSAGE =
   "This evaluator is paused until its configuration is fixed.";
@@ -55,6 +56,7 @@ export function EvaluatorBlockedBanner({
   reactivationPending: boolean;
   onReactivate: () => void;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const reason = blockReason ?? "EVAL_MODEL_CONFIG_INVALID";
   const blockMetadata = getEvaluatorBlockMetadata(reason);
   const blockedAtLabel = formatDistanceToNow(blockedAt, { addSuffix: true });
@@ -74,7 +76,7 @@ export function EvaluatorBlockedBanner({
 
         <div className="min-w-0 flex-1">
           <h2 className="text-foreground text-base leading-5 font-bold">
-            Evaluator paused
+            {tFeatures("evalsMore:evaluator.pausedTitle")}
           </h2>
 
           <div className="text-muted-foreground mt-1 flex flex-wrap items-center gap-2 text-sm leading-5">
@@ -84,7 +86,7 @@ export function EvaluatorBlockedBanner({
             <Fragment>
               <span className="bg-border h-1 w-1 rounded-full" />
               <span title={blockedAt.toLocaleString()}>
-                Paused {blockedAtLabel}
+                {tFeatures("ui.paused")} {blockedAtLabel}
               </span>
             </Fragment>
           </div>
@@ -111,7 +113,7 @@ export function EvaluatorBlockedBanner({
                 className="h-8 px-3"
               >
                 <RefreshCcw className="mr-1.5 h-3.5 w-3.5" />
-                Reactivate
+                {tFeatures("evalsMore:evaluator.reactivate")}
               </Button>
             ) : null}
           </div>

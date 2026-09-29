@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 /* eslint-disable boundaries/dependencies */
 "use client";
 
@@ -46,6 +47,8 @@ function ConfirmationDialogController<TValue = undefined>({
   title: ConfirmationDialogContent<TValue>;
   variant: "default" | "destructive";
 }) {
+const { t: tUi } = useTranslation("uiMore");
+
   const [confirmationInput, setConfirmationInput] = React.useState("");
 
   const [selectedValue, setSelectedValue] = React.useState<TValue>();
@@ -107,7 +110,7 @@ function ConfirmationDialogController<TValue = undefined>({
             <p className="text-muted-foreground text-sm">{resolvedText}</p>
             {error ? (
               <div className="rounded border border-red-200 bg-red-50 p-3 text-sm text-red-700">
-                <p className="font-bold">Error:</p>
+                <p className="font-bold">{tUi("errorLabel")}</p>
                 <p className="whitespace-pre-wrap">{error}</p>
               </div>
             ) : null}
@@ -117,7 +120,7 @@ function ConfirmationDialogController<TValue = undefined>({
                   htmlFor={confirmationInputId}
                   className="flex flex-wrap items-center gap-1.5"
                 >
-                  <span>To confirm, enter the required value:</span>
+                  <span>{tUi("confirmValue")}</span>
                   <code className="bg-muted text-foreground rounded px-1.5 py-0.5 font-mono text-sm leading-none">
                     {confirmationText}
                   </code>

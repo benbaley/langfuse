@@ -4,6 +4,7 @@ import { useState } from "react";
 import { z } from "zod";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics";
 import { env } from "@/src/env.mjs";
+import { useTranslation } from "react-i18next";
 
 export function RequestResetPasswordEmailButton({
   email,
@@ -16,6 +17,7 @@ export function RequestResetPasswordEmailButton({
   onEmailSent: () => void;
   label?: string;
 }) {
+  const { t: tApp } = useTranslation("app");
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const session = useSession();
@@ -64,8 +66,8 @@ export function RequestResetPasswordEmailButton({
       >
         {label ??
           (session.status === "authenticated"
-            ? "Send verification code"
-            : "Request password reset")}
+            ? tApp("ui.SendVerificationCode")
+            : tApp("ui.RequestPasswordReset"))}
       </Button>
       {errorMessage && (
         <div className="text-destructive mt-3 text-center text-sm">

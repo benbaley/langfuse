@@ -9,6 +9,7 @@ import {
 import { cn } from "@/src/utils/tailwind";
 import { getGalleryCategoryPresentation } from "@/src/features/evals/v2/fns/templateGallery/galleryCategoryPresentation";
 import type { GalleryNavigationItem } from "@/src/features/evals/v2/types/templateGallery";
+import { useTranslation } from "react-i18next";
 
 export function EvaluatorGallerySidebar({
   items,
@@ -19,17 +20,18 @@ export function EvaluatorGallerySidebar({
   activeSection: string | null;
   onSelectSection: (key: string) => void;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const selectedSection = activeSection ?? items[0]?.key;
   const selectedItem = items.find((item) => item.key === selectedSection);
 
   return (
     <>
       <nav
-        aria-label="Browse categories"
+        aria-label={tFeatures("ui.browseCategories")}
         className="hidden w-56 shrink-0 flex-col gap-0.5 overflow-y-auto border-r p-4 @2xl:flex"
       >
         <div className="text-muted-foreground px-3 pb-2 text-xs font-bold tracking-wide uppercase">
-          Browse
+          {tFeatures("ui.browse")}
         </div>
         {items.map((item) => {
           const isActive = selectedSection === item.key;
@@ -55,8 +57,15 @@ export function EvaluatorGallerySidebar({
                 className={cn("mr-2 h-3.5 w-3.5 shrink-0", iconClassName)}
               />
               <span className="flex min-w-0 flex-1 items-baseline justify-between gap-3">
-                <span className="truncate" title={item.label}>
-                  {item.label}
+                <span
+                  className="truncate"
+                  title={tFeatures(`evalsMore:gallery.category.${item.key}`, {
+                    defaultValue: item.label,
+                  })}
+                >
+                  {tFeatures(`evalsMore:gallery.category.${item.key}`, {
+                    defaultValue: item.label,
+                  })}
                 </span>
                 {item.count !== undefined ? (
                   <span className="text-muted-foreground shrink-0 font-mono text-xs tabular-nums">
@@ -69,11 +78,21 @@ export function EvaluatorGallerySidebar({
         })}
       </nav>
 
-      <nav aria-label="Browse categories" className="border-b p-3 @2xl:hidden">
+      <nav
+        aria-label={tFeatures("ui.browseCategories")}
+        className="border-b p-3 @2xl:hidden"
+      >
         <Select value={selectedSection} onValueChange={onSelectSection}>
-          <SelectTrigger aria-label="Browse categories" className="w-full">
-            <SelectValue placeholder="Browse categories">
-              {selectedItem?.label}
+          <SelectTrigger
+            aria-label={tFeatures("ui.browseCategories")}
+            className="w-full"
+          >
+            <SelectValue placeholder={tFeatures("ui.browseCategories")}>
+              {selectedItem
+                ? tFeatures(`evalsMore:gallery.category.${selectedItem.key}`, {
+                    defaultValue: selectedItem.label,
+                  })
+                : undefined}
             </SelectValue>
           </SelectTrigger>
           <SelectContent>
@@ -84,8 +103,15 @@ export function EvaluatorGallerySidebar({
                 className="[&>span:last-child]:w-full"
               >
                 <span className="flex w-full items-center justify-between gap-3">
-                  <span className="truncate" title={item.label}>
-                    {item.label}
+                  <span
+                    className="truncate"
+                    title={tFeatures(`evalsMore:gallery.category.${item.key}`, {
+                      defaultValue: item.label,
+                    })}
+                  >
+                    {tFeatures(`evalsMore:gallery.category.${item.key}`, {
+                      defaultValue: item.label,
+                    })}
                   </span>
                   {item.count !== undefined ? (
                     <span className="text-muted-foreground shrink-0 font-mono text-xs tabular-nums">

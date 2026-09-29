@@ -6,8 +6,11 @@ import { api } from "@/src/utils/api";
 import { TracesOnboarding } from "@/src/components/onboarding/TracesOnboarding";
 import { getTracingTabs, TRACING_TABS } from "@/src/features/navigation";
 import { useQueryProject } from "@/src/features/projects";
+import { useTranslation, useTranslation as useNavigationTranslation } from "react-i18next";
 
 export default function EventsPage() {
+  const { t: tNavigation } = useNavigationTranslation("navigation");
+  const { t: tFeatures } = useTranslation("features");
   const router = useRouter();
   const projectId = router.query.projectId as string;
   const { project } = useQueryProject();
@@ -35,14 +38,13 @@ export default function EventsPage() {
   return (
     <Page
       headerProps={{
-        title: "Tracing - Events Table (New)",
+        title: tFeatures("ui.tracingEventsTableNew"),
         help: {
-          description:
-            "An observation captures a single function call in an application. This view uses the new ClickHouse events table.",
+          description: tFeatures("help.events"),
           href: "https://langfuse.com/docs/observability/data-model",
         },
         tabsProps: {
-          tabs: getTracingTabs(projectId),
+          tabs: getTracingTabs(projectId, tNavigation),
           activeTab: TRACING_TABS.OBSERVATIONS,
         },
       }}

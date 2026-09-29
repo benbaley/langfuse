@@ -2,6 +2,7 @@ import { Code2, Scale, Sparkles } from "lucide-react";
 import { EvalTemplateTypeEnum, type EvalTemplateType } from "@langfuse/shared";
 
 import { Tabs } from "@/src/components/design-system/Tabs/Tabs";
+import { useTranslation } from "react-i18next";
 
 /** Selects the evaluator implementation. */
 export function EvaluationTypeToggle({
@@ -13,6 +14,7 @@ export function EvaluationTypeToggle({
   onValueChange: (value: EvalTemplateType) => void;
   disabled?: boolean;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   return (
     <Tabs
       value={value}
@@ -40,7 +42,7 @@ export function EvaluationTypeToggle({
             value={EvalTemplateTypeEnum.DECISION_MODEL}
             disabled={disabled}
             icon={Scale}
-            label="Decision model (experimental)"
+            label={tFeatures("ui.decisionModelExperimental")}
           />
         ) : null}
       </Tabs.List>

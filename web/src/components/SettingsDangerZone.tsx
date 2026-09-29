@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import Header from "@/src/components/layouts/header";
 import React from "react";
 
@@ -8,9 +9,10 @@ export const SettingsDangerZone: React.FC<{
     button: React.ReactNode;
   }[];
 }> = ({ items }) => {
+  const { t } = useTranslation("settings");
   return (
     <div className="space-y-3">
-      <Header title="Danger Zone" />
+      <Header title={t("dangerZone")} />
       <div className="rounded-lg border">
         {items.map((item, index) => (
           <div

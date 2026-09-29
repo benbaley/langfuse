@@ -7,6 +7,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@/src/components/ui/dropdown-menu";
+import { useTranslation } from "react-i18next";
 
 export const TestResultTraceActionsTrigger = forwardRef<
   HTMLButtonElement,
@@ -35,6 +36,7 @@ export function TestResultTraceActions({
   executionTraceId: string | null;
   onOpenExecutionTrace: ((executionTraceId: string) => void) | null;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const openExecutionTrace =
     executionTraceId && onOpenExecutionTrace
       ? () => onOpenExecutionTrace(executionTraceId)
@@ -47,7 +49,7 @@ export function TestResultTraceActions({
         {openExecutionTrace ? (
           <DropdownMenuItem onClick={openExecutionTrace}>
             <ExternalLink className="mr-2 h-3.5 w-3.5" />
-            Open execution trace
+            {tFeatures("ui.openExecutionTrace")}
           </DropdownMenuItem>
         ) : null}
       </DropdownMenuContent>

@@ -25,6 +25,7 @@ import { type DatabaseRow } from "@/src/server/api/services/sqlInterface";
 import { DashboardLineTimeSeriesChart } from "@/src/features/dashboard/components/DashboardLineTimeSeriesChart";
 import { useScheduledDashboardExecuteQuery } from "@/src/features/dashboard/hooks/useDashboardQueryScheduler";
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 
 export const ModelUsageChart = ({
   className,
@@ -51,6 +52,7 @@ export const ModelUsageChart = ({
   schedulerId?: string;
   syncId?: string;
 }) => {
+  const { t: tApp } = useTranslation("app");
   const { allModels, selectedModels, setSelectedModels } = useModelSelection(
     projectId,
     userAndEnvFilterState,
@@ -347,7 +349,7 @@ export const ModelUsageChart = ({
   return (
     <DashboardCard
       className={className}
-      title="Model Usage"
+      title={tApp("ui.ModelUsage")}
       isLoading={
         isLoading || (queryResult.isPending && selectedModels.length > 0)
       }

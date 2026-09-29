@@ -3,6 +3,7 @@ import {
   type ToolDefinition,
 } from "./ToolCallDefinitionCard";
 import type { ToolCallInvocation } from "../../../hooks/useChatMLParser";
+import { useTranslation } from "react-i18next";
 
 // SectionToolDefinitions props
 export interface SectionToolDefinitionsProps {
@@ -23,11 +24,12 @@ export function SectionToolDefinitions({
   toolCallsByName,
   toolNameToDefinitionNumber,
 }: SectionToolDefinitionsProps) {
+  const { t: tFeatures } = useTranslation("features");
   return (
     <div className="[&_.io-message-content]:px-2 [&_.io-message-header]:px-2">
       <div className="border-border mb-4 border-b pb-4">
         <div className="io-message-header px-1 py-1 text-sm font-bold capitalize">
-          Tools
+          {tFeatures("ui.tools")}
         </div>
         <ToolCallDefinitionCard
           tools={tools}

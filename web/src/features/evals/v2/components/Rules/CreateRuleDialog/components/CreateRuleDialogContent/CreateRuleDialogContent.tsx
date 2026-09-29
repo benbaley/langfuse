@@ -25,6 +25,7 @@ import { useProject } from "@/src/features/projects";
 import { prepareNameForSave } from "@/src/features/evals/v2/fns/prepareNameForSave";
 import { getFilterAnalyticsProperties } from "@/src/features/evals/v2/fns/getFilterAnalyticsProperties";
 import { resolveInitialRuleFilters } from "./resolveInitialRuleFilters";
+import { useTranslation } from "react-i18next";
 
 export function CreateRuleDialogContent({
   projectId,
@@ -51,6 +52,7 @@ export function CreateRuleDialogContent({
   successNotification: "toast" | "none";
   onEvaluatorSearchChange: (search: string) => void;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const capture = usePostHogClientCapture();
   const utils = api.useUtils();
   const { isLangfuseCloud } = useLangfuseCloudRegion();
@@ -121,7 +123,7 @@ export function CreateRuleDialogContent({
     });
     if (successNotification === "toast") {
       showSuccessToast({
-        title: "Rule created",
+        title: tFeatures("ui.ruleCreated"),
         description: `${rule.name} is active.`,
       });
     }
@@ -154,9 +156,11 @@ export function CreateRuleDialogContent({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent size="xl" className="max-w-6xl" closeOnInteractionOutside>
         <DialogHeader>
-          <DialogTitle>New rule</DialogTitle>
+          <DialogTitle>{tFeatures("ui.newRule")}</DialogTitle>
           <DialogDescription>
-            Select which incoming observations should trigger evaluators.
+            {tFeatures(
+              "ui.selectWhichIncomingObservationsShouldTriggerEvaluators",
+            )}
           </DialogDescription>
         </DialogHeader>
         <DialogBody>

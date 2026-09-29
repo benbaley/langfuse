@@ -120,6 +120,7 @@ import { CodeEvalTestRunCard } from "@/src/features/evals/components/code-eval-t
 import { getExperimentEvalPreviewFilters } from "@/src/features/evals/utils/experiment-eval-preview-utils";
 import { cn } from "@/src/utils/tailwind";
 import { PeekTableStateProvider } from "@/src/components/table/peek/contexts/PeekTableStateContext";
+import { useTranslation } from "react-i18next";
 
 // Lazy load tables
 const TracesTable = lazy(() => import("@/src/features/traces/TracesTable"));
@@ -141,6 +142,7 @@ const TracesPreview = memo(
     projectId: string;
     filterState: z.infer<typeof singleFilterList>[number][];
   }) => {
+    const { t: tFeatures } = useTranslation("features");
     const dateRange = useMemo(() => {
       return {
         from: getDateFromOption({
@@ -154,10 +156,10 @@ const TracesPreview = memo(
       <>
         <div className="flex flex-col items-start gap-1">
           <span className="text-sm leading-none font-bold">
-            Preview sample matched traces
+            {tFeatures("ui.previewSampleMatchedTraces")}
           </span>
           <FormDescription>
-            Sample over the last 24 hours that match these filters
+            {tFeatures("ui.sampleOverTheLast24HoursThatMatchTheseFilters")}
           </FormDescription>
         </div>
         <div className="mb-4 flex max-h-[30dvh] w-full flex-col overflow-hidden border-r border-b border-l">
@@ -193,6 +195,7 @@ const ObservationsPreview = memo(
     isNewCompatible: boolean;
     compatibilityCheckWasPerformed: boolean;
   }) => {
+    const { t: tFeatures } = useTranslation("features");
     const { isV4 } = useReadPath();
 
     const dateRange = useMemo(() => {
@@ -212,7 +215,7 @@ const ObservationsPreview = memo(
       <>
         <div className="flex flex-col items-start gap-1">
           <FormDescription>
-            Sample over the last 24 hours that match filters
+            {tFeatures("ui.sampleOverTheLast24HoursThatMatchFilters")}
           </FormDescription>
         </div>
         <div className="mb-4 flex max-h-[30dvh] w-full flex-col overflow-hidden border-r border-b border-l">
@@ -222,21 +225,17 @@ const ObservationsPreview = memo(
                 <AlertTriangle className="text-dark-yellow h-8 w-8" />
                 <div className="flex flex-col gap-1">
                   <span className="text-foreground font-bold">
-                    Please verify your SDK version
+                    {tFeatures("evalsMore:sdk.verify")}
                   </span>
                   <span className="text-muted-foreground max-w-md text-sm">
-                    We did not find any data ingested with langfuse
-                    OTEL-compatible SDKs in the last 7 days. Observation-level
-                    evaluators require JS SDK v4+ or Python SDK v3+. You can
-                    still configure this evaluator now—it will start running
-                    once you upgrade.{" "}
+                    {tFeatures("evalsMore:sdk.noOtel")}{" "}
                     <a
                       href="https://langfuse.com/docs/observability/sdk/upgrade-path"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-dark-blue font-bold hover:opacity-80"
                     >
-                      Learn more
+                      {tFeatures("evalsMore:sdk.learnMore")}
                     </a>
                     .
                   </span>
@@ -288,6 +287,7 @@ function CodeEvalSourceLink({
   projectId: string;
   evalTemplate: EvalTemplate;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const sourceCodeLanguage =
     evalTemplate.sourceCodeLanguage ??
     EvalTemplateSourceCodeLanguage.TYPESCRIPT;
@@ -300,7 +300,7 @@ function CodeEvalSourceLink({
         target="_blank"
         rel="noopener noreferrer"
       >
-        Edit source code
+        {tFeatures("evalsMore:evaluator.editCode")}
         <ExternalLink className="ml-1 h-3.5 w-3.5" />
       </Link>
     </Button>
@@ -308,9 +308,9 @@ function CodeEvalSourceLink({
     <Button
       variant="outline"
       disabled
-      title="Only user-managed templates can be edited"
+      title={tFeatures("ui.onlyUserManagedTemplatesCanBeEdited")}
     >
-      Edit source code
+      {tFeatures("evalsMore:evaluator.editCode")}
       <ExternalLink className="ml-1 h-3.5 w-3.5" />
     </Button>
   );
@@ -352,6 +352,7 @@ export const InnerEvaluatorForm = (props: {
   oldConfigId?: string;
   sourceRuleAction?: "mark-inactive" | "delete";
 }) => {
+  const { t: tFeatures } = useTranslation("features");
   const capture = usePostHogClientCapture();
   const router = useRouter();
   const [showTraceConfirmDialog, setShowTraceConfirmDialog] = useState(false);
@@ -573,6 +574,7 @@ export const InnerEvaluatorForm = (props: {
   const evalVersionCalloutContent = getEvalVersionCalloutContent(
     watchedTarget,
     props.evalCapabilities,
+    tFeatures,
   );
   const eventsPreviewFilterState = useMemo(
     () =>
@@ -839,7 +841,9 @@ export const InnerEvaluatorForm = (props: {
           name="scoreName"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Generated Score Name</FormLabel>
+              <FormLabel>
+                {tFeatures("evalsMore:score.generatedName")}
+              </FormLabel>
               <FormControl>
                 <Input {...field} />
               </FormControl>
@@ -852,11 +856,11 @@ export const InnerEvaluatorForm = (props: {
         <Card className="flex max-w-full flex-col gap-2 overflow-y-auto p-4">
           {hasInvalidTraceFilters && (
             <Alert variant="destructive" icon={AlertTriangle}>
-              <Alert.Title>Unsupported filter detected</Alert.Title>
+              <Alert.Title>
+                {tFeatures("ui.unsupportedFilterDetected")}
+              </Alert.Title>
               <Alert.Description>
-                This evaluator has a filter that is not supported for
-                trace-level evaluators. It is effectively paused. Please remove
-                all filters and re-add them from scratch to resume execution.
+                {tFeatures("evalsMore:rules.legacyFilter")}
               </Alert.Description>
             </Alert>
           )}
@@ -868,7 +872,7 @@ export const InnerEvaluatorForm = (props: {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      Run on{" "}
+                      {tFeatures("ui.runOn")}{" "}
                       {props.mode === "edit" && (
                         <Tooltip>
                           <TooltipTrigger>
@@ -876,8 +880,7 @@ export const InnerEvaluatorForm = (props: {
                           </TooltipTrigger>
                           <TooltipContent className="max-w-[200px] p-2">
                             <span className="leading-4">
-                              An evaluator&apos;s target data may only be
-                              configured at creation.
+                              {tFeatures("evalsMore:rules.targetImmutable")}
                             </span>
                           </TooltipContent>
                         </Tooltip>
@@ -899,7 +902,7 @@ export const InnerEvaluatorForm = (props: {
                               value="event"
                               disabled={props.disabled || props.mode === "edit"}
                               icon={CircleDot}
-                              label="Observations"
+                              label={tFeatures("ui.observations")}
                             />
                           </span>
                           {showLegacyTargetOptions && (
@@ -911,13 +914,13 @@ export const InnerEvaluatorForm = (props: {
                                 }
                                 icon={ListTree}
                               >
-                                Traces
+                                {tFeatures("ui.traces")}
                                 <Badge
                                   variant="secondary"
                                   size="sm"
                                   className="border-border border font-normal"
                                 >
-                                  Legacy
+                                  {tFeatures("ui.legacy")}
                                 </Badge>
                               </Tabs.Trigger>
                             </span>
@@ -927,7 +930,7 @@ export const InnerEvaluatorForm = (props: {
                               value="offline-experiment"
                               disabled={props.disabled || props.mode === "edit"}
                               icon={FlaskConical}
-                              label="Experiments"
+                              label={tFeatures("ui.experiments")}
                             />
                           </span>
                         </Tabs.List>
@@ -944,7 +947,9 @@ export const InnerEvaluatorForm = (props: {
               userFacingTarget === "offline-experiment" &&
               showLegacyTargetOptions && (
                 <div className="flex flex-col gap-2">
-                  <FormLabel className="text-sm">Experiment Method</FormLabel>
+                  <FormLabel className="text-sm">
+                    {tFeatures("ui.experimentMethod")}
+                  </FormLabel>
                   <Tabs
                     value={useOtelDataForExperiment ? "otel" : "non-otel"}
                     onValueChange={(value) => {
@@ -983,7 +988,7 @@ export const InnerEvaluatorForm = (props: {
                           value="otel"
                           disabled={props.mode === "edit" || props.disabled}
                           icon={FlaskConical}
-                          label="Experiment Runner SDK"
+                          label={tFeatures("ui.experimentRunnerSdk")}
                         />
                       </span>
                       <span className="min-w-[100px]">
@@ -992,13 +997,13 @@ export const InnerEvaluatorForm = (props: {
                           disabled={props.mode === "edit" || props.disabled}
                           icon={BetweenHorizonalStart}
                         >
-                          Low-level SDK methods
+                          {tFeatures("ui.lowLevelSdkMethods")}
                           <Badge
                             variant="secondary"
                             size="sm"
                             className="border-border border font-normal"
                           >
-                            Legacy
+                            {tFeatures("ui.legacy")}
                           </Badge>
                         </Tabs.Trigger>
                       </span>
@@ -1022,7 +1027,7 @@ export const InnerEvaluatorForm = (props: {
                   name="timeScope"
                   render={({ field }) => (
                     <FormItem className="flex-1">
-                      <FormLabel>Evaluate</FormLabel>
+                      <FormLabel>{tFeatures("ui.evaluate")}</FormLabel>
                       <FormControl>
                         <div className="flex flex-col gap-2">
                           <div className="flex space-x-2">
@@ -1042,7 +1047,8 @@ export const InnerEvaluatorForm = (props: {
                                 htmlFor="newObjects"
                                 className="text-sm leading-none font-bold peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                               >
-                                New {getTargetDisplayName(form.watch("target"))}
+                                {tFeatures("ui.new")}{" "}
+                                {getTargetDisplayName(form.watch("target"))}
                               </label>
                             </div>
                           </div>
@@ -1067,7 +1073,7 @@ export const InnerEvaluatorForm = (props: {
                                 htmlFor="existingObjects"
                                 className="text-sm leading-none font-bold peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                               >
-                                Existing{" "}
+                                {tFeatures("ui.existing")}{" "}
                                 {getTargetDisplayName(form.watch("target"))}
                               </label>
                               {field.value.includes("EXISTING") &&
@@ -1124,8 +1130,8 @@ export const InnerEvaluatorForm = (props: {
                           <div className="space-y-0.5">
                             <FormLabel>
                               {isEventTarget(target)
-                                ? "Run on live incoming observations"
-                                : "Run on new experiments"}
+                                ? tFeatures("ui.runOnLiveIncomingObservations")
+                                : tFeatures("ui.runOnNewExperiments")}
                             </FormLabel>
                             <FormDescription>
                               Automatically evaluate new incoming{" "}
@@ -1142,15 +1148,16 @@ export const InnerEvaluatorForm = (props: {
                         </FormItem>
                         {!field.value && isEventTarget(target) && (
                           <p className="text-muted-foreground text-xs">
-                            This evaluator can still be used for batched
-                            evaluation of historic observations.{" "}
+                            {tFeatures(
+                              "ui.thisEvaluatorCanStillBeUsedForBatchedEvaluationOfHistoricObservations",
+                            )}{" "}
                             <a
                               href="https://langfuse.com/docs/evaluation/evaluation-methods/llm-as-a-judge"
                               target="_blank"
                               rel="noopener noreferrer"
                               className="text-dark-blue hover:opacity-80"
                             >
-                              Read the docs
+                              {tFeatures("ui.readTheDocs")}
                             </a>
                           </p>
                         )}
@@ -1203,13 +1210,15 @@ export const InnerEvaluatorForm = (props: {
 
                     return (
                       <FormItem>
-                        <FormLabel>Filter</FormLabel>
+                        <FormLabel>
+                          {tFeatures("evalsMore:rules.filter")}
+                        </FormLabel>
                         <FormControl>
                           <div className="max-w-[500px]">
                             {props.disabled && !hasFilters ? (
                               <p className="text-muted-foreground text-xs">
-                                All {getTargetDisplayName(target)} will be
-                                evaluated
+                                {tFeatures("ui.all")}{" "}
+                                {getTargetDisplayName(target)} will be evaluated
                               </p>
                             ) : (
                               <InlineFilterBuilder
@@ -1308,7 +1317,7 @@ export const InnerEvaluatorForm = (props: {
                       name="sampling"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Sampling</FormLabel>
+                          <FormLabel>{tFeatures("ui.sampling")}</FormLabel>
                           <FormControl>
                             <div className="max-w-[500px]">
                               <Slider
@@ -1335,14 +1344,14 @@ export const InnerEvaluatorForm = (props: {
                         name="delay"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Delay (seconds)</FormLabel>
+                            <FormLabel>
+                              {tFeatures("ui.delaySeconds")}
+                            </FormLabel>
                             <FormControl>
                               <Input {...field} type="number" min={0} />
                             </FormControl>
                             <FormDescription>
-                              Time between first Trace/Dataset run event and
-                              evaluation execution to ensure all data is
-                              available
+                              {tFeatures("evalsMore:rules.delayHelp")}
                             </FormDescription>
                             <FormMessage />
                           </FormItem>
@@ -1411,7 +1420,9 @@ export const InnerEvaluatorForm = (props: {
           disabled={hasJsonPathCompatibilityError}
           className="mt-3 max-w-fit"
         >
-          {props.mode === "edit" ? "Update" : "Execute"}
+          {props.mode === "edit"
+            ? tFeatures("ui.update")
+            : tFeatures("ui.execute")}
         </Button>
       ) : null}
     </div>
@@ -1449,19 +1460,19 @@ export const InnerEvaluatorForm = (props: {
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>You selected a legacy evaluator</DialogTitle>
+            <DialogTitle>
+              {tFeatures("ui.youSelectedALegacyEvaluator")}
+            </DialogTitle>
           </DialogHeader>
           <DialogBody className="text-sm">
-            We strongly recommend using observation evaluators. Trace evaluators
-            will be deprecated in the future. Only proceed if you are sure you
-            cannot upgrade your SDK version now.
+            {tFeatures("evalsMore:sdk.traceDeprecated")}
           </DialogBody>
           <DialogFooter>
             <Button
               variant="outline"
               onClick={() => setShowTraceConfirmDialog(false)}
             >
-              Cancel
+              {tFeatures("ui.cancel")}
             </Button>
             <Button
               onClick={() => {
@@ -1481,7 +1492,7 @@ export const InnerEvaluatorForm = (props: {
                 form.setValue("target", actualTarget);
               }}
             >
-              Continue
+              {tFeatures("ui.continue")}
             </Button>
           </DialogFooter>
         </DialogContent>

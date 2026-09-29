@@ -5,6 +5,7 @@ import {
   type DatasetSchema,
 } from "../utils/datasetItemUtils";
 import { DatasetItemFields } from "@/src/features/datasets/components/DatasetItemFields";
+import { useTranslation } from "react-i18next";
 
 type DatasetItemVersionedContentProps = {
   itemAtVersion: DatasetItemDomain | null;
@@ -30,9 +31,15 @@ export const DatasetItemVersionedContent = ({
   itemChangedAtVersion,
   dataset,
 }: DatasetItemVersionedContentProps) => {
+  const { t: tMore } = useTranslation("coreMore");
+  const { t: tFeatures } = useTranslation("features");
   // Loading states
   if (isLoadingVersioned) {
-    return <div className="text-muted-foreground text-sm">Loading...</div>;
+    return (
+      <div className="text-muted-foreground text-sm">
+        {tFeatures("ui.loading")}
+      </div>
+    );
   }
 
   // Item doesn't exist at this version
@@ -41,12 +48,9 @@ export const DatasetItemVersionedContent = ({
       <div className="flex flex-col items-center justify-center p-12 text-center">
         <div className="text-muted-foreground">
           <p className="text-lg font-bold">
-            Item does not exist at this version
+            {tFeatures("ui.itemDoesNotExistAtThisVersion")}
           </p>
-          <p className="mt-2 text-sm">
-            This dataset item either had not been created yet or was deleted at
-            the selected version timestamp.
-          </p>
+          <p className="mt-2 text-sm">{tMore("datasets.missingVersion")}</p>
         </div>
       </div>
     );
@@ -55,7 +59,11 @@ export const DatasetItemVersionedContent = ({
   // Show diff mode if enabled and item changed at this version
   if (showDiffMode && itemChangedAtVersion) {
     if (isLoadingLatest) {
-      return <div className="text-muted-foreground text-sm">Loading...</div>;
+      return (
+        <div className="text-muted-foreground text-sm">
+          {tFeatures("ui.loading")}
+        </div>
+      );
     }
 
     // Can't show diff if latest doesn't exist
@@ -63,9 +71,13 @@ export const DatasetItemVersionedContent = ({
       return (
         <div className="flex flex-col items-center justify-center p-12 text-center">
           <div className="text-muted-foreground">
-            <p className="text-lg font-bold">Cannot show diff</p>
+            <p className="text-lg font-bold">
+              {tFeatures("ui.cannotShowDiff")}
+            </p>
             <p className="mt-2 text-sm">
-              The latest version of this item does not exist (has been deleted).
+              {tFeatures(
+                "ui.theLatestVersionOfThisItemDoesNotExistHasBeenDeleted",
+              )}
             </p>
           </div>
         </div>

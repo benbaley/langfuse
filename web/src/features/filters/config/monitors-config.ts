@@ -6,12 +6,14 @@ const baseFacets: FilterConfig["facets"] = [
     type: "categorical" as const,
     column: "severity",
     label: "Severity",
+    labelKey: "field.severity",
     disableTextFilter: true,
   },
   {
     type: "categorical" as const,
     column: "tags",
     label: "Tags",
+    labelKey: "field.tags",
   },
 ];
 
@@ -37,6 +39,7 @@ export const getMonitorFilterConfig = (
             type: "categorical" as const,
             column: "evaluatorId",
             label: "Evaluator",
+            labelKey: "field.evaluator",
             disableTextFilter: true,
             getOptionTitle: (value, displayLabel) =>
               `${displayLabel} (${value})`,

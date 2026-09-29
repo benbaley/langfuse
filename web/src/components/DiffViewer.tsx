@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 /* eslint-disable @repo/no-style-props */
 import React, { useEffect, useState } from "react";
 import { Card, CardContent } from "@/src/components/ui/card";
@@ -99,6 +100,7 @@ const DiffViewer: React.FC<DiffViewerProps> = ({
   newSubLabel,
   className,
 }) => {
+  const { t: tMore } = useTranslation("coreMore");
   const [diffLines, setDiffLines] = useState<{
     left: DiffSegment[];
     right: DiffSegment[];
@@ -193,7 +195,11 @@ const DiffViewer: React.FC<DiffViewerProps> = ({
   };
 
   if (oldString === newString) {
-    return <div className="text-muted-foreground text-sm">No changes</div>;
+    return (
+      <div className="text-muted-foreground text-sm">
+        {tMore("io.noChanges")}
+      </div>
+    );
   }
 
   return (

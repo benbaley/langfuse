@@ -15,6 +15,7 @@ import {
   SelectTrigger,
 } from "@/src/components/ui/select";
 import type { CloudRegion } from "@/src/features/organizations";
+import { useTranslation } from "react-i18next";
 
 export function CloudRegionPicker({
   regions,
@@ -27,17 +28,18 @@ export function CloudRegionPicker({
   onValueChange: (value: CloudRegion["name"]) => void;
   isSignUpPage?: boolean;
 }) {
+  const { t: tApp } = useTranslation("app");
   return (
     <div className="bg-card mt-8 -mb-10 rounded-lg px-6 py-6 text-sm sm:mx-auto sm:w-full sm:max-w-[480px] sm:rounded-lg sm:px-10">
       <div className="flex w-full flex-col gap-2">
         <div>
           <span className="text-sm leading-none font-bold">
-            Data Region
+            {tApp("ui.DataRegion")}
             <DataRegionInfo />
           </span>
           {isSignUpPage && selectedRegion?.name === "HIPAA" ? (
             <p className="text-muted-foreground text-xs">
-              Demo project is not available in the HIPAA data region.
+              {tApp("ui.DemoProjectIsNotAvailableInTheHipaaDataRegion")}
             </p>
           ) : null}
         </div>
@@ -65,15 +67,16 @@ export function CloudRegionPicker({
         {selectedRegion?.name === "HIPAA" && (
           <div className="bg-muted/50 text-muted-foreground mt-2 rounded-md p-3 text-xs">
             <p>
-              The Business Associate Agreement (BAA) is only effective on the
-              Cloud Pro and Teams plans.{" "}
+              {tApp(
+                "ui.TheBusinessAssociateAgreementBaaIsOnlyEffectiveOnTheCloudProAndTeamsPlans",
+              )}{" "}
               <a
                 href="https://langfuse.com/security/hipaa"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-link hover:text-link-hover underline"
               >
-                Learn more about HIPAA compliance →
+                {tApp("ui.LearnMoreAboutHipaaCompliance")}
               </a>
             </p>
           </div>
@@ -100,66 +103,71 @@ function CloudRegionLabel({ region }: { region: CloudRegion }) {
   );
 }
 
-const DataRegionInfo = () => (
-  <Dialog>
-    <DialogTrigger asChild>
-      <a
-        href="#"
-        className="text-link hover:text-link-hover ml-1 text-xs"
-        title="What is this?"
-        tabIndex={-1}
-      >
-        (what is this?)
-      </a>
-    </DialogTrigger>
-    <DialogContent>
-      <DialogHeader>
-        <DialogTitle>Data Regions</DialogTitle>
-      </DialogHeader>
-      <DialogBody>
-        <DialogDescription className="flex flex-col gap-2">
-          <p>Langfuse Cloud is available in four data regions:</p>
-          <ul className="list-disc pl-5">
-            <li>US: Oregon (AWS us-west-2)</li>
-            <li>EU: Ireland (AWS eu-west-1)</li>
-            <li>JP: Tokyo (AWS ap-northeast-1)</li>
-            <li>
-              HIPAA: Oregon (AWS us-west-2) - HIPAA-compliant region (available
-              with Pro and Teams plans)
-            </li>
-          </ul>
-          <p>
-            Regions are strictly separated, and no data is shared across
-            regions. Choosing a region close to you can help improve speed and
-            comply with local data residency laws and privacy regulations.
-          </p>
-          <p>
-            You can have accounts in multiple regions. Each region requires a
-            separate subscription.
-          </p>
-          <p>
-            Learn more about{" "}
-            <a
-              href="https://langfuse.com/security/data-regions"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-link hover:text-link-hover underline"
-            >
-              data regions
-            </a>{" "}
-            and{" "}
-            <a
-              href="https://langfuse.com/docs/data-security-privacy"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-link hover:text-link-hover underline"
-            >
-              data security & privacy
-            </a>
-            .
-          </p>
-        </DialogDescription>
-      </DialogBody>
-    </DialogContent>
-  </Dialog>
-);
+const DataRegionInfo = () => {
+  const { t: tApp } = useTranslation("app");
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <a
+          href="#"
+          className="text-link hover:text-link-hover ml-1 text-xs"
+          title={tApp("ui.WhatIsThis")}
+          tabIndex={-1}
+        >
+          {tApp("ui.WhatIsThis")}
+        </a>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{tApp("ui.DataRegions")}</DialogTitle>
+        </DialogHeader>
+        <DialogBody>
+          <DialogDescription className="flex flex-col gap-2">
+            <p>{tApp("ui.LangfuseCloudIsAvailableInFourDataRegions")}</p>
+            <ul className="list-disc pl-5">
+              <li>{tApp("ui.UsOregonAwsUsWest2")}</li>
+              <li>{tApp("ui.EuIrelandAwsEuWest1")}</li>
+              <li>{tApp("ui.JpTokyoAwsApNortheast1")}</li>
+              <li>
+                {tApp(
+                  "ui.HipaaOregonAwsUsWest2HipaaCompliantRegionAvailableWithProAndTeamsPlans",
+                )}
+              </li>
+            </ul>
+            <p>
+              {tApp(
+                "ui.RegionsAreStrictlySeparatedAndNoDataIsSharedAcrossRegionsChoosingARegionCloseToYouCanHelpImproveSpeedAndComplyWithLocalDataResidencyLawsAndPrivacyRegulations",
+              )}
+            </p>
+            <p>
+              {tApp(
+                "ui.YouCanHaveAccountsInMultipleRegionsEachRegionRequiresASeparateSubscription",
+              )}
+            </p>
+            <p>
+              {tApp("ui.LearnMoreAbout")}{" "}
+              <a
+                href="https://langfuse.com/security/data-regions"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-link hover:text-link-hover underline"
+              >
+                {tApp("ui.DataRegions")}
+              </a>{" "}
+              {tApp("ui.And")}{" "}
+              <a
+                href="https://langfuse.com/docs/data-security-privacy"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-link hover:text-link-hover underline"
+              >
+                {tApp("ui.DataSecurityPrivacy")}
+              </a>
+              .
+            </p>
+          </DialogDescription>
+        </DialogBody>
+      </DialogContent>
+    </Dialog>
+  );
+};

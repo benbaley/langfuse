@@ -24,6 +24,7 @@ import {
 import { cn } from "@/src/utils/tailwind";
 import { useViewData } from "@/src/components/table/table-view-presets/hooks/useViewData";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics";
+import { useTranslation } from "react-i18next";
 
 const CATEGORY_ICONS: Record<SystemTableViewPresetCategory, LucideIcon> = {
   [SystemTableViewPresetCategory.SlowCalls]: Timer,
@@ -106,6 +107,7 @@ export function CategoryPresetChips({
   applyViewState,
   onPreviewView,
 }: CategoryPresetChipsProps) {
+  const { t: tFeatures } = useTranslation("features");
   const capture = usePostHogClientCapture();
   const { TableViewPresetsList } = useViewData({
     tableName: TableViewPresetTableName.ObservationsEvents,
@@ -348,7 +350,7 @@ export function CategoryPresetChips({
                           {preset.name}
                           {preset.disabled && (
                             <span className="text-muted-foreground rounded-sm border px-1 text-[10px] font-normal uppercase">
-                              Soon
+                              {tFeatures("ui.soon")}
                             </span>
                           )}
                         </span>

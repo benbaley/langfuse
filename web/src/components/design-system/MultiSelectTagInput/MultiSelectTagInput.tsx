@@ -1,4 +1,5 @@
 "use client";
+import { useTranslation } from "react-i18next";
 
 import * as React from "react";
 import * as PopoverPrimitive from "@radix-ui/react-popover";
@@ -50,6 +51,8 @@ export function MultiSelectTagInput<V extends string>({
   "aria-describedby": ariaDescribedBy,
   "aria-invalid": ariaInvalid,
 }: MultiSelectTagInputProps<V>) {
+const { t: tUi } = useTranslation("uiMore");
+
   const container = useLayerContainer("popover");
   const [open, setOpen] = React.useState(false);
   const [fullyVisibleValues, setFullyVisibleValues] = React.useState<Set<V>>(
@@ -291,7 +294,7 @@ export function MultiSelectTagInput<V extends string>({
                     )
                   }
                   data-clear-selection
-                  aria-label="Clear selection"
+                  aria-label={tUi("clearSelection")}
                   className="text-muted-foreground hover:text-foreground ml-auto flex shrink-0 items-center rounded-sm px-1 disabled:cursor-not-allowed"
                   onClick={(event) => {
                     event.stopPropagation();

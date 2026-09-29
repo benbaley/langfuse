@@ -29,6 +29,7 @@ import { getFilterAnalyticsProperties } from "@/src/features/evals/v2/fns/getFil
 import { EvaluatorSavedRuleFilterPreview } from "@/src/features/evals/v2/components/Evaluators/EvaluatorSavedDialog/EvaluatorSavedRuleFilterPreview";
 import { EvaluatorBackfillSettings } from "@/src/features/evals/v2/components/Evaluators/EvaluatorBackfillSettings/EvaluatorBackfillSettings";
 import { useEvaluatorSavedBackfill } from "@/src/features/evals/v2/components/Evaluators/EvaluatorSavedDialogContainer/hooks/useEvaluatorSavedBackfill";
+import { useTranslation } from "react-i18next";
 
 type Rule = RouterOutputs["evalsV2"]["rules"]["list"]["rules"][number];
 type DialogPhase = "saved" | "closing-saved" | "create-rule" | "closed";
@@ -54,6 +55,7 @@ export function EvaluatorSavedDialogContainer({
   onDismiss: () => Promise<void>;
   onFinish: () => Promise<void>;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const capture = usePostHogClientCapture();
   const utils = api.useUtils();
   const activation = useActivationConfirmation({ projectId });
@@ -258,7 +260,7 @@ export function EvaluatorSavedDialogContainer({
                   sampling,
                 },
               ],
-              title: "Review evaluator cost",
+              title: tFeatures("ui.reviewEvaluatorCost"),
               description: "",
               confirmLabel: "Continue",
               onConfirm: async () => undefined,
@@ -284,6 +286,7 @@ export function EvaluatorSavedDialogContainer({
       }
     },
     [
+      tFeatures,
       claimMissingCostTest,
       evaluator.id,
       evaluator.name,
@@ -457,11 +460,15 @@ export function EvaluatorSavedDialogContainer({
               className="truncate"
               title={
                 selectedRule?.name ??
-                (selectedRuleId === null ? "New rule" : "Select a rule")
+                (selectedRuleId === null
+                  ? tFeatures("ui.newRule")
+                  : tFeatures("evalsMore:saved.selectRule"))
               }
             >
               {selectedRule?.name ??
-                (selectedRuleId === null ? "New rule" : "Select a rule")}
+                (selectedRuleId === null
+                  ? tFeatures("ui.newRule")
+                  : tFeatures("evalsMore:saved.selectRule"))}
             </span>
             <ChevronDown className="h-4 w-4 shrink-0 opacity-50" />
           </Button>
@@ -488,7 +495,7 @@ export function EvaluatorSavedDialogContainer({
             />
             {selectedRule.assignments.length > 0 ? (
               <p className="text-muted-foreground text-sm">
-                Already attached to:{" "}
+                {tFeatures("ui.alreadyAttachedTo")}{" "}
                 {selectedRule.assignments
                   .map(({ evaluator }) => evaluator.name)
                   .join(", ")}
@@ -497,7 +504,9 @@ export function EvaluatorSavedDialogContainer({
           </>
         ) : selectedRuleId === null ? (
           <p className="text-muted-foreground text-sm">
-            Continue to the rule editor to create a rule for this evaluator.
+            {tFeatures(
+              "ui.continueToTheRuleEditorToCreateARuleForThisEvaluator",
+            )}
           </p>
         ) : null}
       </div>
@@ -561,9 +570,9 @@ export function EvaluatorSavedDialogContainer({
     />
   ) : evaluator.type !== EvalTemplateType.CODE ? (
     <div className="space-y-2">
-      <h3 className="text-sm font-bold">Cost estimate</h3>
+      <h3 className="text-sm font-bold">{tFeatures("ui.costEstimate")}</h3>
       <p className="text-muted-foreground text-sm">
-        Costs will be estimated in the rule editor.
+        {tFeatures("ui.costsWillBeEstimatedInTheRuleEditor")}
       </p>
     </div>
   ) : null;
@@ -593,7 +602,7 @@ export function EvaluatorSavedDialogContainer({
           ? "Execute"
           : selectedRule
             ? "Execute"
-            : "Open rule editor"
+            : tFeatures("evalsMore:saved.openEditor")
       }
       onModeChange={handleModeChange}
       onOpenAutoFocus={requestInitialEstimate}

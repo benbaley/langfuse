@@ -46,8 +46,15 @@ import {
   getDatasetRunCompareTabs,
 } from "@/src/features/navigation";
 import { NoDataOrLoading } from "@/src/components/NoDataOrLoading";
+import {
+  useTranslation,
+  useTranslation as useNavigationTranslation,
+} from "react-i18next";
 
 function DatasetCompareChartsLegacy() {
+  const { t: tNavigation } = useNavigationTranslation("navigation");
+  const { t: tFeatures } = useTranslation("features");
+  const { t: tCore } = useTranslation("core");
   const router = useRouter();
   const capture = usePostHogClientCapture();
   const projectId = router.query.projectId as string;
@@ -91,9 +98,11 @@ function DatasetCompareChartsLegacy() {
   return (
     <Page
       headerProps={{
-        title: `Compare experiments: ${dataset.data?.name ?? datasetId}`,
+        title: tCore("datasets.compareExperiments", {
+          name: dataset.data?.name ?? datasetId,
+        }),
         tabsProps: {
-          tabs: getDatasetRunCompareTabs(projectId, datasetId),
+          tabs: getDatasetRunCompareTabs(projectId, datasetId, tNavigation),
           activeTab: DATASET_RUN_COMPARE_TABS.CHARTS,
         },
         breadcrumb: [
@@ -111,7 +120,7 @@ function DatasetCompareChartsLegacy() {
           },
         ],
         help: {
-          description: "Compare your experiments side by side",
+          description: tCore("datasets.compareExperimentsHelp"),
         },
         actionButtonsRight: (
           <>
@@ -127,7 +136,9 @@ function DatasetCompareChartsLegacy() {
                   onClick={() => capture("dataset_run:new_form_open")}
                 >
                   <FlaskConical className="h-4 w-4" />
-                  <span className="ml-2 hidden md:block">New experiment</span>
+                  <span className="ml-2 hidden md:block">
+                    {tFeatures("ui.newExperiment")}
+                  </span>
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-h-[90vh] overflow-y-auto">
@@ -145,9 +156,9 @@ function DatasetCompareChartsLegacy() {
             </Dialog>
             <MultiSelectKeyValues
               key="select-runs"
-              title="Experiments"
+              title={tFeatures("ui.experiments")}
               showSelectedValueStrings={false}
-              placeholder="Select runs to compare"
+              placeholder={tFeatures("ui.selectRunsToCompare")}
               className="w-fit"
               variant="outline"
               hideClearButton
@@ -267,8 +278,8 @@ function DatasetCompareChartsLegacy() {
             ) : (
               <span className="text-muted-foreground -mt-2 text-sm">
                 {Boolean(chartDataMap?.size)
-                  ? "All charts hidden. Enable them in the Charts dropdown."
-                  : "Select more than one run to generate charts."}
+                  ? tFeatures("ui.allChartsHiddenEnableThemInTheChartsDropdown")
+                  : tFeatures("ui.selectMoreThanOneRunToGenerateCharts")}
               </span>
             )}
           </div>
@@ -284,14 +295,14 @@ function DatasetCompareChartsLegacy() {
           <SidePanelContent className="overflow-y-auto p-1">
             <div className="w-full space-y-4">
               <div>
-                <SubHeaderLabel title="Description" />
+                <SubHeaderLabel title={tFeatures("ui.description")} />
                 <span className="text-muted-foreground text-sm">
-                  {dataset.data?.description ?? "No description"}
+                  {dataset.data?.description ?? tFeatures("ui.noDescription")}
                 </span>
               </div>
               {dataset.data?.metadata && (
                 <div>
-                  <SubHeaderLabel title="Metadata" />
+                  <SubHeaderLabel title={tFeatures("ui.metadata")} />
                   <MarkdownJsonView content={dataset.data?.metadata} />
                 </div>
               )}

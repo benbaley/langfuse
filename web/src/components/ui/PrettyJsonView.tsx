@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 /* eslint-disable no-nested-ternary */
 /* eslint-disable @repo/no-style-props */
 import React, {
@@ -442,6 +443,7 @@ function JsonPrettyTable({
   toneClasses?: (typeof PRETTY_JSON_VIEW_TONE_CLASSES)[PrettyJsonViewTone];
   /** Drop the Path / Value header row. */
 }) {
+  const { t: tMore } = useTranslation("coreMore");
   const topLevelRowRef = useRef<HTMLTableRowElement>(null);
   const [topLevelRowHeight, setTopLevelRowHeight] = useState(32);
 
@@ -537,7 +539,7 @@ function JsonPrettyTable({
 
   const keyColumn: LangfuseColumnDef<JsonTableRow, unknown> = {
     accessorKey: "key",
-    header: "Path",
+    header: tMore("io.path"),
     size: 1,
     cell: ({ row }) => {
       const content = renderKey(row);
@@ -564,7 +566,7 @@ function JsonPrettyTable({
 
   const valueColumn: LangfuseColumnDef<JsonTableRow, unknown> = {
     accessorKey: "value",
-    header: "Value",
+    header: tMore("io.value"),
     size: 99,
     cell: ({ row }) => renderValue(row),
   };
@@ -690,8 +692,8 @@ function JsonPrettyTable({
       <table className="w-full table-auto caption-bottom border-separate border-spacing-0 space-y-4 overflow-auto text-sm">
         <thead className="sr-only">
           <tr>
-            <th scope="col">Path</th>
-            <th scope="col">Value</th>
+            <th scope="col">{tMore("io.path")}</th>
+            <th scope="col">{tMore("io.value")}</th>
           </tr>
         </thead>
         <tbody className="text-xs [&_tr:last-child]:border-0">
@@ -753,6 +755,7 @@ export function PrettyJsonView(props: {
       since the title can carry a message `name` instead of the role). */
   isSystemPrompt?: boolean;
 }) {
+  const { t: tMore } = useTranslation("coreMore");
   const toneClasses = props.tone
     ? PRETTY_JSON_VIEW_TONE_CLASSES[props.tone]
     : undefined;
@@ -1249,7 +1252,7 @@ export function PrettyJsonView(props: {
               <Skeleton className="h-3 w-2/3" />
               {props.isParsing && (
                 <div className="text-muted-foreground mt-2 text-xs">
-                  Parsing in background...
+                  {tMore("io.parsing")}
                 </div>
               )}
             </div>
@@ -1365,7 +1368,7 @@ export function PrettyJsonView(props: {
       {shouldRenderStandaloneMedia && remainingMarkdownMedia.length > 0 && (
         <>
           <div className="text-muted-foreground my-1 px-2 py-1 text-xs">
-            Media
+            {tMore("io.media")}
           </div>
           <div className="ph-no-capture flex flex-wrap gap-2 px-2 pt-1 pb-4">
             {remainingMarkdownMedia.map((m) => (
@@ -1384,7 +1387,7 @@ export function PrettyJsonView(props: {
         !isMarkdownMode && (
           <>
             <div className="text-muted-foreground my-1 px-2 py-1 text-xs">
-              Media
+              {tMore("io.media")}
             </div>
             <div className="ph-no-capture flex flex-wrap gap-2 px-2 pt-1 pb-4">
               {props.media.map((m) => (
@@ -1408,7 +1411,9 @@ export function PrettyJsonView(props: {
           size="icon-xs"
           onClick={() => expandAllRef.current?.()}
           className="text-muted-foreground hover:text-foreground hover:bg-transparent"
-          title={allRowsExpanded ? "Collapse all rows" : "Expand all rows"}
+          title={
+            allRowsExpanded ? tMore("io.collapseRows") : tMore("io.expandRows")
+          }
         >
           {allRowsExpanded ? (
             <FoldVertical className="h-3 w-3" />
@@ -1423,7 +1428,9 @@ export function PrettyJsonView(props: {
           size="icon-xs"
           onClick={handleJsonToggleCollapse}
           className="text-muted-foreground hover:text-foreground hover:bg-transparent"
-          title={jsonIsCollapsed ? "Expand all" : "Collapse all"}
+          title={
+            jsonIsCollapsed ? tMore("io.expandAll") : tMore("io.collapseAll")
+          }
         >
           {jsonIsCollapsed ? (
             <UnfoldVertical className="h-3 w-3" />

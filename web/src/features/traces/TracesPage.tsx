@@ -9,8 +9,11 @@ import { useReadPath } from "@/src/features/events";
 import ObservationsEventsTable from "@/src/features/events/components/EventsTable";
 import { useQueryProject } from "@/src/features/projects";
 import { V4MigrationDelayBadge } from "@/src/features/v4-migration/V4MigrationDelayBadge";
+import { Trans, useTranslation } from "react-i18next";
 
 export default function TracesPage() {
+  const { t: tNavigation } = useTranslation("navigation");
+  const { t: tFeatures } = useTranslation("features");
   const router = useRouter();
   const projectId = router.query.projectId as string;
   const { isV4, isResolved } = useReadPath();
@@ -40,10 +43,9 @@ export default function TracesPage() {
     return (
       <Page
         headerProps={{
-          title: "Tracing",
+          title: tFeatures("ui.tracing"),
           help: {
-            description:
-              "A trace represents a single function/api invocation. Traces contain observations. See [docs](https://langfuse.com/docs/observability/data-model) to learn more.",
+            description: tFeatures("help.tracesMarkdown"),
             href: "https://langfuse.com/docs/observability/data-model",
           },
         }}
@@ -57,24 +59,25 @@ export default function TracesPage() {
   return (
     <Page
       headerProps={{
-        title: "Tracing",
+        title: tFeatures("ui.tracing"),
         titleBadges: <V4MigrationDelayBadge page="traces" />,
         help: {
           description: (
-            <>
-              A trace represents a single function/api invocation. Traces
-              contain observations. See{" "}
-              <a
-                href="https://langfuse.com/docs/observability/data-model"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="decoration-primary/30 hover:decoration-primary underline"
-                onClick={(e) => e.stopPropagation()}
-              >
-                docs
-              </a>{" "}
-              to learn more.
-            </>
+            <Trans
+              t={tFeatures}
+              i18nKey="help.traces"
+              components={{
+                docs: (
+                  <a
+                    href="https://langfuse.com/docs/observability/data-model"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="decoration-primary/30 hover:decoration-primary underline"
+                    onClick={(e) => e.stopPropagation()}
+                  />
+                ),
+              }}
+            />
           ),
           href: "https://langfuse.com/docs/observability/data-model",
         },
@@ -82,7 +85,7 @@ export default function TracesPage() {
           isV4 || !isResolved
             ? undefined
             : {
-                tabs: getTracingTabs(projectId),
+                tabs: getTracingTabs(projectId, tNavigation),
                 activeTab: TRACING_TABS.TRACES,
               },
       }}

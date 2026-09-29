@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 /* eslint-disable @repo/no-style-props */
 import React from "react";
 import { Button } from "@/src/components/ui/button";
@@ -23,6 +24,8 @@ export function TruncatedLabels({
   className,
   showSimpleBadges = false,
 }: TruncatedLabelsProps) {
+const { t: tUi } = useTranslation("uiMore");
+
   // Enhanced sorting: prioritize latest and production labels
   const sortedLabels = [...labels].sort((a, b) => {
     // Production label comes first
@@ -74,7 +77,7 @@ export function TruncatedLabels({
           </HoverCardTrigger>
           <HoverCardContent className="w-80 p-3" side="bottom" align="start">
             <div className="space-y-2">
-              <h4 className="text-sm font-bold">All Labels</h4>
+              <h4 className="text-sm font-bold">{tUi("allLabels")}</h4>
               <div className="flex flex-wrap gap-1">
                 {sortedLabels.map((label) =>
                   showSimpleBadges ? (

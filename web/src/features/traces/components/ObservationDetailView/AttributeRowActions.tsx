@@ -17,6 +17,7 @@ import { buildEventsTablePathForColumnFilter } from "@/src/features/events";
 import { attributeColumnFilter } from "@/src/features/traces/fns/attributeColumnFilter";
 import { attributeGrammar } from "@/src/features/traces/fns/attributeGrammar";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics";
+import { useTranslation } from "react-i18next";
 
 export type AttributeTableAction = "copy" | "include_filter" | "exclude_filter";
 
@@ -34,6 +35,7 @@ export function AttributeRowActions({
   anchorTime?: Date | null;
   analyticsTable: "attributes" | "metadata";
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const router = useRouter();
   const capture = usePostHogClientCapture();
   const { key, value, hasChildren } = row.original;
@@ -75,7 +77,9 @@ export function AttributeRowActions({
         }}
       >
         <Copy className="mr-2 h-3.5 w-3.5 shrink-0" />
-        {hasChildren ? "Copy structure" : "Copy value"}
+        {hasChildren
+          ? tFeatures("ui.copyStructure")
+          : tFeatures("ui.copyValue")}
       </DropdownMenuItem>
       {filter && includeText ? (
         <>
@@ -89,7 +93,7 @@ export function AttributeRowActions({
           >
             <Filter className="mr-2 h-3.5 w-3.5 shrink-0" />
             <span className="flex min-w-0 flex-col">
-              <span>Include in filter</span>
+              <span>{tFeatures("ui.includeInFilter")}</span>
               <span
                 className="text-muted-foreground truncate font-mono"
                 title={includeText}
@@ -108,7 +112,7 @@ export function AttributeRowActions({
             >
               <FilterX className="mr-2 h-3.5 w-3.5 shrink-0" />
               <span className="flex min-w-0 flex-col">
-                <span>Exclude from filter</span>
+                <span>{tFeatures("ui.excludeFromFilter")}</span>
                 <span
                   className="text-muted-foreground truncate font-mono"
                   title={`-${includeText}`}

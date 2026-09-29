@@ -18,6 +18,7 @@ import { api } from "@/src/utils/api";
 import { JSONView } from "@/src/components/ui/CodeJsonViewer";
 import { Skeleton } from "@/src/components/ui/skeleton";
 import { type BaselineDiff, DiffLabel } from "@/src/features/datasets";
+import { useTranslation } from "react-i18next";
 
 const resolveScoreValue = (aggregate: AggregatedScoreData): string => {
   if (aggregate.type === "NUMERIC") {
@@ -90,6 +91,7 @@ export const ScoreRow = ({
   aggregate: AggregatedScoreData | null;
   diff?: BaselineDiff;
 }) => {
+  const { t: tFeatures } = useTranslation("features");
   const [isHovered, setIsHovered] = React.useState(false);
 
   // ensure only loaded if user actually just hovered over the score
@@ -145,14 +147,14 @@ export const ScoreRow = ({
 
           <div className="space-y-2 text-xs">
             <ScoreDetailRow
-              label="Value"
+              label={tFeatures("ui.value")}
               value={resolveScoreValue(aggregate)}
             />
-            <ScoreDetailRow label="Source" value={source} />
+            <ScoreDetailRow label={tFeatures("ui.source")} value={source} />
 
             {aggregate.comment && (
               <ScoreDetailRow
-                label="Comment"
+                label={tFeatures("ui.comment")}
                 value={
                   <span
                     title={aggregate.comment}
@@ -170,7 +172,7 @@ export const ScoreRow = ({
 
             {aggregate.hasMetadata && (
               <ScoreDetailRow
-                label="Metadata"
+                label={tFeatures("ui.metadata")}
                 value={
                   <Tooltip>
                     <TooltipTrigger asChild>

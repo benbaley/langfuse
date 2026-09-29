@@ -19,6 +19,7 @@ import {
 import { CorrectedOutputField } from "./components/CorrectedOutputField";
 import { StatusMessageSection } from "./components/StatusMessageSection";
 import type { ObservationStatusMessage } from "./components/statusMessagePresentation";
+import { useTranslation } from "react-i18next";
 
 interface JsonInputOutputViewProps {
   parsedInput: unknown;
@@ -53,6 +54,7 @@ function JsonInputOutputView({
   onInputExpansionChange,
   onOutputExpansionChange,
 }: JsonInputOutputViewProps) {
+  const { t: tFeatures } = useTranslation("features");
   const showInput = !hideInput && !(hideIfNull && !parsedInput);
   const showOutput = !hideOutput && !(hideIfNull && !parsedOutput);
 
@@ -60,7 +62,7 @@ function JsonInputOutputView({
     <div className="space-y-2 [&_.io-message-content]:px-2 [&_.io-message-header]:px-2">
       {showInput && (
         <PrettyJsonView
-          title="Input"
+          title={tFeatures("ui.input")}
           json={parsedInput ?? null}
           isLoading={isLoading}
           isParsing={isParsing}
@@ -72,7 +74,7 @@ function JsonInputOutputView({
       )}
       {showOutput && (
         <PrettyJsonView
-          title="Output"
+          title={tFeatures("ui.output")}
           json={parsedOutput}
           isLoading={isLoading}
           isParsing={isParsing}
@@ -157,6 +159,7 @@ export function IOPreviewPretty({
   contentMode = "all",
   showSystemPrompt,
 }: IOPreviewPrettyProps) {
+  const { t: tFeatures } = useTranslation("features");
   // Use pre-parsed data if available (from useParsedObservation hook),
   // otherwise parse with size/depth limits to prevent UI freeze
   // IMPORTANT: Don't parse while isParsing=true to avoid double-parsing with different object references
@@ -333,7 +336,7 @@ export function IOPreviewPretty({
       {showData && shouldShowMetadata && (
         <div className="[&_.io-message-content]:px-2 [&_.io-message-header]:px-2">
           <PrettyJsonView
-            title="Metadata"
+            title={tFeatures("ui.metadata")}
             json={parsedMetadata}
             isLoading={isLoading}
             isParsing={isParsing}

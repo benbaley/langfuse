@@ -8,6 +8,7 @@ import {
   type DecisionModelQuestionResult,
 } from "@/src/features/evals/v2/components/Evaluators/DecisionModel/DecisionModelResultView/DecisionModelResultView";
 import { usdFormatter } from "@/src/utils/numbers";
+import { Trans, useTranslation } from "react-i18next";
 
 export type TestResultPanelState =
   | { status: "empty" }
@@ -70,18 +71,21 @@ function TestResultHeader({
   onRawOpenChange: (open: boolean) => void;
   traceActions: ReactNode;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   return (
     <div className="bg-secondary text-secondary-foreground flex flex-wrap items-center gap-2 border-b px-3 py-2">
       <p className="text-sm leading-none font-bold">{title}</p>
       {durationMs !== null ? (
-        <ResultStat icon={Clock} title="Duration of the test call">
+        <ResultStat icon={Clock} title={tFeatures("ui.durationOfTheTestCall")}>
           {(durationMs / 1000).toFixed(2)}s
         </ResultStat>
       ) : null}
       {estimatedCostUsd !== null ? (
         <ResultStat
           icon={Coins}
-          title="Estimated cost of the test call — also feeds the daily projection when saving"
+          title={tFeatures(
+            "ui.estimatedCostOfTheTestCallAlsoFeedsTheDailyProjectionWhenSaving",
+          )}
         >
           {usdFormatter(estimatedCostUsd)}
         </ResultStat>
@@ -93,7 +97,7 @@ function TestResultHeader({
             checked={rawOpen}
             onCheckedChange={onRawOpenChange}
           />
-          Raw output
+          {tFeatures("ui.rawOutput")}
         </label>
         {traceActions}
       </span>
@@ -102,10 +106,11 @@ function TestResultHeader({
 }
 
 function RawOutputView({ rawOutput }: { rawOutput: unknown | null }) {
+  const { t: tFeatures } = useTranslation("features");
   if (rawOutput === null) {
     return (
       <p className="text-muted-foreground text-sm">
-        No raw output available for this run.
+        {tFeatures("ui.noRawOutputAvailableForThisRun")}
       </p>
     );
   }
@@ -159,11 +164,14 @@ function LlmResultView({
   score,
   reasoning,
 }: Omit<Extract<TestResultPanelState, { status: "llm-success" }>, "status">) {
+  const { t: tFeatures } = useTranslation("features");
   return (
     <ResultCard>
-      <ScoreValue label="Score" value={score} />
+      <ScoreValue label={tFeatures("ui.score")} value={score} />
       {reasoning ? (
-        <ScoreNote label="Model reasoning">{reasoning}</ScoreNote>
+        <ScoreNote label={tFeatures("ui.modelReasoning")}>
+          {reasoning}
+        </ScoreNote>
       ) : null}
     </ResultCard>
   );
@@ -172,6 +180,7 @@ function LlmResultView({
 function CodeResultView({
   scores,
 }: Omit<Extract<TestResultPanelState, { status: "code-success" }>, "status">) {
+  const { t: tFeatures } = useTranslation("features");
   return (
     <ResultCard>
       {scores.map((score, index) => (
@@ -181,7 +190,9 @@ function CodeResultView({
         >
           <ScoreValue label={score.name} value={score.value} />
           {score.comment ? (
-            <ScoreNote label="Comment">{score.comment}</ScoreNote>
+            <ScoreNote label={tFeatures("ui.comment")}>
+              {score.comment}
+            </ScoreNote>
           ) : null}
         </div>
       ))}
@@ -190,9 +201,12 @@ function CodeResultView({
 }
 
 function RunErrorView({ message }: { message: string }) {
+  const { t: tFeatures } = useTranslation("features");
   return (
     <div className="border-destructive/40 bg-destructive/5 flex flex-col gap-1 rounded-md border p-3">
-      <p className="text-destructive text-sm font-bold">Test run failed</p>
+      <p className="text-destructive text-sm font-bold">
+        {tFeatures("ui.testRunFailed")}
+      </p>
       <p className="text-sm">{message}</p>
     </div>
   );
@@ -205,7 +219,9 @@ const RESULT_VIEWS: {
   ) => ReactNode;
 } = {
   empty: () => (
-    <p className="text-muted-foreground text-sm">No test run yet.</p>
+    <p className="text-muted-foreground text-sm">
+      <Trans ns="evalsMore" i18nKey="test.empty" />
+    </p>
   ),
   // The rerun button carries the pending state on its own.
   running: () => null,

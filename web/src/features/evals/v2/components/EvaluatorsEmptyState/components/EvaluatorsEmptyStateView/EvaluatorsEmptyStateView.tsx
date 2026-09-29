@@ -15,6 +15,7 @@ import {
 import type { EvaluatorEmptyStateStartingPoint } from "@/src/features/evals/v2/fns/templateGallery/prepareEvaluatorEmptyState";
 import type { GalleryTemplate } from "@/src/features/evals/v2/types/templateGallery";
 import { cn } from "@/src/utils/tailwind";
+import { useTranslation } from "react-i18next";
 
 function DetectTopicsStartingPointCard({
   startingPoint,
@@ -28,6 +29,7 @@ function DetectTopicsStartingPointCard({
   onDetectTopics?: () => void;
   onSelectTemplate: (template: GalleryTemplate) => void;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const { type } = getGalleryTemplatePresentation(startingPoint.template);
 
   return (
@@ -35,13 +37,15 @@ function DetectTopicsStartingPointCard({
       <button
         type="button"
         onClick={() => onSelectTemplate(startingPoint.template)}
-        aria-label={`Set up ${startingPoint.title}`}
+        aria-label={tFeatures("evalsMore:gallery.setup", {
+          name: tFeatures("evalsMore:gallery.detectTopics"),
+        })}
         className="absolute inset-0 cursor-pointer rounded-md"
       />
       <div className="pointer-events-none relative flex h-full flex-col">
         <EvaluatorRecommendedTemplateCardContent
-          title={startingPoint.title}
-          description={startingPoint.description}
+          title={tFeatures("evalsMore:gallery.detectTopics")}
+          description={tFeatures("evalsMore:gallery.detectTopicsDescription")}
           type={type}
           categoryKey={getGalleryTemplateCategoryKey(startingPoint.template)}
         />
@@ -58,7 +62,7 @@ function DetectTopicsStartingPointCard({
               )}
             >
               <BotMessageSquare className="h-3 w-3" />
-              Set up with AI
+              {tFeatures("ui.setUpWithAi")}
             </Button>
           </div>
         ) : null}
@@ -74,6 +78,7 @@ function BrowseLibraryCard({
   templateCount: number;
   onBrowseLibrary: () => void;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   return (
     <button
       type="button"
@@ -87,11 +92,15 @@ function BrowseLibraryCard({
           }
           badge={
             <span className="bg-muted text-muted-foreground inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-xs">
-              {templateCount} templates
+              {tFeatures("evalsMore:gallery.templateCount", {
+                total: templateCount,
+              })}
             </span>
           }
-          title="Browse all templates"
-          description="Search by what you want to measure — quality, retrieval, safety, classifiers, coding agents."
+          title={tFeatures("ui.browseAllTemplates")}
+          description={tFeatures(
+            "ui.searchByWhatYouWantToMeasureQualityRetrievalSafetyClassifiersCodingAgents",
+          )}
         />
       </EvaluatorRecommendedCardSurface>
     </button>
@@ -113,29 +122,30 @@ export function EvaluatorsEmptyStateView({
   onDetectTopics?: () => void;
   onBrowseLibrary: () => void;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   return (
     <div className="mx-auto flex w-full max-w-5xl flex-col items-center px-8 pt-24 pb-8">
       <div className="mb-6 max-w-2xl text-center">
         <h2 className="mb-2 text-2xl font-bold">
-          Turn traces into quality signals
+          {tFeatures("ui.turnTracesIntoQualitySignals")}
         </h2>
         <p className="text-muted-foreground text-base">
-          Evaluators score your data with an LLM-as-a-judge or with code. Run
-          them on production traces to catch patterns, or on dataset runs to
-          evaluate changes before you ship.{" "}
+          {tFeatures("evalsMore:gallery.introduction")}{" "}
           <a
             href={docsHref}
             target="_blank"
             rel="noopener noreferrer"
             className="text-link hover:text-link-hover"
           >
-            How evaluators work.
+            {tFeatures("ui.howEvaluatorsWork")}
           </a>
         </p>
       </div>
 
       <div className="w-full">
-        <EvaluatorRecommendedCards label="Recommended starting points">
+        <EvaluatorRecommendedCards
+          label={tFeatures("ui.recommendedStartingPoints")}
+        >
           {startingPoints.map((startingPoint) => {
             switch (startingPoint.action) {
               case "detect-topics":

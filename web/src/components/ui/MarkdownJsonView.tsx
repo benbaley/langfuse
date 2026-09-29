@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 /* eslint-disable no-nested-ternary */
 /* eslint-disable @repo/no-style-props */
 import {
@@ -21,7 +22,7 @@ type MarkdownJsonViewHeaderProps = {
   controlButtons?: React.ReactNode;
   /** When set, the header hosts expand/collapse so a long body is not the
       only place to find the control. `subject` names what collapses in the
-      accessible labels (defaults to "system prompt", its original use). */
+      accessible labels (defaults to tMore("io.systemPrompt"), its original use). */
   collapseControl?: {
     isCollapsed: boolean;
     onToggle: () => void;
@@ -46,12 +47,13 @@ export function MarkdownJsonViewHeader({
   hideCopyButton = false,
   hoverRevealControls = false,
 }: MarkdownJsonViewHeaderProps) {
+  const { t: tMore } = useTranslation("coreMore");
   const [isCopied, setIsCopied] = useState(false);
-  const collapseSubject = collapseControl?.subject ?? "system prompt";
+  const collapseSubject = collapseControl?.subject ?? tMore("io.systemPrompt");
   const collapseLabel = collapseControl
     ? collapseControl.isCollapsed
-      ? `Expand ${collapseSubject}`
-      : `Collapse ${collapseSubject}`
+      ? tMore("io.expandSubject", { subject: collapseSubject })
+      : tMore("io.collapseSubject", { subject: collapseSubject })
     : undefined;
   // Keep the visible title in the title-button name (WCAG 2.5.3). A generic
   // aria-label would hide message `name`s from assistive tech.
@@ -124,7 +126,7 @@ export function MarkdownJsonViewHeader({
         {controlButtons}
         {!hideCopyButton && (
           <Button
-            title="Copy to clipboard"
+            title={tMore("action.copyClipboard")}
             variant="ghost"
             size="icon-xs"
             type="button"

@@ -45,6 +45,7 @@ import type {
   AnnotationForm as AnnotationFormType,
   AnnotationRefreshHandle,
 } from "@/src/features/scores/types";
+import { useTranslation } from "react-i18next";
 
 function AnnotateHeader({
   saveStatus,
@@ -55,10 +56,11 @@ function AnnotateHeader({
   actionButtons: React.ReactNode;
   description?: string;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   return (
     <div className="relative">
       <Header
-        title="Annotate"
+        title={tFeatures("ui.annotate")}
         titleClassName="text-foreground text-[16px] leading-6"
         help={
           description
@@ -104,6 +106,7 @@ export function AnnotationFormContent({
   isActive?: boolean;
   refreshRef?: React.Ref<AnnotationRefreshHandle>;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const capture = usePostHogClientCapture();
   const primaryTarget = targets[0]!;
   const { scoreMetadata, analyticsData } = primaryTarget;
@@ -193,7 +196,7 @@ export function AnnotationFormContent({
     ).size > 1;
   const description =
     targets.length > 1
-      ? "Annotate the trace and observation with scores to capture human evaluation across different dimensions."
+      ? tFeatures("evalsMore:annotation.multipleDescription")
       : formatAnnotateDescription(primaryTarget.scoreTarget);
   const { selectionOptions } = getScoreConfigSelection({
     targets,
@@ -231,11 +234,13 @@ export function AnnotationFormContent({
         renderContent={({ closePopover }) => (
           <InputCommand>
             <InputCommandInput
-              placeholder="Search scores..."
+              placeholder={tFeatures("ui.searchScores")}
               variant="bottom"
             />
             <InputCommandList className="max-h-72">
-              <InputCommandEmpty>No scores found.</InputCommandEmpty>
+              <InputCommandEmpty>
+                {tFeatures("ui.noScoresFound")}
+              </InputCommandEmpty>
               <InputCommandGroup>
                 {addableOptions.map((option) => (
                   <InputCommandItem
@@ -273,7 +278,7 @@ export function AnnotationFormContent({
               disabled={disabled}
             >
               <Plus className="size-3.5" aria-hidden="true" />
-              Add score
+              {tFeatures("ui.addScore")}
             </Button>
           </Trigger>
         )}
@@ -299,7 +304,7 @@ export function AnnotationFormContent({
         }}
       >
         <Settings2 className="size-3" aria-hidden="true" />
-        Manage score configs
+        {tFeatures("ui.manageScoreConfigs")}
       </Link>
     </Button>
   ) : null;
@@ -400,7 +405,7 @@ export function AnnotationFormContent({
               <span className="flex items-center gap-1">
                 <KeyboardShortcut size="sm" keys={["ArrowUp"]} />
                 <KeyboardShortcut size="sm" keys={["ArrowDown"]} />
-                move between fields
+                {tFeatures("evalsMore:annotation.moveFields")}
               </span>
             )}
             {optionRowCount > 0 && (
@@ -408,13 +413,13 @@ export function AnnotationFormContent({
                 <KeyboardShortcut size="sm" keys={["1"]} />
                 <span className="text-muted-foreground">…</span>
                 <KeyboardShortcut size="sm" keys={["9"]} />
-                select option
+                {tFeatures("evalsMore:annotation.selectOption")}
               </span>
             )}
             {hasEditableRow && (
               <span className="flex items-center gap-1">
                 <KeyboardShortcut size="sm" keys={["Enter"]} />
-                edit field
+                {tFeatures("evalsMore:annotation.editField")}
               </span>
             )}
           </div>

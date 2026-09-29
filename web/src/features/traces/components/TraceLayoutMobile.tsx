@@ -39,6 +39,7 @@ import {
 } from "@/src/components/ui/tabs-bar";
 import { useSelection } from "@/src/features/traces/contexts/SelectionContext";
 import { TraceTruncationNotice } from "./TraceTruncationNotice";
+import { useTranslation } from "react-i18next";
 
 export type MobileTraceTab = "tree" | "timeline" | "graph" | "info";
 const VALID_TABS: MobileTraceTab[] = ["tree", "timeline", "graph", "info"];
@@ -82,6 +83,7 @@ export function TraceLayoutMobile({
   /** Reused from TraceContent; hides the Graph tab when the trace has no graph. */
   showGraph: boolean;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const [tabParam, setTabParam] = useQueryParam("mobileTab", StringParam);
   const { selectedNodeId } = useSelection();
 
@@ -130,10 +132,16 @@ export function TraceLayoutMobile({
         className="h-full w-full"
       >
         <TabsBarList className="shrink-0 px-2">
-          <TabsBarTrigger value="tree">Tree</TabsBarTrigger>
-          <TabsBarTrigger value="timeline">Timeline</TabsBarTrigger>
-          {showGraph && <TabsBarTrigger value="graph">Graph</TabsBarTrigger>}
-          <TabsBarTrigger value="info">Data</TabsBarTrigger>
+          <TabsBarTrigger value="tree">{tFeatures("ui.tree")}</TabsBarTrigger>
+          <TabsBarTrigger value="timeline">
+            {tFeatures("ui.timeline")}
+          </TabsBarTrigger>
+          {showGraph && (
+            <TabsBarTrigger value="graph">
+              {tFeatures("ui.graph")}
+            </TabsBarTrigger>
+          )}
+          <TabsBarTrigger value="info">{tFeatures("ui.data")}</TabsBarTrigger>
         </TabsBarList>
 
         {/* Above the tab bodies, not inside one: the truncation applies to every

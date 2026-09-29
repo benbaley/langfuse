@@ -11,8 +11,14 @@ import { SupportOrUpgradePage } from "@/src/ee/features/billing";
 import { EvaluatorsOnboarding } from "@/src/components/onboarding/EvaluatorsOnboarding";
 import { ManageDefaultEvalModel } from "@/src/features/evals/components/manage-default-eval-model";
 import { V4MigrationUpdateRequiredBadge } from "@/src/features/v4-migration/V4MigrationDelayBadge";
+import {
+  useTranslation,
+  useTranslation as useNavigationTranslation,
+} from "react-i18next";
 
 export default function EvaluatorsPage() {
+  const { t: tNavigation } = useNavigationTranslation("navigation");
+  const { t: tFeatures } = useTranslation("features");
   const router = useRouter();
   const projectId = router.query.projectId as string;
 
@@ -56,7 +62,7 @@ export default function EvaluatorsPage() {
     return (
       <Page
         headerProps={{
-          title: "Evaluators",
+          title: tFeatures("ui.evaluators"),
           help: {
             description:
               "Configure a langfuse managed or custom evaluator to evaluate incoming traces.",
@@ -68,7 +74,7 @@ export default function EvaluatorsPage() {
         <EvaluatorsOnboarding
           projectId={projectId}
           createEvaluatorAction={{
-            label: "Create Evaluator",
+            label: tFeatures("ui.createEvaluator"),
             href: `/project/${projectId}/evals/legacy/new`,
           }}
         />
@@ -79,7 +85,7 @@ export default function EvaluatorsPage() {
   return (
     <Page
       headerProps={{
-        title: "Evaluators",
+        title: tFeatures("ui.evaluators"),
         titleBadges: <V4MigrationUpdateRequiredBadge />,
         help: {
           description:
@@ -87,7 +93,7 @@ export default function EvaluatorsPage() {
           href: "https://langfuse.com/docs/evaluation/evaluation-methods/llm-as-a-judge",
         },
         tabsProps: {
-          tabs: getEvalsTabs(projectId),
+          tabs: getEvalsTabs(projectId, tNavigation),
           activeTab: EVALS_TABS.CONFIGS,
         },
         actionButtonsRight: (
@@ -108,7 +114,7 @@ export default function EvaluatorsPage() {
                   : undefined
               }
             >
-              Set up evaluator
+              {tFeatures("evalsMore:evaluator.setup")}
             </ActionButton>
           </>
         ),

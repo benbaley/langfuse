@@ -23,6 +23,7 @@ import { Skeleton } from "@/src/components/ui/skeleton";
 import { TraceDetailView } from "./TraceDetailView/TraceDetailView";
 import { ConnectedObservationDetailView } from "./ObservationDetailView/ConnectedObservationDetailView";
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 
 function PanelMessage({ title, body }: { title: string; body: string }) {
   return (
@@ -34,6 +35,7 @@ function PanelMessage({ title, body }: { title: string; body: string }) {
 }
 
 export function TracePanelDetail() {
+  const { t: tFeatures } = useTranslation("features");
   const { selectedNodeId } = useSelection();
   const {
     trace,
@@ -68,14 +70,14 @@ export function TracePanelDetail() {
       case "not-found":
         return (
           <PanelMessage
-            title="Observation not found"
+            title={tFeatures("ui.observationNotFound")}
             body="This observation is not part of this trace. It may have been deleted."
           />
         );
       case "error":
         return (
           <PanelMessage
-            title="Could not load observation"
+            title={tFeatures("ui.couldNotLoadObservation")}
             body="Loading this observation failed. Reload the page to try again."
           />
         );
@@ -90,7 +92,7 @@ export function TracePanelDetail() {
           />
         );
     }
-  }, [selected, trace, observations, scores, corrections]);
+  }, [tFeatures, selected, trace, observations, scores, corrections]);
 
   return (
     <div className="bg-background h-full w-full overflow-y-auto">{content}</div>

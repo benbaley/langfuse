@@ -11,6 +11,7 @@ import { EvaluatorCostCalculationTooltipContent } from "@/src/features/evals/v2/
 import type { ActivationEstimate } from "@/src/features/evals/v2/fns/requestRuleActivation";
 import { formatEvaluatorCostCalculation } from "@/src/features/evals/v2/fns/formatEvaluatorCostCalculation";
 import { compactNumberFormatter, usdFormatter } from "@/src/utils/numbers";
+import { useTranslation } from "react-i18next";
 
 export function EvaluatorSavedCostSummary({
   estimates,
@@ -39,6 +40,7 @@ export function EvaluatorSavedCostSummary({
         isEstimating: boolean;
       };
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const estimate = estimates[0];
   const sampledObservations = Math.round(matchingObservations * sampling);
   const estimatedCostUsd =
@@ -62,11 +64,12 @@ export function EvaluatorSavedCostSummary({
     <div className="space-y-5">
       <section className="space-y-2">
         <div className="flex items-center gap-1.5">
-          <h3 className="text-sm font-bold">Sampling</h3>
+          <h3 className="text-sm font-bold">{tFeatures("ui.sampling")}</h3>
           {!onSamplingChange ? (
-            <InfoTooltip label="Sampling is set by the selected rule">
-              The sampling rate is inherited from the selected rule. You can
-              edit it directly in the rule.
+            <InfoTooltip label={tFeatures("ui.samplingIsSetByTheSelectedRule")}>
+              {tFeatures(
+                "ui.theSamplingRateIsInheritedFromTheSelectedRuleYouCanEditItDirectlyInTheRule",
+              )}
             </InfoTooltip>
           ) : null}
         </div>
@@ -84,7 +87,7 @@ export function EvaluatorSavedCostSummary({
 
       {evaluatorType === EvalTemplateTypeEnum.CODE ? (
         <section>
-          <h3 className="text-sm font-bold">Matches</h3>
+          <h3 className="text-sm font-bold">{tFeatures("ui.matches")}</h3>
           {isEstimating ? (
             <div className="mt-2 space-y-2">
               <Skeleton className="h-5 w-24" />
@@ -113,15 +116,17 @@ export function EvaluatorSavedCostSummary({
           ) : (
             <>
               <p className="text-muted-foreground mb-1 font-mono text-[10px] tracking-wider uppercase">
-                Recurring
+                {tFeatures("ui.recurring")}
               </p>
               <div className="flex items-center gap-1.5">
                 <span className="font-mono text-lg font-bold tabular-nums">
                   {estimatedCostUsd === null
-                    ? "Unavailable"
+                    ? tFeatures("ui.unavailable")
                     : `≈ ${usdFormatter(estimatedCostUsd, 2, 2)}`}
                 </span>
-                <InfoTooltip label="How estimated LLM costs are calculated">
+                <InfoTooltip
+                  label={tFeatures("ui.howEstimatedLlmCostsAreCalculated")}
+                >
                   <EvaluatorCostCalculationTooltipContent
                     {...formatEvaluatorCostCalculation({
                       matchingObservations,
@@ -134,12 +139,13 @@ export function EvaluatorSavedCostSummary({
                 </InfoTooltip>
               </div>
               <p className="text-muted-foreground text-xs">
-                estimated LLM costs / week
+                {tFeatures("ui.estimatedLlmCostsWeek")}
               </p>
               {unavailableEstimateCount > 0 ? (
                 <p className="text-muted-foreground mt-2 text-xs">
-                  No recent cost-bearing evaluator trace or successful fallback
-                  test was available.
+                  {tFeatures(
+                    "ui.noRecentCostBearingEvaluatorTraceOrSuccessfulFallbackTestWasAvailable",
+                  )}
                 </p>
               ) : null}
             </>
@@ -157,15 +163,17 @@ export function EvaluatorSavedCostSummary({
           ) : (
             <>
               <p className="text-muted-foreground mb-1 font-mono text-[10px] tracking-wider uppercase">
-                One-time backfill
+                {tFeatures("ui.oneTimeBackfill")}
               </p>
               <div className="flex items-center gap-1.5">
                 <span className="font-mono text-lg font-bold tabular-nums">
                   {backfillEstimatedCostUsd !== null
                     ? `≈ ${usdFormatter(backfillEstimatedCostUsd, 2, 2)}`
-                    : "Unavailable"}
+                    : tFeatures("ui.unavailable")}
                 </span>
-                <InfoTooltip label="How estimated backfill costs are calculated">
+                <InfoTooltip
+                  label={tFeatures("ui.howEstimatedBackfillCostsAreCalculated")}
+                >
                   <EvaluatorCostCalculationTooltipContent
                     {...formatEvaluatorCostCalculation({
                       matchingObservations: backfillObservationCount,

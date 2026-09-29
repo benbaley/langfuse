@@ -1,4 +1,4 @@
-import { ArrowUpRight, LockIcon, Copy, Check } from "lucide-react";
+import { LockIcon, Copy, Check } from "lucide-react";
 import {
   HoverCard,
   HoverCardContent,
@@ -11,6 +11,7 @@ import { Separator } from "@/src/components/ui/separator";
 import { useEffect, useState } from "react";
 import { generateSchemaExample } from "../lib/generateSchemaExample";
 import { copyTextToClipboard } from "@/src/utils/clipboard";
+import { Trans, useTranslation } from "react-i18next";
 
 type DatasetSchemaHoverCardProps = {
   schema: Prisma.JsonValue;
@@ -23,6 +24,8 @@ export const DatasetSchemaHoverCard: React.FC<DatasetSchemaHoverCardProps> = ({
   schemaType,
   showLabel = false,
 }) => {
+  const { t: tMore } = useTranslation("coreMore");
+  const { t: tFeatures } = useTranslation("features");
   const title =
     schemaType === "input" ? "Input Schema" : "Expected Output Schema";
 
@@ -58,11 +61,11 @@ export const DatasetSchemaHoverCard: React.FC<DatasetSchemaHoverCardProps> = ({
         <Button
           variant="ghost"
           className="text-muted-foreground hover:bg-accent hover:text-accent-foreground inline-flex items-center gap-1.5 rounded p-1 text-xs transition-colors"
-          aria-label={`View ${title}`}
+          aria-label={tMore("action.view", { name: title })}
           size="sm"
         >
           <LockIcon className={showLabel ? "h-3 w-3" : "h-4 w-4"} />
-          {showLabel && <span>Schema enforced</span>}
+          {showLabel && <span>{tFeatures("ui.schemaEnforced")}</span>}
         </Button>
       </HoverCardTrigger>
       <HoverCardContent
@@ -71,16 +74,20 @@ export const DatasetSchemaHoverCard: React.FC<DatasetSchemaHoverCardProps> = ({
       >
         <p className="text-sm font-bold">{title}</p>
         <p className="text-muted-foreground pt-2 text-sm">
-          Learn more about{" "}
-          <a
-            href="https://json-schema.org/learn/miscellaneous-examples"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-foreground inline-flex items-center underline"
-          >
-            JSON Schema
-            <ArrowUpRight className="ml-0.5 h-3 w-3" />
-          </a>
+          <Trans
+            ns="coreMore"
+            i18nKey="datasets.schemaDocs"
+            components={{
+              docs: (
+                <a
+                  href="https://json-schema.org/learn/miscellaneous-examples"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-foreground inline-flex items-center underline"
+                />
+              ),
+            }}
+          />
         </p>
         <div className="mt-2">
           <CodeMirrorEditor
@@ -96,7 +103,9 @@ export const DatasetSchemaHoverCard: React.FC<DatasetSchemaHoverCardProps> = ({
           <>
             <Separator className="my-4" />
             <div className="flex items-center justify-between">
-              <p className="text-sm font-bold">Example Object</p>
+              <p className="text-sm font-bold">
+                {tFeatures("ui.exampleObject")}
+              </p>
               <Button
                 variant="ghost"
                 size="sm"

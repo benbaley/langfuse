@@ -45,6 +45,7 @@ import {
 
 import { formatIntervalSeconds } from "@/src/utils/dates";
 import { cn } from "@/src/utils/tailwind";
+import { useTranslation } from "react-i18next";
 
 const OBSERVATION_LIST_OVERSCAN = 5;
 const SIDEBAR_AUTO_FOLLOW_IDLE_MS = 750;
@@ -103,6 +104,8 @@ function ObservationListRows({
         operator: "any of" | "none of",
       ) => void;
     }) {
+  const { t: tMore } = useTranslation("coreMore");
+  const { t: tFeatures } = useTranslation("features");
   if (state.type === "loading") {
     return (
       <div className="flex flex-col gap-1 px-1 py-2">
@@ -116,8 +119,8 @@ function ObservationListRows({
     return (
       <p className="text-muted-foreground px-1 py-2 text-xs">
         {state.hasFilters
-          ? "No matching child observations"
-          : "No child observations"}
+          ? tFeatures("ui.noMatchingChildObservations")
+          : tFeatures("ui.noChildObservations")}
       </p>
     );
   }
@@ -125,7 +128,7 @@ function ObservationListRows({
   if (state.type === "trace-io-only") {
     return (
       <div className="border-border bg-border/40 text-foreground rounded-sm border px-2 py-1.5 text-xs">
-        Trace-level I/O only
+        {tFeatures("ui.traceLevelIOOnly")}
       </div>
     );
   }
@@ -133,7 +136,7 @@ function ObservationListRows({
   if (state.type === "error") {
     return (
       <p className="text-muted-foreground px-1 py-2 text-xs">
-        Failed to load observations
+        {tFeatures("ui.failedToLoadObservations")}
       </p>
     );
   }
@@ -175,7 +178,7 @@ function ObservationListRows({
                   variant="ghost"
                   size="icon"
                   className="text-muted-foreground hover:text-muted-foreground -my-1 -mr-0.5 h-8 w-8 shrink-0 hover:bg-transparent"
-                  aria-label={`Actions for ${observation.name}`}
+                  aria-label={tMore("action.for", { name: observation.name })}
                 >
                   <MoreHorizontal className="h-3.5 w-3.5" />
                 </Button>
@@ -189,7 +192,7 @@ function ObservationListRows({
                     )
                   }
                 >
-                  Only show observations with the same name
+                  {tFeatures("ui.onlyShowObservationsWithTheSameName")}
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onSelect={() =>
@@ -199,7 +202,7 @@ function ObservationListRows({
                     )
                   }
                 >
-                  Exclude observations with the same name
+                  {tFeatures("ui.excludeObservationsWithTheSameName")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -233,6 +236,7 @@ const TurnCard = React.memo(
       operator: "any of" | "none of",
     ) => void;
   }) => {
+    const { t: tFeatures } = useTranslation("features");
     const { trace, turnNumber, observations, hasMatchingTraceLevelIO } =
       sidebarTrace;
     const isTraceLevelIOOnly =
@@ -273,14 +277,18 @@ const TurnCard = React.memo(
             </span>
             <span
               className="min-w-0 flex-1 truncate text-[13px] font-bold"
-              title={trace.name ?? "Trace"}
+              title={trace.name ?? tFeatures("ui.trace")}
             >
-              {trace.name ?? "Trace"}
+              {trace.name ?? tFeatures("ui.trace")}
             </span>
           </button>
           <button
             type="button"
-            aria-label={isCollapsed ? "Expand turn" : "Collapse turn"}
+            aria-label={
+              isCollapsed
+                ? tFeatures("ui.expandTurn")
+                : tFeatures("ui.collapseTurn")
+            }
             onClick={() => onToggleCollapse(trace.id)}
             className="text-muted-foreground -my-2 -mr-2.5 -ml-2 flex h-8 w-8 shrink-0 items-center justify-center"
           >
@@ -349,6 +357,8 @@ export function ModernSessionSidebar(
         onViewportUnderfilled?: () => void;
       },
 ) {
+  const { t: tMore } = useTranslation("coreMore");
+  const { t: tFeatures } = useTranslation("features");
   const traces = props.state === "loaded" ? props.traces : EMPTY_TRACES;
   const activeTraceId =
     props.state === "loaded" ? props.activeTraceId : undefined;
@@ -443,7 +453,7 @@ export function ModernSessionSidebar(
     return (
       <div
         role="complementary"
-        aria-label="Session observations"
+        aria-label={tFeatures("ui.sessionObservations")}
         aria-busy="true"
         className="bg-background relative flex h-full min-h-0 flex-col border-r"
       >
@@ -501,7 +511,7 @@ export function ModernSessionSidebar(
   return (
     <div
       role="complementary"
-      aria-label="Session observations"
+      aria-label={tFeatures("ui.sessionObservations")}
       className="bg-background relative flex h-full min-h-0 flex-col border-r"
     >
       <div className="shrink-0 border-b">
@@ -514,8 +524,8 @@ export function ModernSessionSidebar(
             <Input
               value={search}
               onChange={(event) => handleSearchChange(event.target.value)}
-              aria-label="Search turns and observations"
-              placeholder="Search turns and observations"
+              aria-label={tFeatures("ui.searchTurnsAndObservations")}
+              placeholder={tFeatures("ui.searchTurnsAndObservations")}
               className="h-7 rounded-sm bg-transparent pl-7 font-mono text-xs"
             />
           </div>
@@ -527,7 +537,7 @@ export function ModernSessionSidebar(
                 variant="outline"
                 size="icon"
                 className="relative h-7 w-7 shrink-0 rounded-sm"
-                aria-label="Filter observations"
+                aria-label={tFeatures("ui.filterObservations")}
               >
                 <ListFilter className="h-3.5 w-3.5" />
               </Button>
@@ -565,7 +575,7 @@ export function ModernSessionSidebar(
                     </div>
                   ) : (
                     <span className="text-muted-foreground text-xs">
-                      No filters
+                      {tFeatures("ui.noFilters")}
                     </span>
                   )}
                 </TooltipContent>
@@ -579,13 +589,15 @@ export function ModernSessionSidebar(
                         variant="ghost"
                         size="icon-xs"
                         className="text-muted-foreground hover:text-foreground h-5 w-5"
-                        aria-label="Save filters as view"
+                        aria-label={tFeatures("ui.saveFiltersAsView")}
                         onClick={filterControls.onOpenFilterDialog}
                       >
                         <Save className="h-3 w-3" />
                       </Button>
                     </TooltipTrigger>
-                    <TooltipContent>Save as view</TooltipContent>
+                    <TooltipContent>
+                      {tFeatures("ui.saveAsView")}
+                    </TooltipContent>
                   </Tooltip>
                 ) : null}
                 <Tooltip>
@@ -595,13 +607,13 @@ export function ModernSessionSidebar(
                       variant="ghost"
                       size="icon-xs"
                       className="text-muted-foreground hover:text-foreground h-5 w-5"
-                      aria-label="Edit filters"
+                      aria-label={tFeatures("ui.editFilters")}
                       onClick={filterControls.onOpenFilterDialog}
                     >
                       <Pencil className="h-3 w-3" />
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent>Edit filters</TooltipContent>
+                  <TooltipContent>{tFeatures("ui.editFilters")}</TooltipContent>
                 </Tooltip>
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -610,13 +622,15 @@ export function ModernSessionSidebar(
                       variant="ghost"
                       size="icon-xs"
                       className="text-muted-foreground hover:text-foreground h-5 w-5"
-                      aria-label="Clear filters"
+                      aria-label={tFeatures("ui.clearFilters")}
                       onClick={filterControls.onClearFilters}
                     >
                       <X className="h-3 w-3" />
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent>Clear filters</TooltipContent>
+                  <TooltipContent>
+                    {tFeatures("ui.clearFilters")}
+                  </TooltipContent>
                 </Tooltip>
               </div>
             </div>
@@ -626,7 +640,7 @@ export function ModernSessionSidebar(
       <div
         ref={setListElement}
         role="region"
-        aria-label="Session turns"
+        aria-label={tFeatures("ui.sessionTurns")}
         className="min-h-0 flex-1 overflow-y-auto pt-0.5 pb-4"
         onWheel={handleTransientSidebarScroll}
         onTouchMove={handleTransientSidebarScroll}
@@ -639,12 +653,12 @@ export function ModernSessionSidebar(
         {traces.length === 0 ? (
           <div className="text-muted-foreground px-3 py-6 text-center text-xs">
             {props.isLoadingMoreObservations
-              ? "Loading observations..."
+              ? tFeatures("ui.loadingObservations")
               : props.observationLoadError
-                ? "Failed to load observations"
+                ? tFeatures("ui.failedToLoadObservations")
                 : search
-                  ? "No matching turns"
-                  : "No turns"}
+                  ? tFeatures("ui.noMatchingTurns")
+                  : tFeatures("ui.noTurns")}
           </div>
         ) : (
           <div
@@ -675,7 +689,9 @@ export function ModernSessionSidebar(
                   gap >= IDLE_GAP_THRESHOLD_SECONDS ? (
                     <div className="my-0.5 mb-2 flex items-center bg-[repeating-linear-gradient(315deg,hsl(var(--foreground)/0.07)_0_1px,transparent_1px_5px)] px-3 py-[5px]">
                       <span className="text-muted-foreground font-mono text-[11px] whitespace-nowrap">
-                        +{formatIdleGap(gap)} idle
+                        {tMore("traces.idleDuration", {
+                          duration: `+${formatIdleGap(gap)}`,
+                        })}
                       </span>
                     </div>
                   ) : null}

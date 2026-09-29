@@ -1,4 +1,5 @@
 /* eslint-disable @repo/no-style-props */
+import { useTranslation } from "react-i18next";
 import CodeMirror, {
   EditorView,
   type ReactCodeMirrorRef,
@@ -443,6 +444,7 @@ export function CodeMirrorEditor({
   // media drop/paste handler. Memoize at the call site to avoid reconfiguring.
   extensions?: Extension[];
 }) {
+  const { t } = useTranslation("common");
   const { resolvedTheme } = useTheme();
   const codeMirrorTheme = resolvedTheme === "dark" ? darkTheme : lightTheme;
   // used to disable linter when field is empty
@@ -469,6 +471,38 @@ export function CodeMirrorEditor({
   // a full reconfigure on every parent re-render (e.g. every keystroke).
   const extensions = useMemo(
     () => [
+      EditorState.phrases.of({
+        "Control character": t("editor_Control_character"),
+        "Selection deleted": t("editor_Selection_deleted"),
+        "Folded lines": t("editor_Folded_lines"),
+        "Unfolded lines": t("editor_Unfolded_lines"),
+        to: t("editor_to"),
+        "folded code": t("editor_folded_code"),
+        unfold: t("editor_unfold"),
+        "Fold line": t("editor_Fold_line"),
+        "Unfold line": t("editor_Unfold_line"),
+        "Go to line": t("editor_Go_to_line"),
+        go: t("editor_go"),
+        Find: t("editor_Find"),
+        Replace: t("editor_Replace"),
+        next: t("editor_next"),
+        previous: t("editor_previous"),
+        all: t("editor_all"),
+        "match case": t("editor_match_case"),
+        "by word": t("editor_by_word"),
+        regexp: t("editor_regexp"),
+        replace: t("editor_replace"),
+        "replace all": t("editor_replace_all"),
+        close: t("editor_close"),
+        "current match": t("editor_current_match"),
+        "replaced $ matches": t("editor_replaced_matches"),
+        "replaced match on line $": t("editor_replaced_match_on_line"),
+        "on line": t("editor_on_line"),
+        "No diagnostics": t("editor_No_diagnostics"),
+        Diagnostics: t("editor_Diagnostics"),
+        "No completions": t("editor_No_completions"),
+        Completions: t("editor_Completions"),
+      }),
       tolerateUnstableViewportPosAtCoords,
       // Block document changes (including paste) when not editable; the
       // `editable` DOM facet alone does not always prevent paste (see CM6
@@ -534,6 +568,7 @@ export function CodeMirrorEditor({
       linterEnabled,
       lineWrapping,
       additionalExtensions,
+      t,
     ],
   );
 

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 // AI sub-mode for the search bar: a natural-language prompt that replaces the
 // grammar composer when active (entered via the "Ask AI" affordance; Esc or the
 // back arrow exits). On submit it calls `searchBar.generateFilter`, applies
@@ -77,6 +78,7 @@ export function SearchBarAiPrompt({
   /** Leave AI mode and restore the grammar composer. */
   onExit: () => void;
 }) {
+  const { t } = useTranslation("filters");
   const capture = usePostHogClientCapture();
   const [value, setValue] = React.useState("");
   const [error, setError] = React.useState<string | null>(null);
@@ -102,8 +104,8 @@ export function SearchBarAiPrompt({
   const refineContext = useStore(store, (s) => s.draft).trim();
   const refining = refineContext.length > 0;
   const placeholder = refining
-    ? "Refine your filters — e.g. only errors, or drop the env filter"
-    : "Describe the filters you want — e.g. slow production errors from today";
+    ? t("ui.refinePlaceholder")
+    : t("ui.describePlaceholder");
 
   const generateFilter = api.searchBar.generateFilter.useMutation();
   const pending = generateFilter.isPending;
@@ -229,7 +231,7 @@ export function SearchBarAiPrompt({
             onMouseDown={(event) => event.preventDefault()}
             className="text-muted-foreground mb-1.5 flex min-w-0 items-center gap-1.5 pl-1 text-xs"
           >
-            <span className="shrink-0">Refining</span>
+            <span className="shrink-0">{t("ui.refining")}</span>
             <code
               className="ph-no-capture bg-muted text-foreground/80 min-w-0 truncate rounded px-1.5 py-0.5 font-mono text-[11px]"
               title={refineContext}
@@ -243,8 +245,8 @@ export function SearchBarAiPrompt({
               you're in a sub-mode you can leave. */}
           <button
             type="button"
-            aria-label="Back to search"
-            title="Back (Esc)"
+            aria-label={t("ui.backSearch")}
+            title={t("ui.backShortcut")}
             onMouseDown={(event) => event.preventDefault()}
             onClick={onExit}
             className="text-muted-foreground hover:text-foreground hover:bg-accent -ml-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md"
@@ -257,7 +259,7 @@ export function SearchBarAiPrompt({
             value={value}
             disabled={pending}
             placeholder={placeholder}
-            aria-label="Ask AI to build filters"
+            aria-label={t("ui.aiBuild")}
             data-testid="search-bar-ai-input"
             spellCheck={false}
             autoComplete="off"
@@ -294,14 +296,14 @@ export function SearchBarAiPrompt({
                 className="h-3.5 w-3.5 animate-spin"
                 aria-hidden="true"
               />
-              Generating…
+              {t("ui.generating")}
             </span>
           ) : (
             <div className="flex shrink-0 items-center gap-1.5">
               {value.trim().length > 0 && (
                 <span className="hidden md:inline-flex">
                   <KeyboardShortcut
-                    title="Press Enter to generate"
+                    title={t("ui.pressEnter")}
                     keys={["Enter"]}
                   />
                 </span>
@@ -311,8 +313,8 @@ export function SearchBarAiPrompt({
               </span>
               <button
                 type="button"
-                aria-label="Generate filters"
-                title="Generate filters (Enter)"
+                aria-label={t("ui.generate")}
+                title={t("ui.generateShortcut")}
                 data-testid="search-bar-ai-submit"
                 disabled={value.trim().length === 0}
                 onMouseDown={(event) => event.preventDefault()}

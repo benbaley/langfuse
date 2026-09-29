@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { type ScoreAggregate } from "@langfuse/shared";
 import { createContext, useContext, useState, type ReactNode } from "react";
 import { toast } from "sonner";
@@ -29,7 +30,7 @@ const isSameTarget = (left: CellTarget | null, right: CellTarget | null) =>
   left?.traceId === right?.traceId &&
   left?.observationId === right?.observationId;
 
-function createActiveCellStore() {
+function createActiveCellStore(showUnsavedComment: () => void) {
   return createStore<ActiveCellState>((set, get) => ({
     activeCell: null,
     hasCommentDraft: false,
@@ -38,7 +39,7 @@ function createActiveCellStore() {
         const { activeCell, hasCommentDraft } = get();
         const sameTarget = isSameTarget(activeCell, cell);
         if (!sameTarget && hasCommentDraft) {
-          toast.error("Please save or discard your comment before proceeding");
+          showUnsavedComment();
           return false;
         }
         set({
@@ -65,7 +66,12 @@ const ActiveCellContext = createContext<
 >(undefined);
 
 export function ActiveCellProvider({ children }: { children: ReactNode }) {
-  const [store] = useState(createActiveCellStore);
+  const { i18n } = useTranslation("coreMore");
+  const [store] = useState(() =>
+    createActiveCellStore(() =>
+      toast.error(i18n.t("coreMore:datasets.unsavedComment")),
+    ),
+  );
 
   return (
     <ActiveCellContext.Provider value={store}>

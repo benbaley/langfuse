@@ -1,5 +1,6 @@
 import { LangfuseMediaView } from "@/src/components/ui/LangfuseMediaView";
 import { type MediaReturnType } from "@/src/features/media";
+import { useTranslation } from "react-i18next";
 
 // SectionMedia props
 export interface SectionMediaProps {
@@ -10,9 +11,12 @@ export interface SectionMediaProps {
  * SectionMedia renders media attachments at the bottom of the message list.
  */
 export function SectionMedia({ media }: SectionMediaProps) {
+  const { t: tFeatures } = useTranslation("features");
   return (
     <>
-      <div className="text-muted-foreground my-1 px-2 py-1 text-xs">Media</div>
+      <div className="text-muted-foreground my-1 px-2 py-1 text-xs">
+        {tFeatures("ui.media")}
+      </div>
       <div className="ph-no-capture flex flex-wrap gap-2 px-2 pt-1 pb-4">
         {media.map((m) => (
           <LangfuseMediaView

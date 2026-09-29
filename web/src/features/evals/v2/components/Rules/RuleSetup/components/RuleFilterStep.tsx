@@ -7,6 +7,7 @@ import type { RuleSetupStore } from "@/src/features/evals/v2/types/rules";
 import { RULE_SAMPLE_FIELD_REGISTRY } from "@/src/features/evals/v2/constants/evaluatorSearchRegistry";
 import { env } from "@/src/env.mjs";
 import { RuleSamplingSection } from "./RuleSamplingSection";
+import { useTranslation } from "react-i18next";
 
 const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
 export function RuleFilterStep({
@@ -16,6 +17,7 @@ export function RuleFilterStep({
   projectId: string;
   store: RuleSetupStore;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const filter = useStore(store, (state) => state.filter);
   const selectedObservationId = useStore(
     store,
@@ -29,8 +31,10 @@ export function RuleFilterStep({
   return (
     <Stepper
       number={1}
-      title="Configure rule scope"
-      description="Set filters and a sampling rate to control which incoming observations are evaluated."
+      title={tFeatures("ui.configureRuleScope")}
+      description={tFeatures(
+        "ui.setFiltersAndASamplingRateToControlWhichIncomingObservationsAreEvaluated",
+      )}
     >
       <RuleSampleObservationSelector
         projectId={projectId}

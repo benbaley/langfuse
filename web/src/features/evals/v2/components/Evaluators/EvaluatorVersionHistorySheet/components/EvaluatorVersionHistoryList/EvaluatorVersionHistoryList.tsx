@@ -15,6 +15,7 @@ import {
 } from "../EvaluatorDefinitionView/EvaluatorDefinitionView";
 import type { JudgeModel } from "@/src/features/evals/v2/judgeModel";
 import type { EvaluatorVersion } from "../../types";
+import { useTranslation } from "react-i18next";
 
 function toEvaluatorDefinition(
   version: EvaluatorVersion,
@@ -76,6 +77,7 @@ export function EvaluatorVersionHistoryList({
   onRestoreVersion: (version: EvaluatorVersion) => void;
   isLoading: boolean;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   if (isLoading) {
     return (
       <div className="flex flex-col gap-2">
@@ -87,7 +89,9 @@ export function EvaluatorVersionHistoryList({
 
   if (versions.length === 0) {
     return (
-      <p className="text-muted-foreground text-sm">No saved versions found.</p>
+      <p className="text-muted-foreground text-sm">
+        {tFeatures("ui.noSavedVersionsFound")}
+      </p>
     );
   }
 
@@ -116,11 +120,11 @@ export function EvaluatorVersionHistoryList({
             header={
               <>
                 <span className="shrink-0 font-bold">
-                  Version {version.version}
+                  {tFeatures("ui.version")} {version.version}
                 </span>
                 {version.id === currentVersionId ? (
                   <Badge variant="success" className="shrink-0 px-2">
-                    Current
+                    {tFeatures("ui.current")}
                   </Badge>
                 ) : null}
                 <span className="text-muted-foreground flex min-w-0 shrink-0 items-center gap-1 text-xs">

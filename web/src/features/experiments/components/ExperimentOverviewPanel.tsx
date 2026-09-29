@@ -7,6 +7,7 @@ import {
   ExperimentOverviewField,
   ExperimentOverviewSectionHeading,
 } from "./ExperimentOverviewField";
+import { useTranslation } from "react-i18next";
 
 const isSafeHttpUrl = (value: string | undefined) => {
   if (!value) return false;
@@ -37,6 +38,7 @@ export function ExperimentOverviewPanel({
   projectId,
   experiment,
 }: ExperimentOverviewPanelProps) {
+  const { t: tFeatures } = useTranslation("features");
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
 
   const metadata = experiment?.metadata ?? {};
@@ -78,21 +80,21 @@ export function ExperimentOverviewPanel({
 
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-bold">Baseline details</h3>
+      <h3 className="text-lg font-bold">{tFeatures("ui.baselineDetails")}</h3>
 
       {experiment ? (
         <>
           <div>
             <ExperimentOverviewSectionHeading>
-              Overview
+              {tFeatures("ui.overview")}
             </ExperimentOverviewSectionHeading>
             <div className="space-y-3 text-sm">
-              <ExperimentOverviewField label="Name">
+              <ExperimentOverviewField label={tFeatures("ui.name")}>
                 <div className="font-bold">{experiment.name}</div>
               </ExperimentOverviewField>
 
               {experiment.description && (
-                <ExperimentOverviewField label="Description">
+                <ExperimentOverviewField label={tFeatures("ui.description")}>
                   <div className="break-words">{displayDescription}</div>
                   {isLongDescription && (
                     <Button
@@ -103,13 +105,15 @@ export function ExperimentOverviewPanel({
                         setIsDescriptionExpanded(!isDescriptionExpanded)
                       }
                     >
-                      {isDescriptionExpanded ? "Show less" : "Show more"}
+                      {isDescriptionExpanded
+                        ? tFeatures("ui.showLess")
+                        : tFeatures("ui.showMore")}
                     </Button>
                   )}
                 </ExperimentOverviewField>
               )}
 
-              <ExperimentOverviewField label="Dataset">
+              <ExperimentOverviewField label={tFeatures("ui.dataset")}>
                 <Link
                   href={`/project/${projectId}/datasets/${encodeURIComponent(experiment.datasetId)}`}
                   className="text-primary hover:underline"
@@ -119,7 +123,7 @@ export function ExperimentOverviewPanel({
               </ExperimentOverviewField>
 
               {promptName && (
-                <ExperimentOverviewField label="Prompt">
+                <ExperimentOverviewField label={tFeatures("ui.prompt")}>
                   <Link
                     href={`/project/${projectId}/prompts/${encodeURIComponent(promptName)}${promptVersion !== null ? `?version=${promptVersion}` : ""}`}
                     className="text-primary hover:underline"
@@ -135,7 +139,7 @@ export function ExperimentOverviewPanel({
               )}
 
               {(provider || model) && (
-                <ExperimentOverviewField label="Model">
+                <ExperimentOverviewField label={tFeatures("ui.model")}>
                   <div>
                     {provider && model
                       ? `${provider}/${model}`
@@ -144,7 +148,7 @@ export function ExperimentOverviewPanel({
                 </ExperimentOverviewField>
               )}
 
-              <ExperimentOverviewField label="Start Time">
+              <ExperimentOverviewField label={tFeatures("ui.startTime")}>
                 {preparedStartTime ? (
                   <span title={preparedStartTime.title}>
                     {preparedStartTime.display}
@@ -153,7 +157,7 @@ export function ExperimentOverviewPanel({
               </ExperimentOverviewField>
 
               {safePullRequestUrl && (
-                <ExperimentOverviewField label="Pull Request URL">
+                <ExperimentOverviewField label={tFeatures("ui.pullRequestUrl")}>
                   <a
                     href={safePullRequestUrl}
                     target="_blank"
@@ -166,7 +170,7 @@ export function ExperimentOverviewPanel({
               )}
 
               {safeGithubJobUrl && (
-                <ExperimentOverviewField label="GitHub Job URL">
+                <ExperimentOverviewField label={tFeatures("ui.githubJobUrl")}>
                   <a
                     href={safeGithubJobUrl}
                     target="_blank"
@@ -186,7 +190,7 @@ export function ExperimentOverviewPanel({
         </>
       ) : (
         <p className="text-muted-foreground text-sm">
-          Select a baseline to view its details.
+          {tFeatures("ui.selectABaselineToViewItsDetails")}
         </p>
       )}
     </div>

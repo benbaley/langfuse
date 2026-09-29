@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 /* eslint-disable @repo/no-margin-on-root-elements */
 import React, { useState } from "react";
 import { cn } from "@/src/utils/tailwind";
@@ -103,6 +104,8 @@ export function SplashScreen({
   children,
   videoPosition = "top",
 }: SplashScreenProps) {
+const { t: tUi } = useTranslation("uiMore");
+
   const mediaBlock = (
     <>
       {videoSrc && <VideoPlayer videoSrc={videoSrc} />}
@@ -163,7 +166,7 @@ export function SplashScreen({
       {gettingStarted && (
         <div className="w-full max-w-3xl">
           <Alert icon={InfoIcon}>
-            <Alert.Title>Getting Started</Alert.Title>
+            <Alert.Title>{tUi("gettingStarted")}</Alert.Title>
             <Alert.Description>{gettingStarted}</Alert.Description>
           </Alert>
         </div>

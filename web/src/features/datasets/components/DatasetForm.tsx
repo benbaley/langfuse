@@ -1,3 +1,4 @@
+import { translateDatasetFormError } from "../utils/translateDatasetFormError";
 /* eslint-disable @repo/no-style-props */
 import { Button } from "@/src/components/ui/button";
 import * as z from "zod";
@@ -27,6 +28,7 @@ import { useUniqueNameValidation } from "@/src/hooks/useUniqueNameValidation";
 import { DialogBody, DialogFooter } from "@/src/components/ui/dialog";
 import { DatasetSchemaInput } from "./DatasetSchemaInput";
 import { DatasetSchemaValidationError } from "./DatasetSchemaValidationError";
+import { useTranslation } from "react-i18next";
 
 type ServerSideSchemaValidationErrors = {
   datasetItemId: string;
@@ -86,7 +88,7 @@ const jsonSchemaStringValidator = z.string().refine(
     }
   },
   {
-    message: "Must be a valid JSON Schema",
+    message: "datasets.validation.schema",
   },
 );
 
@@ -105,8 +107,7 @@ const formSchema = z.object({
       }
     },
     {
-      message:
-        "Invalid input. Please provide a JSON object or double-quoted string.",
+      message: "datasets.validation.json",
     },
   ),
   inputSchema: jsonSchemaStringValidator,
@@ -114,6 +115,8 @@ const formSchema = z.object({
 });
 
 export const DatasetForm = (props: DatasetFormProps) => {
+  const { t: tMore } = useTranslation("coreMore");
+  const { t: tFeatures } = useTranslation("features");
   const [pending, setPending] = useState(false);
   const submissionPending = useRef(false);
   const [formError, setFormError] = useState<string | null>(null);
@@ -278,15 +281,18 @@ export const DatasetForm = (props: DatasetFormProps) => {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel>{tFeatures("ui.name")}</FormLabel>
                   <FormDescription>
-                    Use slashes &apos;/&apos; in dataset names to organize them
-                    into <em>folders</em>.
+                    {tMore("datasets.foldersHelp")}
                   </FormDescription>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage
+                    translateError={(message) =>
+                      translateDatasetFormError(message, tMore)
+                    }
+                  />
                 </FormItem>
               )}
             />
@@ -295,11 +301,15 @@ export const DatasetForm = (props: DatasetFormProps) => {
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Description (optional)</FormLabel>
+                  <FormLabel>{tFeatures("ui.descriptionOptional")}</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage
+                    translateError={(message) =>
+                      translateDatasetFormError(message, tMore)
+                    }
+                  />
                 </FormItem>
               )}
             />
@@ -308,7 +318,7 @@ export const DatasetForm = (props: DatasetFormProps) => {
               name="metadata"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Metadata (optional)</FormLabel>
+                  <FormLabel>{tFeatures("ui.metadataOptional")}</FormLabel>
                   <FormControl>
                     <CodeMirrorEditor
                       mode="json"
@@ -319,7 +329,11 @@ export const DatasetForm = (props: DatasetFormProps) => {
                       }}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage
+                    translateError={(message) =>
+                      translateDatasetFormError(message, tMore)
+                    }
+                  />
                 </FormItem>
               )}
             />
@@ -329,8 +343,8 @@ export const DatasetForm = (props: DatasetFormProps) => {
               render={({ field }) => (
                 <DatasetSchemaInput
                   disabled={pending}
-                  label="Input schema"
-                  description="Validate dataset item inputs against a JSON Schema. All new and existing items must conform to this schema."
+                  label={tFeatures("ui.inputSchema")}
+                  description={tMore("datasets.inputSchemaHelp")}
                   value={field.value}
                   onChange={field.onChange}
                   initialValue={inputSchemaString}
@@ -343,8 +357,8 @@ export const DatasetForm = (props: DatasetFormProps) => {
               render={({ field }) => (
                 <DatasetSchemaInput
                   disabled={pending}
-                  label="Expected output schema"
-                  description="Validate dataset item expected outputs against a JSON Schema. All new and existing items must conform to this schema."
+                  label={tFeatures("ui.expectedOutputSchema")}
+                  description={tMore("datasets.outputSchemaHelp")}
                   value={field.value}
                   onChange={field.onChange}
                   initialValue={expectedOutputSchemaString}
@@ -377,7 +391,7 @@ export const DatasetForm = (props: DatasetFormProps) => {
                 onClick={props.onCancel}
                 disabled={pending}
               >
-                Back
+                {tFeatures("ui.backTitle")}
               </Button>
             )}
             <Button
@@ -385,7 +399,9 @@ export const DatasetForm = (props: DatasetFormProps) => {
               disabled={!!form.formState.errors.name}
               loading={pending}
             >
-              {props.mode === "create" ? "Create dataset" : "Update dataset"}
+              {props.mode === "create"
+                ? tFeatures("ui.createDataset")
+                : tFeatures("ui.updateDataset")}
             </Button>
           </DialogFooter>
         )}

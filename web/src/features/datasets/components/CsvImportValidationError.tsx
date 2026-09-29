@@ -4,6 +4,7 @@ import { ChevronDown, ChevronRight } from "lucide-react";
 import { Alert } from "@/src/components/design-system/Alert/Alert";
 import { Button } from "@/src/components/ui/button";
 import { type BulkDatasetItemValidationError } from "@langfuse/shared";
+import { useTranslation } from "react-i18next";
 
 type CsvImportValidationErrorProps = {
   errors: BulkDatasetItemValidationError[];
@@ -12,6 +13,8 @@ type CsvImportValidationErrorProps = {
 export const CsvImportValidationError: React.FC<
   CsvImportValidationErrorProps
 > = ({ errors }) => {
+  const { t: tMore } = useTranslation("coreMore");
+  const { t: tFeatures } = useTranslation("features");
   const [isExpanded, setIsExpanded] = useState(false);
 
   const errorCount = errors.length;
@@ -20,7 +23,7 @@ export const CsvImportValidationError: React.FC<
   return (
     <div className="mt-4">
       <Alert variant="destructive">
-        <Alert.Title>Schema Validation Failed</Alert.Title>
+        <Alert.Title>{tFeatures("ui.schemaValidationFailed")}</Alert.Title>
         <Alert.Description>
           <div className="mt-2 flex flex-col gap-3">
             <p className="text-sm">
@@ -29,8 +32,7 @@ export const CsvImportValidationError: React.FC<
                 : `${errorCount} item${errorCount === 1 ? "" : "s"} failed validation.`}
             </p>
             <p className="text-muted-foreground text-sm">
-              The CSV data does not match the required schema for this dataset.
-              Fix the errors in your CSV file and try importing again.
+              {tMore("datasets.csvInvalid")}
             </p>
 
             <Button
@@ -45,7 +47,8 @@ export const CsvImportValidationError: React.FC<
               ) : (
                 <ChevronRight className="mr-1 h-4 w-4" />
               )}
-              {isExpanded ? "Hide" : "Show"} error details
+              {isExpanded ? tFeatures("ui.hide") : tFeatures("ui.show")}
+              {tMore("datasets.errorDetails")}
             </Button>
 
             {isExpanded && (
@@ -60,12 +63,12 @@ export const CsvImportValidationError: React.FC<
                         #{idx + 1}
                       </span>
                       <span className="text-sm font-bold">
-                        CSV Row {error.itemIndex + 2}:{" "}
+                        {tFeatures("ui.csvRow")} {error.itemIndex + 2}:{" "}
                         {error.field === "input"
-                          ? "Input"
+                          ? tFeatures("ui.input")
                           : error.field === "metadata"
-                            ? "Metadata"
-                            : "Expected Output"}
+                            ? tFeatures("ui.metadata")
+                            : tFeatures("ui.expectedOutput")}
                       </span>
                     </div>
 
@@ -86,8 +89,9 @@ export const CsvImportValidationError: React.FC<
 
                 {hasMoreThan10 && (
                   <p className="text-muted-foreground pt-2 text-xs">
-                    Fix these errors to see if there are additional validation
-                    issues.
+                    {tFeatures(
+                      "ui.fixTheseErrorsToSeeIfThereAreAdditionalValidationIssues",
+                    )}
                   </p>
                 )}
               </div>

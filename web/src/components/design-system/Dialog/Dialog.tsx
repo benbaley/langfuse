@@ -1,4 +1,5 @@
 "use client";
+import { useTranslation } from "react-i18next";
 
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { cva, type VariantProps } from "class-variance-authority";
@@ -57,6 +58,8 @@ function DialogRoot({
   text,
   title,
 }: DialogProps) {
+const { t: tUi } = useTranslation("uiMore");
+
   const container = useLayerContainer("modal");
   const cancelButtonRef = React.useRef<HTMLButtonElement>(null);
   const actionButtonRefs = React.useRef<Array<HTMLButtonElement | null>>([]);
@@ -124,7 +127,7 @@ function DialogRoot({
               tabIndex={-1}
             >
               <X className="size-4" />
-              <span className="sr-only">Close</span>
+              <span className="sr-only">{tUi("close")}</span>
             </DialogPrimitive.Close>
           </div>
         </header>
@@ -132,7 +135,7 @@ function DialogRoot({
         {actions?.length ? (
           <DialogFooter>
             <DialogPrimitive.Close asChild>
-              <Button ref={cancelButtonRef} variant="secondary" text="Cancel" />
+              <Button ref={cancelButtonRef} variant="secondary" text={tUi("cancel")} />
             </DialogPrimitive.Close>
             {actions.map(
               ({ icon: Icon, label, variant, ...buttonProps }, index) => (

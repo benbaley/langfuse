@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { EvalTemplateSourceCodeLanguage } from "@langfuse/shared";
 
 import { EvaluatorsOnboardingView } from "@/src/components/onboarding/components/EvaluatorsOnboardingView/EvaluatorsOnboardingView";
@@ -13,13 +14,15 @@ export function EvaluatorsOnboarding({
   projectId,
   createEvaluatorAction,
 }: EvaluatorsOnboardingProps) {
+  const { t: tFeatures } = useTranslation("features");
+
   const { enabled, supportedSourceCodeLanguages } = useIsCodeEvalEnabled();
   const codeEvaluatorLanguageDescription =
     supportedSourceCodeLanguages.includes(EvalTemplateSourceCodeLanguage.PYTHON)
-      ? "TypeScript or Python"
+      ? tFeatures("evalsMore:onboarding.evalLanguages")
       : "TypeScript";
   const primaryAction = createEvaluatorAction ?? {
-    label: "Create Evaluator",
+    label: tFeatures("evalsMore:onboarding.createEvaluator"),
     href: `/project/${projectId}/evals/new`,
   };
 

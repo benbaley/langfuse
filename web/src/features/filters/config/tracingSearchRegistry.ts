@@ -29,6 +29,7 @@ function tracingFieldRegistry(
     fields[facet.column] = {
       ...fields[facet.column],
       label: facet.label,
+      descriptionKey: facet.labelKey,
       ...(facet.type === "numeric" ? { unit: facet.unit } : {}),
     };
   }
@@ -51,11 +52,13 @@ function tracingFieldRegistry(
               searchType: ["input"],
               label: "Input",
               description: "search only the input payload",
+              descriptionKey: "search.search_only_the_input_payload",
             },
             output: {
               searchType: ["output"],
               label: "Output",
               description: "search only the output payload",
+              descriptionKey: "search.search_only_the_output_payload",
             },
           }
         : {},

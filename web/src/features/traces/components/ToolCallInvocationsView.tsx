@@ -4,6 +4,7 @@ import { cn } from "@/src/utils/tailwind";
 import { PrettyJsonView } from "@/src/components/ui/PrettyJsonView";
 import type { z } from "zod";
 import type { ChatMlMessageSchema } from "@/src/components/schemas/ChatMlSchema";
+import { useTranslation } from "react-i18next";
 
 interface ToolCallInvocationsViewProps {
   message: z.infer<typeof ChatMlMessageSchema>;
@@ -41,6 +42,7 @@ export function ToolCallInvocationsView({
   toolCallNumbers,
   className,
 }: ToolCallInvocationsViewProps) {
+  const { t: tFeatures } = useTranslation("features");
   const toolCalls = message.tool_calls as ToolCallEntry[] | undefined;
 
   if (!toolCalls || !Array.isArray(toolCalls) || toolCalls.length === 0) {
@@ -97,7 +99,7 @@ export function ToolCallInvocationsView({
             {/* Arguments view */}
             <div className="py-2 [&_.io-message-content]:px-0">
               <div className="text-muted-foreground mb-1.5 text-xs font-bold">
-                Arguments
+                {tFeatures("ui.arguments")}
               </div>
               <PrettyJsonView
                 json={parsedArguments}
@@ -112,7 +114,7 @@ export function ToolCallInvocationsView({
             {toolCall.response !== undefined && toolCall.response !== null && (
               <div className="py-2 [&_.io-message-content]:px-0">
                 <div className="text-muted-foreground mb-1.5 text-xs font-bold">
-                  Response
+                  {tFeatures("ui.response")}
                   {toolCall.response?.isError && (
                     <span className="text-dark-red ml-1">(error)</span>
                   )}

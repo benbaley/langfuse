@@ -16,6 +16,7 @@ import { usePostHogClientCapture } from "@/src/features/posthog-analytics";
 import { useHasProjectAccess } from "@/src/features/rbac";
 import { useCopyToClipboard } from "@/src/hooks/useCopyToClipboard";
 import { api } from "@/src/utils/api";
+import { useTranslation } from "react-i18next";
 
 function buildSessionClickHouseQuery(
   table: "events_full" | "events_core",
@@ -72,6 +73,8 @@ export function ModernSessionHeaderActionsController({
   onShowSystemPromptChange?: (isEnabled: boolean) => void;
   children: ReactNode;
 }) {
+  const { t: tMore } = useTranslation("coreMore");
+  const { t: tFeatures } = useTranslation("features");
   const session = useSession();
   const capture = usePostHogClientCapture();
   const { copy } = useCopyToClipboard();
@@ -104,7 +107,9 @@ export function ModernSessionHeaderActionsController({
           }}
         >
           <Share2 className="mr-2 h-3.5 w-3.5" />
-          {isPublic ? "Unshare (make private)" : "Share (make public)"}
+          {isPublic
+            ? tFeatures("ui.unshareMakePrivate")
+            : tFeatures("ui.shareMakePublic")}
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={async () => {
@@ -113,7 +118,7 @@ export function ModernSessionHeaderActionsController({
           }}
         >
           <CopyIcon className="mr-2 h-3.5 w-3.5" />
-          Copy session ID
+          {tFeatures("ui.copySessionId")}
         </DropdownMenuItem>
         {session.data?.user?.admin === true &&
           (["events_full", "events_core"] as const).map((table) => (
@@ -126,14 +131,16 @@ export function ModernSessionHeaderActionsController({
               }}
             >
               <CopyIcon className="mr-2 h-3.5 w-3.5" />
-              Copy {table} query
+              {tMore("sessions.copyQuery", { table })}
             </DropdownMenuItem>
           ))}
         {hasDisplaySettings ? (
           <>
             <DropdownMenuSeparator />
             <DropdownMenuSub>
-              <DropdownMenuSubTrigger>Display</DropdownMenuSubTrigger>
+              <DropdownMenuSubTrigger>
+                {tFeatures("ui.display")}
+              </DropdownMenuSubTrigger>
               <DropdownMenuSubContent>
                 {showCorrections !== undefined && onShowCorrectionsChange ? (
                   <DropdownMenuCheckboxItem
@@ -143,7 +150,7 @@ export function ModernSessionHeaderActionsController({
                       onShowCorrectionsChange(!showCorrections);
                     }}
                   >
-                    Show corrections
+                    {tFeatures("ui.showCorrections")}
                   </DropdownMenuCheckboxItem>
                 ) : null}
                 {showInlineToolCalls !== undefined &&
@@ -155,7 +162,7 @@ export function ModernSessionHeaderActionsController({
                       onShowInlineToolCallsChange(!showInlineToolCalls);
                     }}
                   >
-                    Show tool calls
+                    {tFeatures("ui.showToolCalls")}
                   </DropdownMenuCheckboxItem>
                 ) : null}
                 {showSystemPrompt !== undefined && onShowSystemPromptChange ? (
@@ -166,7 +173,7 @@ export function ModernSessionHeaderActionsController({
                       onShowSystemPromptChange(!showSystemPrompt);
                     }}
                   >
-                    Show system prompt
+                    {tFeatures("ui.showSystemPrompt")}
                   </DropdownMenuCheckboxItem>
                 ) : null}
               </DropdownMenuSubContent>

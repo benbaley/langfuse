@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 /* eslint-disable @repo/no-null-render */
 /**
  * Simple metadata badges for ObservationDetailView
@@ -12,9 +13,16 @@ export function LatencyBadge({
 }: {
   latencySeconds: number | null;
 }) {
+  const { t: tMore } = useTranslation("coreMore");
   if (latencySeconds == null) return null;
 
-  return <Badge text={`Latency: ${formatIntervalSeconds(latencySeconds)}`} />;
+  return (
+    <Badge
+      text={tMore("traces.latency", {
+        value: formatIntervalSeconds(latencySeconds),
+      })}
+    />
+  );
 }
 
 export function TimeToFirstTokenBadge({
@@ -22,11 +30,14 @@ export function TimeToFirstTokenBadge({
 }: {
   timeToFirstToken: number | null | undefined;
 }) {
+  const { t: tMore } = useTranslation("coreMore");
   if (timeToFirstToken == null) return null;
 
   return (
     <Badge
-      text={`Time to first token: ${formatIntervalSeconds(timeToFirstToken)}`}
+      text={tMore("traces.firstToken", {
+        value: formatIntervalSeconds(timeToFirstToken),
+      })}
     />
   );
 }

@@ -25,6 +25,7 @@ import { showSuccessToast, showErrorToast } from "@/src/features/notifications";
 import { getFormattedPayload } from "@/src/features/experiments/utils/format";
 import { type Prisma } from "@langfuse/shared";
 import { Spinner } from "@/src/components/design-system/Spinner/Spinner";
+import { useTranslation } from "react-i18next";
 
 const RemoteExperimentTriggerSchema = z.object({
   payload: z.string(),
@@ -48,6 +49,8 @@ export const RemoteExperimentTriggerModal = ({
   };
   setShowTriggerModal: (show: boolean) => void;
 }) => {
+  const { t: tMore } = useTranslation("coreMore");
+  const { t: tFeatures } = useTranslation("features");
   const dataset = api.datasets.byId.useQuery({
     projectId,
     datasetId,
@@ -71,9 +74,8 @@ export const RemoteExperimentTriggerModal = ({
           );
         } else if (data.success) {
           showSuccessToast({
-            title: "Remote experiment triggered",
-            description:
-              "Your remote experiment may take a few minutes to complete.",
+            title: tFeatures("ui.remoteExperimentTriggered"),
+            description: tMore("experiments.remotePending"),
           });
         } else {
           showErrorToast(
@@ -92,7 +94,7 @@ export const RemoteExperimentTriggerModal = ({
         JSON.parse(data.payload);
       } catch {
         form.setError("payload", {
-          message: "Invalid JSON format",
+          message: tMore("experiments.invalidJson"),
         });
         return;
       }
@@ -113,12 +115,11 @@ export const RemoteExperimentTriggerModal = ({
           onClick={() => setShowTriggerModal(false)}
           className="inline-block self-start"
         >
-          ← Back
+          {tFeatures("ui.back")}
         </Button>
-        <DialogTitle>Run remote dataset run</DialogTitle>
+        <DialogTitle>{tFeatures("ui.runRemoteDatasetRun")}</DialogTitle>
         <DialogDescription>
-          This action will send the following information to{" "}
-          <strong>{remoteExperimentConfig.url}</strong>.
+          {tMore("experiments.remoteSend", { url: remoteExperimentConfig.url })}
         </DialogDescription>
       </DialogHeader>
 
@@ -131,11 +132,11 @@ export const RemoteExperimentTriggerModal = ({
                 name="payload"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Config</FormLabel>
+                    <FormLabel>{tFeatures("ui.config")}</FormLabel>
                     <FormDescription>
-                      Confirm the config you want to send to the remote dataset
-                      run URL along with the{" "}
-                      <strong>{dataset.data?.name}</strong> dataset information.
+                      {tMore("experiments.remoteConfirm", {
+                        dataset: dataset.data?.name,
+                      })}
                     </FormDescription>
                     <FormControl>
                       <CodeMirrorEditor
@@ -162,7 +163,7 @@ export const RemoteExperimentTriggerModal = ({
                 onClick={() => setShowTriggerModal(false)}
                 disabled={runRemoteExperimentMutation.isPending}
               >
-                Cancel
+                {tFeatures("ui.cancel")}
               </Button>
               <Button
                 type="submit"
@@ -173,7 +174,7 @@ export const RemoteExperimentTriggerModal = ({
                     <Spinner size="sm" />
                   </div>
                 )}
-                Run
+                {tFeatures("ui.run")}
               </Button>
             </div>
           </DialogFooter>

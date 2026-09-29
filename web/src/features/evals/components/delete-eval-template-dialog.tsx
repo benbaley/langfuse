@@ -8,6 +8,7 @@ import { Input } from "@/src/components/ui/input";
 import { Label } from "@/src/components/ui/label";
 import { showErrorToast, showSuccessToast } from "@/src/features/notifications";
 import { api } from "@/src/utils/api";
+import { useTranslation } from "react-i18next";
 
 type ReferencingEvaluator = {
   id: string;
@@ -59,13 +60,14 @@ export function DeleteEvalTemplateDialog({
   // instantly while the usage query is in flight.
   initialUsageCount?: number;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const utils = api.useUtils();
   const [confirmationInput, setConfirmationInput] = useState("");
 
   const templateMutation = api.evals.deleteEvalTemplate.useMutation({
     onSuccess: () => {
       showSuccessToast({
-        title: "Evaluator deleted",
+        title: tFeatures("ui.evaluatorDeleted"),
         description: `Evaluator "${templateName}" was deleted.`,
       });
       utils.evals.invalidate();
@@ -113,7 +115,9 @@ export function DeleteEvalTemplateDialog({
       open={open}
       onOpenChange={handleOpenChange}
       size="lg"
-      title={isBlocked ? "Cannot delete" : "Please confirm"}
+      title={
+        isBlocked ? tFeatures("ui.cannotDelete") : tFeatures("ui.pleaseConfirm")
+      }
       description={
         isBlocked
           ? `This evaluator is used by ${usageCount} running evaluator${usageCount === 1 ? "" : "s"}. Delete those running evaluators first.`

@@ -1,4 +1,5 @@
 /* eslint-disable @repo/no-style-props */
+import { useTranslation } from "react-i18next";
 import { Filter } from "lucide-react";
 
 import { useDataTableControls } from "@/src/components/table/data-table-controls";
@@ -18,6 +19,7 @@ export function FilterToggleButton({
   filterState?: FilterState;
   className?: string;
 }) {
+  const { t } = useTranslation("common");
   const { open, setOpen } = useDataTableControls();
   // Count filtered COLUMNS (facets), not raw FilterState entries — one facet
   // can emit several entries (e.g. a numeric range writes >= and <=). Keeps
@@ -33,7 +35,7 @@ export function FilterToggleButton({
       className={cn("flex h-8 items-center gap-2 text-sm", className)}
     >
       <Filter className="h-4 w-4" />
-      <span>Filters</span>
+      <span>{t("filters")}</span>
       {activeFacetCount > 0 && (
         <Badge variant="secondary" className="ml-1 h-5 px-1.5 text-xs">
           {activeFacetCount}

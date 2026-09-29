@@ -1,4 +1,5 @@
 /* eslint-disable no-nested-ternary */
+import { useTranslation } from "react-i18next";
 import { useFormState, useWatch } from "react-hook-form";
 import { Checkbox } from "@/src/components/design-system/Checkbox/Checkbox";
 import {
@@ -23,6 +24,7 @@ export const ExportFieldGroupsField = ({
 }: {
   control: BlobStorageFormControl;
 }) => {
+  const { t } = useTranslation("settingsMore");
   const [watchedExportSource, watchedFileType] = useWatch({
     control,
     name: ["exportSource", "fileType"],
@@ -49,17 +51,14 @@ export const ExportFieldGroupsField = ({
       name="exportFieldGroups"
       render={({ field }) => (
         <FormItem>
-          <FormLabel>Export Field Groups</FormLabel>
+          <FormLabel>{t("blob.fieldGroups")}</FormLabel>
           <FormDescription>
-            Choose which field groups to include in the observation exports.
-            Deselect large groups (e.g. Input / Output) to reduce export size,
-            or privacy-sensitive groups (e.g. Metadata) to avoid storing user
-            data.
+            {t("blob.fieldGroupsHint")}
             {includesLegacyExport
               ? isLegacyOnlyExport
-                ? " Traces and scores are always exported in full. Field groups that only exist on the enriched observations (e.g. Trace Context) are not available for this export source."
-                : " Traces and scores are always exported in full. Fields that only exist on the enriched observations (e.g. Trace Context) are omitted from the legacy observations export."
-              : " Scores are always exported in full."}
+                ? t("blob.legacyGroupsHint")
+                : t("blob.mixedGroupsHint")
+              : t("blob.scoresHint")}
           </FormDescription>
           <div className="mt-2 space-y-2">
             {EXPORT_FIELD_GROUP_OPTIONS.filter(
@@ -102,10 +101,10 @@ export const ExportFieldGroupsField = ({
                     }
                   >
                     <div className="text-sm leading-none font-bold">
-                      {option.label}
+                      {t(`blob.fieldGroup.${option.value}`)}
                       {isCore && (
                         <span className="text-muted-foreground ml-1 font-normal">
-                          (required)
+                          {t("blob.required")}
                         </span>
                       )}
                     </div>

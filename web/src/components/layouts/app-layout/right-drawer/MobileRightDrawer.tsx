@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import {
   Drawer,
   DrawerContent,
@@ -12,6 +13,8 @@ import { V4MigrationPanel } from "@/src/features/v4-migration/V4MigrationPanel";
 import { useV4MigrationTitle } from "@/src/features/v4-migration/V4MigrationContent";
 
 export function MobileRightDrawer() {
+const { t: tUi } = useTranslation("uiMore");
+
   const { open: supportOpen, setOpen: setSupportOpen } = useSupportDrawer();
   const { open: migrationOpen, setOpen: setMigrationOpen } =
     useV4MigrationPanel();
@@ -34,10 +37,8 @@ export function MobileRightDrawer() {
               <div className="bg-muted h-2 w-20 rounded-full" />
             </div>
             {/* sr-only for screen readers and accessibility */}
-            <DrawerTitle className="sr-only">Support</DrawerTitle>
-            <DrawerDescription className="sr-only">
-              A list of resources and options to help you with your questions.
-            </DrawerDescription>
+            <DrawerTitle className="sr-only">{tUi("support")}</DrawerTitle>
+            <DrawerDescription className="sr-only">{tUi("supportDescription")}</DrawerDescription>
           </DrawerHeader>
           <SupportDrawer
             showCloseButton={false}
@@ -62,10 +63,7 @@ export function MobileRightDrawer() {
             </div>
             {/* sr-only for screen readers and accessibility */}
             <DrawerTitle className="sr-only">{migrationTitle}</DrawerTitle>
-            <DrawerDescription className="sr-only">
-              Action items to keep your integrations compatible with Langfuse v4
-              and upcoming deprecations.
-            </DrawerDescription>
+            <DrawerDescription className="sr-only">{tUi("compatibilityActions")}</DrawerDescription>
           </DrawerHeader>
           <V4MigrationPanel
             showCloseButton={false}

@@ -1,4 +1,5 @@
 /* eslint-disable no-nested-ternary */
+import { useTranslation } from "react-i18next";
 import Header from "@/src/components/layouts/header";
 import ContainerPage from "@/src/components/layouts/container-page";
 import { StatusBadge } from "@/src/components/ui/StatusBadge/StatusBadge";
@@ -36,6 +37,7 @@ const syncStatusFromConfig = (
   });
 
 export default function BlobStorageIntegrationPage() {
+  const { t } = useTranslation("settingsMore");
   const router = useRouter();
   const projectId = router.query.projectId as string;
   const hasAccess = useHasProjectAccess({
@@ -69,9 +71,12 @@ export default function BlobStorageIntegrationPage() {
   return (
     <ContainerPage
       headerProps={{
-        title: "Blob Storage Integration",
+        title: t("blob.title"),
         breadcrumb: [
-          { name: "Settings", href: `/project/${projectId}/settings` },
+          {
+            name: t("common.settings"),
+            href: `/project/${projectId}/settings`,
+          },
         ],
         actionButtonsLeft: (
           <>
@@ -84,35 +89,23 @@ export default function BlobStorageIntegrationPage() {
               href="https://langfuse.com/docs/api-and-data-platform/features/export-to-blob-storage"
               target="_blank"
             >
-              Integration Docs ↗
+              {t("common.integrationDocsLink")}
             </Link>
           </Button>
         ),
       }}
     >
-      <p className="text-primary mb-4 text-sm">
-        Configure scheduled exports of your trace data to AWS S3, S3-compatible
-        storages, or Azure Blob Storage. Set up a hourly, daily, or weekly
-        export to your own storage for data analysis or backup purposes. Use the
-        &quot;Validate&quot; button to test your configuration by uploading a
-        small test file, and the &quot;Run Now&quot; button to trigger an
-        immediate export.
-      </p>
+      <p className="text-primary mb-4 text-sm">{t("blob.description")}</p>
       {!hasEntitlement ? (
-        <p className="text-sm">
-          This feature is not available in your current plan.
-        </p>
+        <p className="text-sm">{t("blob.planUnavailable")}</p>
       ) : !hasAccess ? (
-        <p className="text-sm">
-          Your current role does not grant you access to these settings, please
-          reach out to your project admin or owner.
-        </p>
+        <p className="text-sm">{t("integrations.accessDenied")}</p>
       ) : (
         <>
           {state.data?.config && (
             <BlobStorageStatusSection config={state.data.config} />
           )}
-          <Header title="Configuration" className="mt-8" />
+          <Header title={t("common.configuration")} className="mt-8" />
           <Card className="p-3">
             {!state.data ? (
               <IntegrationSettingsSkeleton />

@@ -65,16 +65,19 @@ import { usePostHogClientCapture } from "@/src/features/posthog-analytics";
 import { useV4UpgradeUiEnabled } from "@/src/features/v4-migration/useV4UpgradeUiEnabled";
 import { V4MigrationBadgeContent } from "@/src/features/v4-migration/V4MigrationBadgeContent";
 import { buildEvaluatorUpgradeUrl } from "@/src/features/v4-migration/evaluatorMigrationUrls";
+import { useTranslation } from "react-i18next";
 
 function DeprecatedChip() {
+  const { t: tFeatures } = useTranslation("features");
   return (
     <span className="bg-light-yellow text-dark-yellow inline-flex w-fit shrink-0 items-center rounded-full px-2 py-0.5 text-xs font-bold whitespace-nowrap">
-      Deprecated
+      {tFeatures("ui.deprecated")}
     </span>
   );
 }
 
 export default function EvaluatorTable({ projectId }: { projectId: string }) {
+  const { t: tFeatures } = useTranslation("features");
   const router = useRouter();
   const capture = usePostHogClientCapture();
   const v4UpgradeUiEnabled = useV4UpgradeUiEnabled(projectId);
@@ -207,7 +210,7 @@ export default function EvaluatorTable({ projectId }: { projectId: string }) {
                 {v4UpgradeUiEnabled ? (
                   <V4MigrationBadgeContent
                     onClick={() => openEvaluatorUpgrade(row.row.original.id)}
-                    title="Upgrade now"
+                    title={tFeatures("ui.upgradeNow")}
                     showChevron={false}
                     compact
                   />
@@ -222,14 +225,14 @@ export default function EvaluatorTable({ projectId }: { projectId: string }) {
     }),
     createStatusTableColumn<EvaluatorDataRow, string>({
       accessorKey: "status",
-      header: "Status",
+      header: tFeatures("ui.status"),
       enableSorting: true,
       size: 80,
       getStatus: (status) => status?.toLowerCase(),
     }),
     createNumberTableColumn<EvaluatorDataRow>({
       accessorKey: "totalCost",
-      header: "Total Cost (7d)",
+      header: tFeatures("ui.totalCost7d"),
       enableSorting: false,
       size: 120,
       formatter: (value) => usdFormatter(value, 2, 4),
@@ -241,7 +244,7 @@ export default function EvaluatorTable({ projectId }: { projectId: string }) {
       },
     }),
     columnHelper.accessor("result", {
-      header: "Result",
+      header: tFeatures("ui.result"),
       id: "result",
       enableSorting: false,
       size: 150,
@@ -256,7 +259,7 @@ export default function EvaluatorTable({ projectId }: { projectId: string }) {
       },
     }),
     columnHelper.accessor("logs", {
-      header: "Logs",
+      header: tFeatures("ui.logs"),
       id: "logs",
       enableSorting: false,
       size: 150,
@@ -266,7 +269,7 @@ export default function EvaluatorTable({ projectId }: { projectId: string }) {
         return (
           <Button
             variant="outline"
-            aria-label="view-logs"
+            aria-label={tFeatures("evalsMore:actions.logs")}
             size="sm"
             onClick={(e) => {
               e.stopPropagation();
@@ -276,14 +279,14 @@ export default function EvaluatorTable({ projectId }: { projectId: string }) {
             }}
           >
             <ExternalLinkIcon className="mr-1 h-3 w-3" />
-            View
+            {tFeatures("ui.view")}
           </Button>
         );
       },
     }),
     columnHelper.accessor("template", {
       id: "template",
-      header: "Referenced Evaluator",
+      header: tFeatures("ui.referencedEvaluator"),
       enableSorting: false,
       size: 200,
       loadingCell: (
@@ -307,19 +310,19 @@ export default function EvaluatorTable({ projectId }: { projectId: string }) {
     }),
     createDateTableColumn<EvaluatorDataRow>({
       accessorKey: "createdAt",
-      header: "Created At",
+      header: tFeatures("ui.createdAt"),
       enableSorting: true,
       size: 150,
     }),
     createDateTableColumn<EvaluatorDataRow>({
       accessorKey: "updatedAt",
-      header: "Updated At",
+      header: tFeatures("ui.updatedAt"),
       enableSorting: true,
       size: 150,
     }),
     columnHelper.accessor("target", {
       id: "target",
-      header: "Runs on",
+      header: tFeatures("ui.runsOn"),
       size: 150,
       enableSorting: true,
       enableHiding: true,
@@ -366,7 +369,7 @@ export default function EvaluatorTable({ projectId }: { projectId: string }) {
       enableHiding: true,
     }),
     columnHelper.accessor("actions", {
-      header: "Actions",
+      header: tFeatures("ui.actions"),
       id: "actions",
       enableSorting: false,
       size: 100,
@@ -378,8 +381,8 @@ export default function EvaluatorTable({ projectId }: { projectId: string }) {
             <IconOnlyButton
               key={id}
               icon={<Pen className="h-4 w-4" />}
-              label="Edit"
-              aria-label="edit"
+              label={tFeatures("ui.edit")}
+              aria-label={tFeatures("evalsMore:actions.edit")}
               disabledReason={
                 !hasAccess
                   ? "You don't have permission to edit this evaluator."
@@ -393,7 +396,7 @@ export default function EvaluatorTable({ projectId }: { projectId: string }) {
               }}
             />
             <DeleteEvalConfigButton
-              aria-label="delete"
+              aria-label={tFeatures("evalsMore:actions.delete")}
               itemId={id}
               projectId={projectId}
               isTableAction
@@ -401,7 +404,7 @@ export default function EvaluatorTable({ projectId }: { projectId: string }) {
               icon
               variant="ghost"
               size="icon-xs"
-              title="Delete"
+              title={tFeatures("ui.delete")}
             />
           </div>
         );
@@ -514,7 +517,7 @@ export default function EvaluatorTable({ projectId }: { projectId: string }) {
       >
         <DialogContent className="max-h-[90vh] max-w-(--breakpoint-xl) overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Edit configuration</DialogTitle>
+            <DialogTitle>{tFeatures("ui.editConfiguration")}</DialogTitle>
           </DialogHeader>
           {existingEvaluator.isLoading ? (
             <div className="flex items-center justify-center p-4">

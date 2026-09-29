@@ -1,4 +1,5 @@
 "use client";
+import { useTranslation } from "react-i18next";
 
 import * as React from "react";
 import * as SelectPrimitive from "@radix-ui/react-select";
@@ -60,6 +61,8 @@ function SelectInputInner<V extends string>(
   }: SelectInputProps<V>,
   ref: React.ForwardedRef<HTMLButtonElement>,
 ) {
+const { t: tUi } = useTranslation("uiMore");
+
   const container = useLayerContainer("popover");
   const [open, setOpen] = React.useState(false);
   const selectedOption = options
@@ -143,7 +146,7 @@ function SelectInputInner<V extends string>(
         <InputDropdown.Content width="select-trigger">
           <SelectPrimitive.Content position="popper" sideOffset={4}>
             <SelectPrimitive.ScrollUpButton
-              aria-label="Scroll up"
+              aria-label={tUi("scrollUp")}
               className="animate-in fade-in-0 fill-mode-both absolute inset-x-0 top-0 z-3 flex h-6 cursor-pointer items-center justify-center duration-300 [animation-delay:.5s]"
             >
               <ChevronUp className="size-4" />
@@ -165,7 +168,7 @@ function SelectInputInner<V extends string>(
               </SelectPrimitive.Viewport>
             </InputDropdown.List>
             <SelectPrimitive.ScrollDownButton
-              aria-label="Scroll down"
+              aria-label={tUi("scrollDown")}
               className="animate-in fade-in-0 fill-mode-both absolute inset-x-0 bottom-0 z-3 flex h-6 cursor-pointer items-center justify-center duration-300 [animation-delay:.5s]"
             >
               <ChevronDown className="size-4" />

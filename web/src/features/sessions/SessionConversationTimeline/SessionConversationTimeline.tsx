@@ -15,6 +15,7 @@ import { SessionVirtualizedRow } from "@/src/features/sessions/SessionVirtualize
 import { type EventSessionTrace } from "@/src/features/sessions/sessionDetailPageTypes";
 import { useElementSize } from "@/src/hooks/useElementSize";
 import { useVirtualizedScrollSpy } from "@/src/hooks/useVirtualizedScrollSpy";
+import { useTranslation } from "react-i18next";
 
 const SESSION_TIMELINE_OVERSCAN = 5;
 const observationIdentityByReference = new WeakMap<object, number>();
@@ -249,6 +250,7 @@ function SessionConversationTimelineFeed({
   scrollTarget: SessionConversationTimelineScrollTarget | null;
   onLoadMoreObservations?: () => void;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const { feedRef, virtualItems, virtualizer } = controller;
   const handleScroll = (event: UIEvent<HTMLDivElement>) => {
     if (!onLoadMoreObservations) return;
@@ -272,7 +274,7 @@ function SessionConversationTimelineFeed({
   return (
     <div
       ref={feedRef}
-      aria-label="Session conversation timeline"
+      aria-label={tFeatures("ui.sessionConversationTimeline")}
       className="h-full min-h-0 overflow-y-auto scroll-smooth"
       onScroll={handleScroll}
     >

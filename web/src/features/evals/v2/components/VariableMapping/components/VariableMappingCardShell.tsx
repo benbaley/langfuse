@@ -10,6 +10,7 @@ import {
 import { Button } from "@/src/components/ui/button";
 import { CollapsibleCard } from "@/src/features/evals/v2/components/CollapsibleCard/CollapsibleCard";
 import { StateKeyNameInput } from "./StateKeyNameInput/StateKeyNameInput";
+import { useTranslation } from "react-i18next";
 
 /**
  * How the mapped name is rendered: as a prompt template `{{variable}}`, or as
@@ -30,6 +31,8 @@ function VariableMappingCardHeaderContent({
   isUnmapped: boolean;
   warningMessage?: string | null;
 }) {
+  const { t: tFeatures } = useTranslation("features");
+
   return (
     <>
       <span className="text-primary-accent shrink-0 font-mono font-bold">
@@ -41,7 +44,7 @@ function VariableMappingCardHeaderContent({
       {isUnmapped ? (
         <span className="text-dark-yellow flex min-w-0 items-center gap-1.5 font-bold">
           <TriangleAlert className="h-4 w-4 shrink-0" />
-          <span>nothing yet</span>
+          <span>{tFeatures("evalsMore:mapping.nothing")}</span>
         </span>
       ) : (
         <span className="@container flex min-w-0 flex-1 items-center gap-1.5">
@@ -97,6 +100,7 @@ function VariableMappingCardShell({
   rename?: VariableRenameControls;
   children?: React.ReactNode;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const isRenaming = rename?.isRenaming ?? false;
   const canToggle = !isEditing && !isRenaming;
   const bodyVisible = isExpanded || isEditing;
@@ -152,8 +156,8 @@ function VariableMappingCardShell({
             size="icon-xs"
             title={
               isEditing
-                ? "Cancel — keep the current mapping"
-                : "Change the mapping"
+                ? tFeatures("ui.cancelKeepTheCurrentMapping")
+                : tFeatures("ui.changeTheMapping")
             }
             aria-expanded={isEditing}
             disabled={isRenaming}

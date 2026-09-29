@@ -108,6 +108,7 @@ import {
   type RowExtent,
   type Viewport,
 } from "../../fns/timeline/viewport";
+import { useTranslation } from "react-i18next";
 
 /** Reuses ItemBadge's type→hue mapping, so a colour means what it already means. */
 const TYPE_COLOR: Record<string, string> = {
@@ -381,6 +382,8 @@ export function TimelineDense({
   showDuration = true,
   search,
 }: TimelineDenseProps) {
+  const { t: tMore } = useTranslation("coreMore");
+  const { t: tFeatures } = useTranslation("features");
   const [viewport, setViewport] = useState<Viewport | null>(null);
   const [pointerPos, setPointerPos] = useState<{
     x: number;
@@ -1455,13 +1458,13 @@ export function TimelineDense({
         data-testid="timeline-dense-toolbar"
       >
         <ToolbarButton
-          label="Zoom out"
+          label={tFeatures("ui.zoomOut")}
           onClick={() => zoomBy(2 ** -BUTTON_ZOOM_LEVELS, 0.5, 0.5)}
         >
           <Minus className="h-3 w-3" />
         </ToolbarButton>
         <ToolbarButton
-          label="Zoom in"
+          label={tFeatures("ui.zoomIn")}
           onClick={() =>
             offerShowLabels
               ? showLabels()
@@ -1471,15 +1474,22 @@ export function TimelineDense({
           <Plus className="h-3 w-3" />
         </ToolbarButton>
         {offerShowLabels ? (
-          <ToolbarButton label="Show labels" onClick={showLabels}>
+          <ToolbarButton
+            label={tFeatures("ui.showLabels")}
+            onClick={showLabels}
+          >
             <UnfoldVertical className="h-3 w-3" />
             <span className="pr-0.5" style={{ fontSize: "10px" }}>
-              Show labels
+              {tFeatures("ui.showLabels")}
             </span>
           </ToolbarButton>
         ) : (
           <ToolbarButton
-            label={fitSpent ? "Whole trace already fits" : "Fit whole trace"}
+            label={
+              fitSpent
+                ? tFeatures("ui.wholeTraceAlreadyFits")
+                : tFeatures("ui.fitWholeTrace")
+            }
             onClick={() => {
               setLabelsPinned(false);
               setOverride(null);
@@ -1498,7 +1508,10 @@ export function TimelineDense({
         {search ? (
           <span
             className="text-muted-foreground truncate text-xs"
-            title={`${search.label} for “${search.query}”`}
+            title={tMore("traces.searchLabel", {
+              label: search.label,
+              query: search.query,
+            })}
             data-testid="timeline-dense-search-count"
           >
             {search.label}
@@ -1625,7 +1638,7 @@ export function TimelineDense({
                     className="text-muted-foreground rotate-90 whitespace-nowrap"
                     style={{ fontSize: "9px" }}
                   >
-                    {gap.label} idle
+                    {tMore("traces.idleDuration", { duration: gap.label })}
                   </span>
                 ) : null}
               </div>
@@ -1705,7 +1718,9 @@ export function TimelineDense({
                         top: `${Math.max((rowHeight - barHeight) / 2, 0)}px`,
                         height: `${barHeight}px`,
                       }}
-                      title={`Outside the time window — starts at ${formatDurationMs(node.startMs)}`}
+                      title={tMore("traces.outsideWindow", {
+                        time: formatDurationMs(node.startMs),
+                      })}
                       data-testid="timeline-dense-offscreen"
                     />
                   ) : (

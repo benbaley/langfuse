@@ -1,3 +1,4 @@
+import { localizeEvaluatorValidation } from "@/src/features/evals/v2/fns/localizeEvaluatorValidation";
 /* eslint-disable no-nested-ternary */
 import { useStore } from "zustand";
 import { useShallow } from "zustand/react/shallow";
@@ -6,6 +7,7 @@ import { getPromptMessagesValidationError } from "@/src/features/evals/v2/fns/pr
 import { getScoreOutputValidation } from "@/src/features/evals/v2/fns/scoreOutput/getScoreOutputValidation";
 import type { EvaluatorSetupStore } from "@/src/features/evals/v2/store/evaluatorSetupStore/evaluatorSetupStore";
 import { EvaluatorSetupFooterView } from "./EvaluatorSetupFooterView";
+import { useTranslation } from "react-i18next";
 
 export function EvaluatorSetupFooter({
   store,
@@ -26,6 +28,7 @@ export function EvaluatorSetupFooter({
   onClose: () => void;
   onSave: () => void;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const {
     currentSnapshot,
     canSubmit,
@@ -64,15 +67,15 @@ export function EvaluatorSetupFooter({
   const hasUnsavedChanges = currentSnapshot !== initialSnapshot;
   const disabledReason =
     nameMissing && !nameAIAssistanceAvailable
-      ? "Add an evaluator name before saving."
+      ? tFeatures("evalsMore:validation.nameBeforeSaving")
       : promptMessagesReason
-        ? promptMessagesReason
+        ? localizeEvaluatorValidation(tFeatures, promptMessagesReason)
         : scoreOutputReason
-          ? scoreOutputReason
+          ? localizeEvaluatorValidation(tFeatures, scoreOutputReason)
           : codeValidation &&
               !codeValidation.isPending &&
               !codeValidation.isValid
-            ? "Fix the code validation errors before saving."
+            ? tFeatures("evalsMore:validation.codeBeforeSaving")
             : null;
   const saveDisabled =
     !canSubmit ||
@@ -84,8 +87,12 @@ export function EvaluatorSetupFooter({
     isSaving;
 
   const sharedProps = {
-    closeLabel: hasUnsavedChanges ? "Cancel" : "Close",
-    saveLabel: isEditing ? "Save changes" : "Create evaluator",
+    closeLabel: hasUnsavedChanges
+      ? tFeatures("evalsMore:actions.cancel")
+      : tFeatures("evalsMore:actions.close"),
+    saveLabel: isEditing
+      ? tFeatures("evalsMore:actions.saveChanges")
+      : tFeatures("evalsMore:evaluator.create"),
     isSaving,
     saveDisabled,
     disabledReason,
@@ -99,7 +106,7 @@ export function EvaluatorSetupFooter({
 
   return (
     <EvaluatorSetupFooterView mode="create" {...sharedProps}>
-      Next: attach a rule to run this evaluator on incoming observations.
+      {tFeatures("ui.nextAttachARuleToRunThisEvaluatorOnIncomingObservations")}
     </EvaluatorSetupFooterView>
   );
 }

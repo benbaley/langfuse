@@ -3,8 +3,11 @@ import { NewPromptForm } from "@/src/features/prompts/components/NewPromptForm";
 import useProjectIdFromURL from "@/src/hooks/useProjectIdFromURL";
 import { api } from "@/src/utils/api";
 import Page from "@/src/components/layouts/page";
+import { useTranslation } from "react-i18next";
 
 export const NewPrompt = () => {
+  const { t: tMore } = useTranslation("coreMore");
+  const { t: tFeatures } = useTranslation("features");
   const projectId = useProjectIdFromURL();
   const [initialPromptId] = useQueryParam("promptId", StringParam);
 
@@ -21,7 +24,7 @@ export const NewPrompt = () => {
   );
 
   if (isLoading) {
-    return <div className="p-3">Loading...</div>;
+    return <div className="p-3">{tFeatures("ui.loading")}</div>;
   }
 
   const breadcrumb: { name: string; href?: string }[] = [
@@ -54,8 +57,7 @@ export const NewPrompt = () => {
           ? `${initialPrompt.name} \u2014 New version`
           : "Create new prompt",
         help: {
-          description:
-            "Manage and version your prompts in Langfuse. Edit and update them via the UI and SDK. Retrieve the production version via the SDKs. Learn more in the docs.",
+          description: tMore("prompts.managementHelp"),
           href: "https://langfuse.com/docs/prompts",
         },
         breadcrumb: breadcrumb,
@@ -63,8 +65,9 @@ export const NewPrompt = () => {
     >
       {initialPrompt ? (
         <p className="text-muted-foreground text-sm">
-          Prompts are immutable in Langfuse. To update a prompt, create a new
-          version.
+          {tFeatures(
+            "ui.promptsAreImmutableInLangfuseToUpdateAPromptCreateANewVersion",
+          )}
         </p>
       ) : null}
       <div className="my-8">

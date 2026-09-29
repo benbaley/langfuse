@@ -18,6 +18,7 @@ import {
   getRuleNavigationAction,
   getRuleNavigationUrl,
 } from "@/src/features/evals/v2/utils/ruleNavigation";
+import { useTranslation } from "react-i18next";
 
 export function EditRuleDialog({
   projectId,
@@ -30,6 +31,7 @@ export function EditRuleDialog({
   hasWriteAccess: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const router = useRouter();
   const rule = api.evalsV2.rules.get.useQuery({ projectId, ruleId });
   const [evaluatorSearch, setEvaluatorSearch] = useState("");
@@ -96,7 +98,9 @@ export function EditRuleDialog({
     <Dialog open onOpenChange={onOpenChange}>
       <DialogContent size="xl" className="max-w-6xl" closeOnInteractionOutside>
         <DialogHeader>
-          <DialogTitle>{rule.data?.name ?? "Evaluation rule"}</DialogTitle>
+          <DialogTitle>
+            {rule.data?.name ?? tFeatures("ui.evaluationRule")}
+          </DialogTitle>
         </DialogHeader>
         {rule.isPending || !rule.data ? (
           <DialogBody>

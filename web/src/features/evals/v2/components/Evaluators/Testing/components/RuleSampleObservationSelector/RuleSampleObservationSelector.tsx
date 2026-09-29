@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useMemo } from "react";
 import type { FilterState } from "@langfuse/shared";
 
@@ -52,6 +53,7 @@ export function RuleSampleObservationSelector({
   onSelect: (observation: SampleObservation | null) => void;
   onOpenTrace: (observation: SampleObservation) => void;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const previewFilters = useMemo(
     () => toEventsPreviewFilters(filterState),
     [filterState],
@@ -72,12 +74,15 @@ export function RuleSampleObservationSelector({
       leadingColumns={[]}
       resolveSelection={resolveSelection}
       getRowClassName={undefined}
-      filterDescription="Define which incoming observations match this rule."
-      filterTooltip="Only new observations matching these filters are evaluated by this rule."
-      matchingDescription="The first match is used to preview attached evaluator mappings."
-      matchingTooltip="Observations matching the rule filters over the last seven days."
+      filterDescription={tFeatures("evalsMore:sample.ruleDescription")}
+      filterTooltip={tFeatures("evalsMore:sample.ruleTooltip")}
+      matchingDescription={tFeatures("evalsMore:sample.ruleMatches")}
+      matchingTooltip={tFeatures("evalsMore:sample.ruleMatchTooltip")}
       formatCount={(count) =>
-        `(${compactNumberFormatter(count)} ${count === 1 ? "match" : "matches"})`
+        tFeatures("evalsMore:sample.matchCount", {
+          count,
+          total: compactNumberFormatter(count),
+        })
       }
       mapObservedOptions={addRuleTagAlias}
     />

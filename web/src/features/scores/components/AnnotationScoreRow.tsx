@@ -53,6 +53,7 @@ import type {
   PreparedAnnotationTarget,
 } from "@/src/features/scores/types";
 import { cn } from "@/src/utils/tailwind";
+import { useTranslation } from "react-i18next";
 
 function CommentField({
   savedComment,
@@ -69,12 +70,15 @@ function CommentField({
   loading: boolean;
   onSave: (comment: string | null) => void;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const hasChanges = localValue.trim() !== (savedComment || "");
 
   return (
     <div className="relative">
       <div className="mb-1 flex items-center justify-between">
-        <FormLabel className="text-sm">Score Comment</FormLabel>
+        <FormLabel className="text-sm">
+          {tFeatures("ui.scoreComment")}
+        </FormLabel>
         <div className="relative">
           {savedComment && (
             <PopoverClose asChild>
@@ -115,7 +119,7 @@ function CommentField({
                 onValueChange(null);
               }}
             >
-              Discard Changes
+              {tFeatures("ui.discardChanges")}
             </Button>
           </PopoverClose>
           <PopoverClose asChild>
@@ -130,7 +134,7 @@ function CommentField({
                 onValueChange(null);
               }}
             >
-              Save Changes
+              {tFeatures("ui.saveChangesTitle")}
             </Button>
           </PopoverClose>
         </div>
@@ -166,6 +170,7 @@ export function AnnotationScoreRow({
   isActive?: boolean;
   onRemove: () => void;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const [commentOpen, setCommentOpen] = useState(false);
   const [commentDraft, setCommentDraft] = useState<string | null>(null);
   const [detailsOpen, setDetailsOpen] = useState(false);
@@ -283,7 +288,7 @@ export function AnnotationScoreRow({
                   variant="link"
                   type="button"
                   size="xs"
-                  title="Add or view score comment"
+                  title={tFeatures("ui.addOrViewScoreComment")}
                   // Center the comment icon vertically
                   // against the score label instead of stretching
                   // to the full (possibly multi-line) row height,
@@ -360,7 +365,7 @@ export function AnnotationScoreRow({
                         maxLength={TEXT_SCORE_MAX_LENGTH}
                         className="text-xs"
                         disabled={config.isArchived}
-                        placeholder="Enter free form text..."
+                        placeholder={tFeatures("ui.enterFreeFormText")}
                         onBlur={(event) => {
                           field.onBlur();
                           if (!isMovingToScoreActions(event))
@@ -486,7 +491,7 @@ export function AnnotationScoreRow({
                   {targetOptions.length > 0 ? (
                     <>
                       <DropdownMenuLabel>
-                        Applies to: {target.label}
+                        {tFeatures("ui.appliesTo")} {target.label}
                       </DropdownMenuLabel>
                       {score.id ? (
                         <div className="text-muted-foreground px-2 pb-2 text-xs">
@@ -515,7 +520,8 @@ export function AnnotationScoreRow({
                                 else deferredInput.current = input;
                               }}
                             >
-                              Score {destination.label.toLowerCase()} instead
+                              {tFeatures("ui.score")}{" "}
+                              {destination.label.toLowerCase()} instead
                               {hasField ? " (already selected)" : ""}
                             </DropdownMenuItem>
                           ),
@@ -535,7 +541,8 @@ export function AnnotationScoreRow({
                               if (nextKey) focusFieldKey.current = nextKey;
                             }}
                           >
-                            Also score {destination.label.toLowerCase()}
+                            {tFeatures("ui.alsoScore")}{" "}
+                            {destination.label.toLowerCase()}
                             {hasField ? " (already selected)" : ""}
                           </DropdownMenuItem>
                         ),
@@ -554,7 +561,7 @@ export function AnnotationScoreRow({
                         onRemove();
                       }}
                     >
-                      Remove score
+                      {tFeatures("ui.removeScore")}
                     </DropdownMenuItem>
                   ) : null}
                   {hasScoreValue || invalid ? (
@@ -565,7 +572,7 @@ export function AnnotationScoreRow({
                         actions.clear(fieldKey, target);
                       }}
                     >
-                      Clear score
+                      {tFeatures("ui.clearScore")}
                     </DropdownMenuItem>
                   ) : null}
                 </>
@@ -582,8 +589,13 @@ export function AnnotationScoreRow({
                       if (event.currentTarget.dataset.state !== "open")
                         commitDeferredScore();
                     }}
-                    aria-label={`Score actions for ${score.name}${showTarget ? ` (${target.label})` : ""}`}
-                    title="Score actions"
+                    aria-label={tFeatures(
+                      showTarget
+                        ? "evalsMore:score.actionsTarget"
+                        : "evalsMore:score.actionsName",
+                      { name: score.name, target: target.label },
+                    )}
+                    title={tFeatures("ui.scoreActions")}
                   >
                     <MoreHorizontal className="size-4" />
                   </Button>

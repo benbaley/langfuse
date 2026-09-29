@@ -11,6 +11,7 @@ import {
   ReadOnlyVariableMappingCardShell,
   type VariableDisplay,
 } from "./components/VariableMappingCardShell";
+import { useTranslation } from "react-i18next";
 
 type VariableMappingProps = {
   mappings: Array<{ variable: string; fieldState: VariableFieldState }>;
@@ -58,17 +59,18 @@ function ReadOnlyVariableMapping({
 }
 
 function EmptyVariableMapping({ mode }: Pick<VariableMappingProps, "mode">) {
+  const { t: tFeatures } = useTranslation("features");
   return (
     <div className="border-border bg-muted/20 flex flex-col items-center justify-center gap-2 rounded-md border px-6 py-8 text-center">
       <div className="bg-muted text-muted-foreground flex size-9 items-center justify-center rounded-full">
         <Braces className="size-4" aria-hidden />
       </div>
       <div className="space-y-1">
-        <p className="text-sm font-bold">No variables to map</p>
+        <p className="text-sm font-bold">{tFeatures("ui.noVariablesToMap")}</p>
         <p className="text-muted-foreground text-xs">
           {mode === "editable"
             ? "Add a {{variable}} to the prompt to map evaluation data."
-            : "This prompt does not contain any variables."}
+            : tFeatures("ui.thisPromptDoesNotContainAnyVariables")}
         </p>
       </div>
     </div>

@@ -16,10 +16,13 @@ import {
 } from "@/src/features/traces/components/ObservationMetadataBadgesTooltip";
 import { useTraceData } from "@/src/features/traces/contexts/TraceDataContext";
 import { aggregateTraceMetrics } from "@/src/features/traces/fns/traceAggregation";
+import { useTranslation } from "react-i18next";
 
 const MAX_VISIBLE_TAGS = 3;
 
 export function TraceHeader() {
+  const { t: tMore } = useTranslation("coreMore");
+  const { t: tFeatures } = useTranslation("features");
   const { trace, observations, mergedScores } = useTraceData();
   const [showAllTags, setShowAllTags] = useState(false);
 
@@ -78,7 +81,7 @@ export function TraceHeader() {
                 variant="tertiary"
                 size="icon-sm"
                 className="w-fit"
-                aria-label={`Show ${hiddenTagCount} more tags`}
+                aria-label={tMore("traces.moreTags", { count: hiddenTagCount })}
                 onClick={() => setShowAllTags(true)}
               >
                 +{hiddenTagCount}
@@ -89,10 +92,10 @@ export function TraceHeader() {
                 variant="tertiary"
                 size="icon-sm"
                 className="w-fit"
-                aria-label="Show fewer tags"
+                aria-label={tFeatures("ui.showFewerTags")}
                 onClick={() => setShowAllTags(false)}
               >
-                Show fewer
+                {tFeatures("ui.showFewer")}
               </Button>
             )}
           </div>

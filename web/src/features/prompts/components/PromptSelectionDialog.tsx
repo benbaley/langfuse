@@ -15,6 +15,7 @@ import { api } from "@/src/utils/api";
 import { CopyIcon, ExternalLinkIcon } from "lucide-react";
 import { copyTextToClipboard } from "@/src/utils/clipboard";
 import { getPromptDetailHref } from "@/src/features/prompts/utils";
+import { useTranslation } from "react-i18next";
 
 type PromptSelectionDialogProps = {
   isOpen: boolean;
@@ -29,6 +30,8 @@ export function PromptSelectionDialog({
   onSelect,
   projectId,
 }: PromptSelectionDialogProps) {
+  const { t: tMore } = useTranslation("coreMore");
+  const { t: tFeatures } = useTranslation("features");
   const [selectedPromptName, setSelectedPromptName] = useState<string>("");
   const [selectedTag, setSelectedTag] = useState<string>("");
   const [selectionType, setSelectionType] = useState<"version" | "label">(
@@ -97,18 +100,16 @@ export function PromptSelectionDialog({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Add inline prompt reference</DialogTitle>
+          <DialogTitle>{tFeatures("ui.addInlinePromptReference")}</DialogTitle>
         </DialogHeader>
         <DialogBody>
           <div className="flex flex-col gap-4">
             <p className="text-muted-foreground text-sm">
-              Referenced prompts are dynamically resolved and inserted when
-              fetched via API/SDK. This enables modular design—create complex
-              prompts from reusable, independently maintained components.
+              {tMore("prompts.referenceHelp")}
             </p>
 
             <div className="flex flex-col gap-2">
-              <Label htmlFor="prompt-name">Prompt name</Label>
+              <Label htmlFor="prompt-name">{tFeatures("ui.promptName")}</Label>
               <SelectInput
                 id="prompt-name"
                 value={selectedPromptName}
@@ -116,7 +117,7 @@ export function PromptSelectionDialog({
                   setSelectedPromptName(value);
                   setSelectedVersionOrLabel("");
                 }}
-                placeholder="Select a text prompt"
+                placeholder={tFeatures("ui.selectATextPrompt")}
                 options={
                   promptOptions?.map((prompt) => ({
                     value: prompt.name,
@@ -125,13 +126,15 @@ export function PromptSelectionDialog({
                 }
               />
               <p className="text-muted-foreground text-xs">
-                Only text prompts can be referenced inline.
+                {tFeatures("ui.onlyTextPromptsCanBeReferencedInline")}
               </p>
             </div>
 
             {selectedPromptName && (
               <div className="flex flex-col gap-2">
-                <Label htmlFor="selection-type">Reference by</Label>
+                <Label htmlFor="selection-type">
+                  {tFeatures("ui.referenceBy")}
+                </Label>
                 <SelectInput
                   id="selection-type"
                   value={selectionType}
@@ -139,10 +142,10 @@ export function PromptSelectionDialog({
                     setSelectionType(value);
                     setSelectedVersionOrLabel("");
                   }}
-                  placeholder="Select link type"
+                  placeholder={tFeatures("ui.selectLinkType")}
                   options={[
-                    { value: "label", label: "Label" },
-                    { value: "version", label: "Version" },
+                    { value: "label", label: tFeatures("ui.label") },
+                    { value: "version", label: tFeatures("ui.version") },
                   ]}
                 />
               </div>
@@ -151,7 +154,9 @@ export function PromptSelectionDialog({
             {selectedPromptName && (
               <div className="flex flex-col gap-2">
                 <Label htmlFor="version-or-label">
-                  {selectionType === "version" ? "Version" : "Label"}
+                  {selectionType === "version"
+                    ? tFeatures("ui.version")
+                    : tFeatures("ui.label")}
                 </Label>
                 <div className="flex gap-2">
                   <SelectInput
@@ -160,8 +165,8 @@ export function PromptSelectionDialog({
                     onValueChange={setSelectedVersionOrLabel}
                     placeholder={
                       selectionType === "version"
-                        ? "Select a version"
-                        : "Select a label"
+                        ? tFeatures("ui.selectAVersion")
+                        : tFeatures("ui.selectALabel")
                     }
                     options={
                       selectionType === "version"
@@ -193,7 +198,7 @@ export function PromptSelectionDialog({
 
           {selectedTag && (
             <div className="space-y-2">
-              <Label>Tag preview</Label>
+              <Label>{tFeatures("ui.tagPreview")}</Label>
               <div className="relative">
                 <div className="bg-muted rounded-md border p-3 pr-10 font-mono text-xs">
                   {selectedTag}
@@ -210,8 +215,10 @@ export function PromptSelectionDialog({
               </div>
               <p className="text-muted-foreground text-xs">
                 {onSelect
-                  ? "This tag will be inserted into the prompt content."
-                  : "This tag will be copied to clipboard to be then inserted into the prompt"}
+                  ? tFeatures("ui.thisTagWillBeInsertedIntoThePromptContent")
+                  : tFeatures(
+                      "ui.thisTagWillBeCopiedToClipboardToBeThenInsertedIntoThePrompt",
+                    )}
               </p>
             </div>
           )}
@@ -219,10 +226,10 @@ export function PromptSelectionDialog({
 
         <DialogFooter>
           <Button type="button" variant="outline" onClick={onClose}>
-            Cancel
+            {tFeatures("ui.cancel")}
           </Button>
           <Button type="button" onClick={handleConfirm} disabled={!selectedTag}>
-            {onSelect ? "Insert" : "Copy and close"}
+            {onSelect ? tFeatures("ui.insert") : tFeatures("ui.copyAndClose")}
           </Button>
         </DialogFooter>
       </DialogContent>

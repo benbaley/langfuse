@@ -21,6 +21,7 @@ import { NoDataOrLoading } from "@/src/components/NoDataOrLoading";
 import useLocalStorage from "@/src/components/useLocalStorage";
 import { type ViewVersion } from "@langfuse/shared/query";
 import { MultiSelectTagInput } from "@/src/components/design-system/MultiSelectTagInput/MultiSelectTagInput";
+import { useTranslation } from "react-i18next";
 
 export function ScoreAnalytics(props: {
   className?: string;
@@ -35,6 +36,7 @@ export function ScoreAnalytics(props: {
   /** Shared hover-sync group so the per-score line charts join the dashboard crosshair. */
   syncId?: string;
 }) {
+  const { t: tApp } = useTranslation("app");
   // Stale score selections in localStorage are ignored as we only show scores that exist in scoreAnalyticsOptions
   const [selectedDashboardScoreKeys, setSelectedDashboardScoreKeys] =
     useLocalStorage<string[]>(
@@ -94,8 +96,8 @@ export function ScoreAnalytics(props: {
   return (
     <DashboardCard
       className={props.className}
-      title="Scores Analytics"
-      description="Aggregate scores and averages over time"
+      title={tApp("ui.ScoresAnalytics")}
+      description={tApp("ui.AggregateScoresAndAveragesOverTime")}
       isLoading={props.isLoading || scoreKeysAndProps.isPending}
       headerClassName="grid grid-cols-[1fr_auto_auto] items-center"
       headerChildren={
@@ -107,9 +109,9 @@ export function ScoreAnalytics(props: {
               value={scoreAnalyticsValues.map(({ key }) => key)}
               options={scoreSelectorOptions}
               onValueChange={setSelectedDashboardScoreKeys}
-              placeholder="Select scores"
+              placeholder={tApp("ui.SelectScores")}
               searchPlaceholder="Search scores..."
-              emptyMessage="No scores found."
+              emptyMessage={tApp("ui.NoScoresFound")}
             />
           </div>
         )
@@ -130,11 +132,13 @@ export function ScoreAnalytics(props: {
                   {/* aggregate */}
                   <div>
                     <div className="text-muted-foreground mb-2 text-sm">
-                      Total aggregate scores
+                      {tApp("ui.TotalAggregateScores")}
                       {isNumericDataType(dataType) && (
                         // TODO: v2 histogram aggregates all rows server-side (no 10k cap).
                         // Make this tooltip conditional on metricsVersion.
-                        <DocPopup description="Aggregate of up to 10,000 scores" />
+                        <DocPopup
+                          description={tApp("ui.AggregateOfUpTo10000Scores")}
+                        />
                       )}
                     </div>
                     {isCategoricalDataType(dataType) && (
@@ -169,8 +173,8 @@ export function ScoreAnalytics(props: {
                   <div>
                     <div className="text-muted-foreground mb-2 text-sm">
                       {isNumericDataType(dataType)
-                        ? "Moving average over time"
-                        : "Scores over time"}
+                        ? tApp("ui.MovingAverageOverTime")
+                        : tApp("ui.ScoresOverTime")}
                     </div>
                     {isCategoricalDataType(dataType) && (
                       <CategoricalScoreChart
@@ -217,7 +221,7 @@ export function ScoreAnalytics(props: {
       ) : Boolean(scoreKeysAndProps.data?.scoreColumns.length) ? (
         <div className="flex min-h-36 w-full flex-1 items-center justify-center rounded-md border">
           <p className="text-muted-foreground">
-            Select a score to view analytics
+            {tApp("ui.SelectAScoreToViewAnalytics")}
           </p>
         </div>
       ) : (

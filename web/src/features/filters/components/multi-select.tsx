@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 /* eslint-disable @repo/no-style-props, @repo/no-abstracted-overlay-trigger */
 import * as React from "react";
 import { Check, ChevronDown, Loader2 } from "lucide-react";
@@ -65,6 +66,7 @@ export function MultiSelect({
   onOpenChange?: (open: boolean) => void;
   isLoading?: boolean;
 }) {
+  const { t } = useTranslation("filters");
   const selectedValues = useMemo(() => new Set(values), [values]);
   const optionValues = new Set(options.map((option) => option.value));
   const freeTextInput = getFreeTextInput(
@@ -149,13 +151,13 @@ export function MultiSelect({
   const selectedBadges =
     selectedValues.size > labelTruncateCutOff ? (
       <Badge variant="secondary" className="rounded-sm px-1 font-normal">
-        {selectedValues.size} selected
+        {t("summary.selected", { count: selectedValues.size })}
       </Badge>
     ) : (
       getSelectedOptions().map((option) => {
         const displayValue =
           option.displayValue ??
-          (option.value === "" ? "(empty)" : option.value);
+          (option.value === "" ? t("summary.empty") : option.value);
         return (
           <Badge
             variant="secondary"
@@ -229,12 +231,12 @@ export function MultiSelect({
                 className="text-muted-foreground flex items-center gap-2 px-3 py-2 text-sm"
               >
                 <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
-                Loading…
+                {t("ui.loading")}
               </div>
             )}
             {/* if isCustomSelectEnabled we always show custom select hence never empty */}
             {!isCustomSelectEnabled && !isLoading && (
-              <InputCommandEmpty>No results found.</InputCommandEmpty>
+              <InputCommandEmpty>{t("ui.noResults")}</InputCommandEmpty>
             )}
             <InputCommandGroup>
               {showSelectAll && (
@@ -266,10 +268,10 @@ export function MultiSelect({
                 const isSelected = selectedValues.has(option.value);
                 const displayValue =
                   option.displayValue ??
-                  (option.value === "" ? "(empty)" : option.value);
+                  (option.value === "" ? t("summary.empty") : option.value);
                 const displayTitle =
                   option.displayValue ??
-                  (option.value === "" ? "(empty)" : option.value);
+                  (option.value === "" ? t("summary.empty") : option.value);
 
                 const commandItem = (
                   <InputCommandItem
@@ -380,7 +382,7 @@ export function MultiSelect({
                     onClick={(e) => {
                       e.stopPropagation();
                     }}
-                    placeholder="Enter custom value"
+                    placeholder={t("ui.customValue")}
                     className="h-6 w-full rounded-none border-t-0 border-r-0 border-b-2 border-l-0 border-dotted p-0 text-sm"
                   />
                 </InputCommandItem>
@@ -395,7 +397,7 @@ export function MultiSelect({
                     onSelect={() => onValueChange([])}
                     className="justify-center text-center"
                   >
-                    Clear filters
+                    {t("ui.clear")}
                   </InputCommandItem>
                 </InputCommandGroup>
               </>

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { BadgeShell } from "@/src/components/design-system/Badge/Badge";
 import {
   Popover,
@@ -46,13 +47,17 @@ const formatScoreValue = (score: ChipScore) =>
   score.stringValue ?? score.value?.toFixed(2) ?? "";
 
 const ScoreTable = <T extends ChipScore>({ scores }: { scores: T[] }) => {
+  const { t: tFeatures } = useTranslation("features");
+
   const groups = Object.entries(groupScoresByName(scores)).sort(([a], [b]) =>
     a.localeCompare(b),
   );
 
   return (
     <div className="p-2 text-xs">
-      <div className="text-foreground mb-1 font-bold">Scores</div>
+      <div className="text-foreground mb-1 font-bold">
+        {tFeatures("evalsMore:score.scores")}
+      </div>
       <ul className="grid grid-cols-[auto_auto] gap-x-4 gap-y-1">
         {groups.map(([name, groupScores]) => (
           <li key={name} className="contents">
@@ -78,6 +83,8 @@ export const GroupedScoreBadges = <T extends ChipScore>({
   maxVisible?: number;
   compact?: boolean;
 }) => {
+  const { t: tFeatures } = useTranslation("features");
+
   const groupedScores = groupScoresByName(scores);
 
   // Level tags only when this selection MIXES levels: a row whose scores all
@@ -116,7 +123,9 @@ export const GroupedScoreBadges = <T extends ChipScore>({
                   "cursor-pointer self-center text-xs font-bold",
                   compact ? "px-0.5 py-0 leading-tight" : "px-1",
                 )}
-                aria-label={`Show all ${Object.keys(groupedScores).length} scores`}
+                aria-label={tFeatures("evalsMore:score.showAll", {
+                  total: Object.keys(groupedScores).length,
+                })}
                 // Chips render inside clickable rows; opening must not select the row.
                 onClick={(event) => event.stopPropagation()}
               >

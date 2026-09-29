@@ -20,6 +20,7 @@ import { Input } from "@/src/components/ui/input";
 import { env } from "@/src/env.mjs";
 import { reportError } from "@/src/utils/reportError";
 import { isJsonParseSyntaxError } from "@/src/features/auth/lib/expectedAuthErrors";
+import { useTranslation } from "react-i18next";
 
 const enterpriseSsoFormSchema = z.object({
   email: z.email(),
@@ -44,6 +45,7 @@ const PROVIDER_LABELS: Record<string, string> = {
 };
 
 export default function EnterpriseSsoRequiredPage() {
+  const { t: tApp } = useTranslation("app");
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -145,7 +147,7 @@ export default function EnterpriseSsoRequiredPage() {
   return (
     <>
       <Head>
-        <title>Enterprise SSO Required | Langfuse</title>
+        <title>{tApp("ui.EnterpriseSsoRequiredLangfuse")}</title>
       </Head>
       <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
@@ -153,11 +155,13 @@ export default function EnterpriseSsoRequiredPage() {
             <LangfuseIcon />
           </div>
           <h1 className="text-primary mt-6 text-center text-2xl font-bold">
-            Use your Enterprise SSO
+            {tApp("ui.UseYourEnterpriseSso")}
           </h1>
           <p className="text-muted-foreground mt-2 text-center text-sm leading-6">
-            {description} Enter your company email so we can send you to the
-            correct identity provider.
+            {description}{" "}
+            {tApp(
+              "ui.EnterYourCompanyEmailSoWeCanSendYouToTheCorrectIdentityProvider",
+            )}
           </p>
         </div>
 
@@ -169,7 +173,7 @@ export default function EnterpriseSsoRequiredPage() {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel>{tApp("ui.Email")}</FormLabel>
                     <FormControl>
                       <Input
                         placeholder="jsdoe@example.com"
@@ -189,7 +193,7 @@ export default function EnterpriseSsoRequiredPage() {
                 loading={loading}
                 disabled={loading}
               >
-                Continue with Enterprise SSO
+                {tApp("ui.ContinueWithEnterpriseSso")}
               </Button>
             </form>
           </Form>
@@ -197,14 +201,14 @@ export default function EnterpriseSsoRequiredPage() {
             <div className="text-destructive mt-4 text-center text-sm font-bold">
               {error}
               <br />
-              Contact{" "}
+              {tApp("ui.Contact")}{" "}
               <a
                 href="mailto:support@langfuse.com"
                 className="text-link hover:text-link-hover"
               >
                 support@langfuse.com
               </a>{" "}
-              if this keeps happening.
+              {tApp("ui.IfThisKeepsHappening")}
             </div>
           ) : null}
           <div className="text-muted-foreground mt-6 text-center text-sm">
@@ -212,13 +216,13 @@ export default function EnterpriseSsoRequiredPage() {
               href="/auth/sign-in"
               className="text-link hover:text-link-hover"
             >
-              Back to other sign-in options
+              {tApp("ui.BackToOtherSignInOptions")}
             </Link>
           </div>
         </div>
 
         <div className="text-muted-foreground mt-4 text-center text-xs">
-          Need help? Contact{" "}
+          {tApp("ui.NeedHelpContact")}{" "}
           <a
             href="mailto:support@langfuse.com"
             className="text-link hover:text-link-hover"

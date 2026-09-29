@@ -1,4 +1,5 @@
 /* eslint-disable @repo/no-null-render */
+import { useTranslation } from "react-i18next";
 import Header from "@/src/components/layouts/header";
 import { Button } from "@/src/components/ui/button";
 import { Card } from "@/src/components/ui/card";
@@ -7,7 +8,6 @@ import { Input } from "@/src/components/ui/input";
 import { ConfirmDialog } from "@/src/components/ui/confirm-dialog";
 import { SimpleDataTable } from "@/src/components/table/simple-data-table";
 import { type LangfuseColumnDef } from "@/src/components/table/types";
-import { createTextTableColumn } from "@/src/components/design-system/table/columns/createTextTableColumn";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics";
 import { CreateApiKeyButton } from "@/src/features/public-api/components/CreateApiKeyButton";
 import {
@@ -18,7 +18,6 @@ import { api, reportNonTrpcError } from "@/src/utils/api";
 import { Check, Copy, TrashIcon } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Alert } from "@/src/components/design-system/Alert/Alert";
-import startCase from "lodash/startCase";
 import { useLangfuseEnvCode } from "@/src/features/public-api/hooks/useLangfuseEnvCode";
 import { useCopyToClipboard } from "@/src/hooks/useCopyToClipboard";
 import { type RouterOutput } from "@/src/utils/types";
@@ -38,6 +37,7 @@ type ApiKeyCreator = {
 };
 
 export function ApiKeyList(props: { entityId: string; scope: ApiKeyScope }) {
+  const { t } = useTranslation("settings");
   const { entityId, scope } = props;
   const envCode = useLangfuseEnvCode();
 
@@ -81,33 +81,33 @@ export function ApiKeyList(props: { entityId: string; scope: ApiKeyScope }) {
 
   const columns = useMemo<LangfuseColumnDef<ApiKeyRow>[]>(
     () => [
-      createTextTableColumn<ApiKeyRow, Date>({
+      {
         accessorKey: "createdAt",
-        header: "Created",
-        mapValue: (value) => value?.toLocaleDateString(),
+        header: () => <ApiKeyColumnHeader translationKey="created" />,
+        cell: ({ getValue }) => <ApiKeyCreatedAt value={getValue<Date>()} />,
         hideBelowMd: true,
-      }),
+      },
       {
         accessorKey: "createdByUser",
-        header: "Created By",
+        header: () => <ApiKeyColumnHeader translationKey="createdBy" />,
         hideBelowMd: true,
         cell: ({ row }) => <ApiKeyCreatedBy apiKey={row.original} />,
       },
       {
         accessorKey: "note",
-        header: "Note",
+        header: () => <ApiKeyColumnHeader translationKey="note" />,
         cell: ({ row }) => (
           <ApiKeyNote apiKey={row.original} entityId={entityId} scope={scope} />
         ),
       },
       {
         accessorKey: "publicKey",
-        header: "Public Key",
+        header: () => <ApiKeyColumnHeader translationKey="publicKey" />,
         cell: ({ row }) => <PublicKeyCell publicKey={row.original.publicKey} />,
       },
       {
         accessorKey: "displaySecretKey",
-        header: "Secret Key",
+        header: () => <ApiKeyColumnHeader translationKey="secretKey" />,
         cell: ({ getValue }) => (
           <span className="font-mono">{getValue<string>()}</span>
         ),
@@ -130,11 +130,15 @@ export function ApiKeyList(props: { entityId: string; scope: ApiKeyScope }) {
   if (!hasAccess) {
     return (
       <div>
-        <Header title="API Keys" />
+        <Header title={t("apiKeys")} />
         <Alert>
-          <Alert.Title>Access Denied</Alert.Title>
+          <Alert.Title>{t("accessDenied")}</Alert.Title>
           <Alert.Description>
-            You do not have permission to view API keys for this {scope}.
+            {t(
+              scope === "project"
+                ? "projectKeysForbidden"
+                : "organizationKeysForbidden",
+            )}
           </Alert.Description>
         </Alert>
       </div>
@@ -144,9 +148,15 @@ export function ApiKeyList(props: { entityId: string; scope: ApiKeyScope }) {
   return (
     <div className="space-y-4">
       <Header
-        title={startCase(`${scope} API keys`)}
+        title={t(
+          scope === "project" ? "projectApiKeys" : "organizationApiKeys",
+        )}
         help={{
-          description: `Learn more about ${scope} API keys`,
+          description: t(
+            scope === "project"
+              ? "projectApiKeysHelp"
+              : "organizationApiKeysHelp",
+          ),
           href:
             scope === "project"
               ? "https://langfuse.com/docs/api#authentication"
@@ -161,7 +171,7 @@ export function ApiKeyList(props: { entityId: string; scope: ApiKeyScope }) {
       <CodeView
         content={envCode}
         title=".env"
-        copiedToClipboardMessage="Secrets are not included, create a new key to copy them."
+        copiedToClipboardMessage={t("secretsNotIncluded")}
       />
       <Card className="mb-4 overflow-hidden">
         <SimpleDataTable
@@ -170,11 +180,9 @@ export function ApiKeyList(props: { entityId: string; scope: ApiKeyScope }) {
           isLoading={apiKeysQuery.isLoading}
           noResults={
             apiKeysQuery.isError ? (
-              <span className="text-destructive">
-                Failed to load API keys. Please try again.
-              </span>
+              <span className="text-destructive">{t("apiKeysLoadFailed")}</span>
             ) : (
-              "None"
+              t("none")
             )
           }
           bodyTone="muted"
@@ -186,6 +194,7 @@ export function ApiKeyList(props: { entityId: string; scope: ApiKeyScope }) {
 }
 
 function PublicKeyCell({ publicKey }: { publicKey: string }) {
+  const { t } = useTranslation("settings");
   const { copy, isCopied } = useCopyToClipboard();
 
   return (
@@ -195,8 +204,8 @@ function PublicKeyCell({ publicKey }: { publicKey: string }) {
         variant="ghost"
         size="icon-xs"
         className="absolute top-1/2 right-2 -translate-y-1/2"
-        title="Copy to clipboard"
-        aria-label="Copy to clipboard"
+        title={t("copyClipboard")}
+        aria-label={t("copyClipboard")}
         onClick={async (event) => {
           event.preventDefault();
           const button = event.currentTarget;
@@ -224,6 +233,7 @@ function DeleteApiKeyButton(props: {
   apiKeyId: string;
   scope: ApiKeyScope;
 }) {
+  const { t } = useTranslation("settings");
   const { entityId, apiKeyId, scope } = props;
   const capture = usePostHogClientCapture();
 
@@ -287,9 +297,9 @@ function DeleteApiKeyButton(props: {
           <TrashIcon className="h-4 w-4" />
         </Button>
       }
-      title="Delete API key"
-      description="Are you sure you want to delete this API key? This action cannot be undone."
-      confirmLabel="Permanently delete"
+      title={t("deleteApiKey")}
+      description={t("deleteApiKeyConfirmation")}
+      confirmLabel={t("permanentlyDelete")}
       loading={mutDeleteOrgApiKey.isPending || mutDeleteProjectApiKey.isPending}
       onConfirm={handleDelete}
     />
@@ -297,11 +307,12 @@ function DeleteApiKeyButton(props: {
 }
 
 function ApiKeyCreatedBy({ apiKey }: { apiKey: ApiKeyCreator }) {
+  const { t } = useTranslation("settings");
   if (apiKey.createdByUser) {
     const { name, email } = apiKey.createdByUser;
     return (
       <span className="truncate" title={email ?? undefined}>
-        {name ?? email ?? "Unknown user"}
+        {name ?? email ?? t("unknownUser")}
       </span>
     );
   }
@@ -309,7 +320,7 @@ function ApiKeyCreatedBy({ apiKey }: { apiKey: ApiKeyCreator }) {
     return (
       <span
         className="truncate font-mono"
-        title={`Created via API by key ${apiKey.createdByApiKey.publicKey}`}
+        title={t("createdViaApiKey", { key: apiKey.createdByApiKey.publicKey })}
       >
         {apiKey.createdByApiKey.publicKey}
       </span>
@@ -327,6 +338,7 @@ function ApiKeyNote({
   entityId: string;
   scope: ApiKeyScope;
 }) {
+  const { t } = useTranslation("settings");
   const utils = api.useUtils();
 
   const hasProjectAccess = useHasProjectAccess({
@@ -388,7 +400,17 @@ function ApiKeyNote({
       onClick={() => setIsEditing(true)}
       className="hover:bg-secondary/50 -mx-2 cursor-pointer rounded px-2 py-1"
     >
-      {note || "Click to add note"}
+      {note || t("addNote")}
     </div>
   );
+}
+
+function ApiKeyColumnHeader({ translationKey }: { translationKey: string }) {
+  const { t } = useTranslation("settings");
+  return <>{t(translationKey)}</>;
+}
+
+function ApiKeyCreatedAt({ value }: { value: Date }) {
+  const { i18n } = useTranslation("settings");
+  return <>{value?.toLocaleDateString(i18n.resolvedLanguage)}</>;
 }

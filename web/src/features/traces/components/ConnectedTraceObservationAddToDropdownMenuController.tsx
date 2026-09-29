@@ -25,6 +25,7 @@ import { usePostHogClientCapture } from "@/src/features/posthog-analytics";
 import { type AnalyticsData } from "@/src/features/scores/types";
 import { api, reportNonTrpcError } from "@/src/utils/api";
 import type { MetadataDomainClient } from "@/src/utils/clientSideDomainTypes";
+import { useTranslation } from "react-i18next";
 
 type PlaygroundGeneration = Extract<
   JumpToPlaygroundSourceProps,
@@ -71,6 +72,7 @@ type ConnectedTraceObservationAddToDropdownMenuControllerProps =
 export function ConnectedTraceObservationAddToDropdownMenuController(
   props: ConnectedTraceObservationAddToDropdownMenuControllerProps,
 ) {
+  const { t: tFeatures } = useTranslation("features");
   const capture = usePostHogClientCapture();
   const objectId =
     props.variant === "observation" ? props.observationId : props.traceId;
@@ -102,7 +104,7 @@ export function ConnectedTraceObservationAddToDropdownMenuController(
                 openDialog: openDatasetDialog,
               }) => (
                 <ConfirmationDialogController<QueueRemoval>
-                  title="Remove from annotation queue"
+                  title={tFeatures("ui.removeFromAnnotationQueue")}
                   text={({ queueName }) =>
                     `Are you sure you want to remove this item from the queue "${queueName}"?`
                   }
@@ -182,6 +184,8 @@ function ConnectedTraceObservationAddToDropdownMenuControllerContent({
   openQueueDialog: () => void;
   openRemoveQueueDialog: (queueRemoval: QueueRemoval) => void;
 }) {
+  const { t: tMore } = useTranslation("coreMore");
+  const { t: tFeatures } = useTranslation("features");
   const capture = usePostHogClientCapture();
   const session = useSession();
   const objectId = variant === "observation" ? observationId : traceId;
@@ -279,9 +283,9 @@ function ConnectedTraceObservationAddToDropdownMenuControllerContent({
       {
         type: "submenu",
         id: "annotation-queue",
-        title: "Annotation queue",
+        title: tFeatures("ui.annotationQueue"),
         icon: ListPlus,
-        search: { placeholder: "Search annotation queues…" },
+        search: { placeholder: tMore("traces.searchQueues") },
         disabled:
           !hasAnnotationQueueAccess || queuesAreLoading
             ? {
@@ -312,7 +316,7 @@ function ConnectedTraceObservationAddToDropdownMenuControllerContent({
                     {
                       id: "no-queues",
                       type: "item" as const,
-                      title: "No queues defined",
+                      title: tFeatures("ui.noQueuesDefined"),
                       disabled: {
                         reason: "No annotation queues are defined.",
                       },
@@ -329,7 +333,7 @@ function ConnectedTraceObservationAddToDropdownMenuControllerContent({
                     {
                       id: "create-queue",
                       type: "item" as const,
-                      title: "Create new queue",
+                      title: tFeatures("ui.createNewQueue"),
                       icon: PlusIcon,
                       onClick: openQueueDialog,
                     },
@@ -340,9 +344,9 @@ function ConnectedTraceObservationAddToDropdownMenuControllerContent({
       {
         type: "submenu",
         id: "dataset",
-        title: "Dataset",
+        title: tFeatures("ui.dataset"),
         icon: Database,
-        search: { placeholder: "Search datasets…" },
+        search: { placeholder: tMore("traces.searchDatasets") },
         disabled: !hasDatasetAccess
           ? {
               reason: "You don't have permission to add items to datasets.",
@@ -375,7 +379,7 @@ function ConnectedTraceObservationAddToDropdownMenuControllerContent({
                     {
                       id: "no-datasets",
                       type: "item" as const,
-                      title: "No datasets defined",
+                      title: tFeatures("ui.noDatasetsDefined"),
                       disabled: {
                         reason: "No datasets are defined.",
                       },
@@ -390,7 +394,7 @@ function ConnectedTraceObservationAddToDropdownMenuControllerContent({
               {
                 type: "item" as const,
                 id: "create-dataset",
-                title: "Create new dataset",
+                title: tFeatures("ui.createNewDataset"),
                 icon: PlusIcon,
                 disabled: createDatasetDisabled,
                 onClick: openDatasetDialog,
@@ -405,20 +409,20 @@ function ConnectedTraceObservationAddToDropdownMenuControllerContent({
       items.push({
         type: "submenu",
         id: "playground",
-        title: "Playground",
+        title: tFeatures("ui.playground"),
         icon: Terminal,
         disabled: playgroundDisabled ? { reason: playgroundTitle } : undefined,
         items: [
           {
             type: "item",
             id: "fresh-playground",
-            title: "Fresh playground",
+            title: tFeatures("ui.freshPlayground"),
             onClick: () => handlePlaygroundAction("fresh"),
           },
           {
             type: "item",
             id: "existing-playground",
-            title: "Add to existing",
+            title: tFeatures("ui.addToExisting"),
             onClick: () => handlePlaygroundAction("existing"),
           },
           {
@@ -428,7 +432,7 @@ function ConnectedTraceObservationAddToDropdownMenuControllerContent({
           {
             type: "checkbox",
             id: "include-output",
-            title: "Include output",
+            title: tFeatures("ui.includeOutput"),
             checked: includeOutput,
             onCheckedChange: setIncludeOutput,
           },
@@ -438,6 +442,8 @@ function ConnectedTraceObservationAddToDropdownMenuControllerContent({
 
     return items;
   }, [
+    tFeatures,
+    tMore,
     analyticsData,
     capture,
     variant,

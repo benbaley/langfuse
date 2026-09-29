@@ -9,8 +9,11 @@ import { usePostHogClientCapture } from "@/src/features/posthog-analytics";
 import { getEvalsTabs, EVALS_TABS } from "@/src/features/navigation";
 import { ManageDefaultEvalModel } from "@/src/features/evals/components/manage-default-eval-model";
 import { V4MigrationUpdateRequiredBadge } from "@/src/features/v4-migration/V4MigrationDelayBadge";
+import { useTranslation, useTranslation as useNavigationTranslation } from "react-i18next";
 
 export default function TemplatesPage() {
+  const { t: tNavigation } = useNavigationTranslation("navigation");
+  const { t: tFeatures } = useTranslation("features");
   const router = useRouter();
   const projectId = router.query.projectId as string;
   const capture = usePostHogClientCapture();
@@ -25,20 +28,20 @@ export default function TemplatesPage() {
   });
 
   if (!hasReadAccess) {
-    return <div>You do not have access to this page.</div>;
+    return <div>{tFeatures("ui.youDoNotHaveAccessToThisPage")}</div>;
   }
 
   return (
     <Page
       headerProps={{
-        title: "Evaluators",
+        title: tFeatures("ui.evaluators"),
         titleBadges: <V4MigrationUpdateRequiredBadge />,
         help: {
           description: "View all langfuse managed and custom evaluators.",
           href: "https://langfuse.com/docs/evaluation/evaluation-methods/llm-as-a-judge",
         },
         tabsProps: {
-          tabs: getEvalsTabs(projectId),
+          tabs: getEvalsTabs(projectId, tNavigation),
           activeTab: EVALS_TABS.TEMPLATES,
         },
         actionButtonsRight: (
@@ -62,7 +65,7 @@ export default function TemplatesPage() {
                 ) : (
                   <Lock className="mr-2 h-4 w-4" />
                 )}
-                Custom Evaluator
+                {tFeatures("ui.customEvaluator")}
               </Link>
             </Button>
           </>

@@ -1,3 +1,4 @@
+import { type TFunction } from "i18next";
 import { deepParseJson, type ObservationLevelType } from "@langfuse/shared";
 import { assertUnreachable } from "@/src/utils/types";
 
@@ -21,31 +22,34 @@ export function parseStructuredStatusMessage(message: string) {
   return typeof parsed === "object" && parsed !== null ? parsed : undefined;
 }
 
-export function getStatusMessagePresentation(level: ObservationLevelType) {
+export function getStatusMessagePresentation(
+  level: ObservationLevelType,
+  t: TFunction<"coreMore">,
+) {
   if (level === "ERROR") {
     return {
-      title: "Error",
+      title: t("io.status.error"),
       tone: "danger" as const,
     };
   }
 
   if (level === "WARNING") {
     return {
-      title: "Warning",
+      title: t("io.status.warning"),
       tone: "warning" as const,
     };
   }
 
   if (level === "DEBUG") {
     return {
-      title: "Debug",
+      title: t("io.status.debug"),
       tone: "muted" as const,
     };
   }
 
   if (level === "DEFAULT") {
     return {
-      title: "Status",
+      title: t("io.status.status"),
       tone: "neutral" as const,
     };
   }

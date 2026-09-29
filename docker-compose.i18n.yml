@@ -1,0 +1,10 @@
+# Build the translated UI locally; compose retains the base service's ports,
+# credentials, volumes and infrastructure configuration.
+services:
+  langfuse-web:
+    image: langfuse-ui:zh-cn-local
+    build:
+      context: .
+      dockerfile: web/Dockerfile
+      args:
+        NEXT_PUBLIC_LANGFUSE_DEFAULT_LANGUAGE: zh-CN

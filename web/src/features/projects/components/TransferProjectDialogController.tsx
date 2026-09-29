@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { showSuccessToast } from "@/src/features/notifications";
 import { type ReactNode } from "react";
 
@@ -31,6 +32,7 @@ export function TransferProjectDialogController({
   organization,
   children,
 }: TransferProjectDialogControllerProps) {
+  const { t } = useTranslation("settings");
   const capture = usePostHogClientCapture();
   const session = useSession();
   const hasAccess = useHasOrganizationAccess({
@@ -50,9 +52,8 @@ export function TransferProjectDialogController({
   const transferProject = api.projects.transfer.useMutation({
     onSuccess: async () => {
       showSuccessToast({
-        title: "Project transferred",
-        description:
-          "The project is successfully transferred to the new organization. Redirecting...",
+        title: t("projectTransferred"),
+        description: t("projectTransferredDescription"),
       });
       await new Promise((resolve) => setTimeout(resolve, 5000));
       session.update();
@@ -62,9 +63,7 @@ export function TransferProjectDialogController({
     },
   });
 
-  const disabled = hasAccess
-    ? undefined
-    : { reason: "You don't have permission to transfer this project." };
+  const disabled = hasAccess ? undefined : { reason: t("transferForbidden") };
 
   const onConfirm = (organizationId: string) => {
     capture("project_settings:project_delete");

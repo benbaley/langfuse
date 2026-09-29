@@ -37,6 +37,7 @@ import {
   PRODUCTION_LABEL,
   PromptLabelSchema,
 } from "@langfuse/shared";
+import { useTranslation } from "react-i18next";
 
 const AddLabelFormSchema = z.object({
   label: PromptLabelSchema,
@@ -49,6 +50,8 @@ export default function ProtectedLabelsSettings({
 }: {
   projectId: string;
 }) {
+  const { t: tMore } = useTranslation("coreMore");
+  const { t: tFeatures } = useTranslation("features");
   const hasAccess = useHasProjectAccess({
     projectId,
     scope: "promptProtectedLabels:CUD",
@@ -108,12 +111,10 @@ export default function ProtectedLabelsSettings({
 
   return (
     <div>
-      <Header title="Protected Prompt Labels" />
+      <Header title={tFeatures("ui.protectedPromptLabels")} />
       <Card className="mb-4 p-3">
         <p className="text-primary mb-4 text-sm">
-          Protected labels can only be modified by users with admin or owner
-          access. This prevents other users from changing or removing these
-          labels from prompts.
+          {tMore("prompts.protectedHelp")}
         </p>
         <div className="mb-4 flex flex-wrap gap-2">
           {protectedLabels.map((label) => (
@@ -167,7 +168,7 @@ export default function ProtectedLabelsSettings({
                           )}
                           disabled={!hasAccess || !hasEntitlement}
                         >
-                          {field.value || "Select or enter a label"}
+                          {field.value || tFeatures("ui.selectOrEnterALabel")}
                           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                         </Button>
                       </FormControl>
@@ -175,12 +176,14 @@ export default function ProtectedLabelsSettings({
                     <PopoverContent className="w-full p-0">
                       <Command>
                         <CommandInput
-                          placeholder="Search or enter a new label..."
+                          placeholder={tFeatures("ui.searchOrEnterANewLabel")}
                           onValueChange={(value) => {
                             field.onChange(value);
                           }}
                         />
-                        <CommandEmpty>No label found</CommandEmpty>
+                        <CommandEmpty>
+                          {tFeatures("ui.noLabelFound")}
+                        </CommandEmpty>
                         <CommandGroup>
                           {availableLabels.map((label) => (
                             <CommandItem
@@ -217,7 +220,7 @@ export default function ProtectedLabelsSettings({
               hasAccess={hasAccess}
               hasEntitlement={hasEntitlement}
             >
-              Add
+              {tFeatures("ui.add")}
             </ActionButton>
           </form>
         </Form>

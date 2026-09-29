@@ -10,6 +10,7 @@ import { ListFilter, ChevronsUpDown, X, Check } from "lucide-react";
 import { useMemo, useState } from "react";
 import { type FilterCondition, type FilterState } from "@langfuse/shared";
 import { cn } from "@/src/utils/tailwind";
+import { useTranslation } from "react-i18next";
 
 interface ExperimentFilterPillsProps {
   filtersByExperiment: { runId: string; filters: FilterState }[];
@@ -81,6 +82,7 @@ function FilterPillWithTarget({
   onTargetChange,
   onRemove,
 }: FilterPillWithTargetProps) {
+  const { t: tFeatures } = useTranslation("features");
   const [open, setOpen] = useState(false);
   const filterLabel = formatFilterForPill(filter);
 
@@ -108,7 +110,7 @@ function FilterPillWithTarget({
         </PopoverTrigger>
         <PopoverContent className="w-[200px] p-1" align="start">
           <div className="text-muted-foreground px-2 py-1.5 text-xs font-bold">
-            Target Experiment
+            {tFeatures("ui.targetExperiment")}
           </div>
           <div className="space-y-0.5">
             {selectedExperimentNames.map((exp) => (

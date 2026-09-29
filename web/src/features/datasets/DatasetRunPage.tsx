@@ -28,8 +28,10 @@ import {
   singleRunToExperimentsUrl,
 } from "@/src/features/experiments";
 import { buildLocalIsoDatePresentation } from "@/src/utils/dates";
+import { useTranslation } from "react-i18next";
 
 function DatasetRunLegacy() {
+  const { t: tFeatures } = useTranslation("features");
   const router = useRouter();
   const projectId = router.query.projectId as string;
   const datasetId = router.query.datasetId as string;
@@ -76,7 +78,7 @@ function DatasetRunLegacy() {
             >
               <Button>
                 <Columns3 className="mr-2 h-4 w-4" />
-                <span>Compare</span>
+                <span>{tFeatures("ui.compare")}</span>
               </Button>
             </Link>
             <DetailPageNav
@@ -102,7 +104,7 @@ function DatasetRunLegacy() {
                   <DropdownMenuContent>
                     <DropdownMenuItem disabled={disabled} onSelect={openDialog}>
                       <Trash className="h-4 w-4" />
-                      <span>Delete</span>
+                      <span>{tFeatures("ui.delete")}</span>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -126,7 +128,9 @@ function DatasetRunLegacy() {
           id="experiment-run-details"
         >
           <SidePanelHeader>
-            <SidePanelTitle>Experiment run details</SidePanelTitle>
+            <SidePanelTitle>
+              {tFeatures("ui.experimentRunDetails")}
+            </SidePanelTitle>
           </SidePanelHeader>
           <SidePanelContent>
             {run.isPending ? (
@@ -135,7 +139,9 @@ function DatasetRunLegacy() {
               <>
                 {run.data?.datasetVersion && preparedDate && (
                   <div className="flex flex-col gap-2 p-1">
-                    <span className="text-sm font-bold">Dataset Version</span>
+                    <span className="text-sm font-bold">
+                      {tFeatures("ui.datasetVersion")}
+                    </span>
                     <Link
                       href={`/project/${projectId}/datasets/${datasetId}/items?version=${run.data.datasetVersion.toISOString()}`}
                       className="text-link hover:text-link-hover text-sm"
@@ -149,20 +155,20 @@ function DatasetRunLegacy() {
                 {!!run.data?.description && (
                   <JSONView
                     json={run.data.description}
-                    title="Description"
+                    title={tFeatures("ui.description")}
                     className="w-full overflow-y-auto"
                   />
                 )}
                 {!!run.data?.metadata && (
                   <JSONView
                     json={run.data.metadata}
-                    title="Metadata"
+                    title={tFeatures("ui.metadata")}
                     className="w-full overflow-y-auto"
                   />
                 )}
                 {!run.data?.description && !run.data?.metadata && (
                   <div className="text-muted-foreground mt-1 px-1 text-sm">
-                    No description or metadata for this run
+                    {tFeatures("ui.noDescriptionOrMetadataForThisRun")}
                   </div>
                 )}
               </>

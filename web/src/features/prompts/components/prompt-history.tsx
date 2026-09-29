@@ -12,6 +12,7 @@ import { DialogController } from "@/src/components/ui/dialog";
 import { SetPromptVersionLabels } from "@/src/features/prompts/components/SetPromptVersionLabels";
 import { CommentCountIcon } from "@/src/features/comments/CommentCountIcon";
 import { FileDiffIcon } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const PromptHistoryTraceNode = (props: {
   index: number;
@@ -22,6 +23,8 @@ const PromptHistoryTraceNode = (props: {
   openCommentDrawer: (promptId: string, promptVersion: number) => void;
   commentCounts?: Map<string, number>;
 }) => {
+  const { t: tMore } = useTranslation("coreMore");
+  const { t: tFeatures } = useTranslation("features");
   const [isHovered, setIsHovered] = useState(false);
   const [isLabelPopoverOpen, setIsLabelPopoverOpen] = useState(false);
   const { prompt } = props;
@@ -135,8 +138,10 @@ const PromptHistoryTraceNode = (props: {
                 </div>
               )}
               <div className="text-muted-foreground flex flex-wrap gap-1 text-xs">
-                {prompt.createdAt.toLocaleString()} by{" "}
-                {prompt.creator || prompt.createdBy}
+                {tMore("prompts.createdBy", {
+                  time: prompt.createdAt.toLocaleString(),
+                  user: prompt.creator || prompt.createdBy,
+                })}
               </div>
             </div>
             <div className="flex flex-row justify-end space-x-1">
@@ -166,7 +171,7 @@ const PromptHistoryTraceNode = (props: {
                           event.stopPropagation();
                           openDialog();
                         }}
-                        title="Compare with selected prompt"
+                        title={tFeatures("ui.compareWithSelectedPrompt")}
                       >
                         <FileDiffIcon className="h-4 w-4" />
                       </Button>

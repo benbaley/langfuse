@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useState, type ReactNode } from "react";
 import { ChevronDown } from "lucide-react";
 
@@ -29,6 +30,7 @@ export function Stepper({
   onOpenChange?: (open: boolean) => void;
   children: ReactNode;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const [internalOpen, setInternalOpen] = useState(defaultOpen);
   const expanded = open ?? internalOpen;
 
@@ -56,7 +58,7 @@ export function Stepper({
         <button
           type="button"
           className="flex min-h-7 items-center gap-1.5 text-left"
-          aria-label={`Step ${number}: ${title}`}
+          aria-label={tFeatures("evalsMore:steps.label", { number, title })}
           aria-expanded={expanded}
           onClick={toggle}
         >

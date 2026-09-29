@@ -14,6 +14,7 @@ import {
 } from "@/src/features/scores";
 import { ChevronRight } from "lucide-react";
 import { useCallback } from "react";
+import { useTranslation } from "react-i18next";
 
 export const AnnotationPanel = ({ projectId }: { projectId: string }) => {
   const { activeCell, clearActiveCell, setCommentDraft } = useActiveCell();
@@ -44,6 +45,7 @@ function ActiveAnnotationPanel({
   clearActiveCell: ReturnType<typeof useActiveCell>["clearActiveCell"];
   setCommentDraft: ReturnType<typeof useActiveCell>["setCommentDraft"];
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const { traceId, observationId } = activeCell;
   const handleDraftChange = useCallback(
     (hasDraft: boolean) =>
@@ -100,7 +102,7 @@ function ActiveAnnotationPanel({
                 <Button
                   variant="outline"
                   size="icon"
-                  aria-label="Close annotation panel"
+                  aria-label={tFeatures("ui.closeAnnotationPanel")}
                   onClick={clearActiveCell}
                 >
                   <ChevronRight className="h-4 w-4" />
@@ -109,8 +111,9 @@ function ActiveAnnotationPanel({
             />
             {hasNonAnnotationScores && (
               <div className="text-muted-foreground mt-4 text-xs">
-                API and eval scores visible on left. Add manual annotations
-                above.
+                {tFeatures(
+                  "ui.apiAndEvalScoresVisibleOnLeftAddManualAnnotationsAbove",
+                )}
               </div>
             )}
           </>

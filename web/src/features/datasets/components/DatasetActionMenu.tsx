@@ -5,6 +5,7 @@ import { DropdownMenu } from "@/src/components/design-system/DropdownMenu/Dropdo
 import { DeleteDatasetDialogController } from "@/src/features/datasets/components/DeleteDatasetDialogController";
 import { DuplicateDatasetDialogController } from "@/src/features/datasets/components/DuplicateDatasetDialogController";
 import { UpdateDatasetDialogController } from "@/src/features/datasets/components/UpdateDatasetDialogController";
+import { useTranslation } from "react-i18next";
 
 type DatasetActionMenuProps = Omit<
   ComponentProps<typeof UpdateDatasetDialogController>,
@@ -32,12 +33,13 @@ function DatasetActionDropdown({
   manageEvaluatorsHref?: string;
   updateControl: ActionControl;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const items = useMemo<ComponentProps<typeof DropdownMenu>["items"]>(
     () => [
       {
         type: "item",
         id: "edit",
-        title: "Edit",
+        title: tFeatures("ui.edit"),
         icon: updateControl.disabled ? LockIcon : Edit,
         disabled: updateControl.disabled,
         onClick: updateControl.openDialog,
@@ -45,7 +47,7 @@ function DatasetActionDropdown({
       {
         type: "item",
         id: "duplicate",
-        title: "Duplicate",
+        title: tFeatures("ui.duplicate"),
         icon: duplicateControl.disabled ? LockIcon : Copy,
         disabled: duplicateControl.disabled,
         onClick: duplicateControl.openDialog,
@@ -53,7 +55,7 @@ function DatasetActionDropdown({
       {
         type: "item",
         id: "delete",
-        title: "Delete",
+        title: tFeatures("ui.delete"),
         icon: deleteControl.disabled ? LockIcon : Trash,
         disabled: deleteControl.disabled,
         onClick: deleteControl.openDialog,
@@ -63,14 +65,20 @@ function DatasetActionDropdown({
             {
               type: "item" as const,
               id: "manage-evaluators",
-              title: "Manage Evaluators",
+              title: tFeatures("ui.manageEvaluators"),
               icon: Bot,
               href: manageEvaluatorsHref,
             },
           ]
         : []),
     ],
-    [deleteControl, duplicateControl, manageEvaluatorsHref, updateControl],
+    [
+      tFeatures,
+      deleteControl,
+      duplicateControl,
+      manageEvaluatorsHref,
+      updateControl,
+    ],
   );
 
   return (

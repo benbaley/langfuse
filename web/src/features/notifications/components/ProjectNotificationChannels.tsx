@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import Header from "@/src/components/layouts/header";
 import { Button } from "@/src/components/ui/button";
 import {
@@ -32,18 +33,16 @@ const NOTIFIED_EVENT_COPY: Record<
   { title: string; description: string }
 > = {
   "blob-export-failed": {
-    title: "Blob storage export failed",
-    description: "Sent when a scheduled blob storage export fails.",
+    title: "notifications.blob-export-failed.title",
+    description: "notifications.blob-export-failed.description",
   },
   "posthog-export-failed": {
-    title: "PostHog export failed",
-    description:
-      "Sent when a PostHog export is disabled after a configuration error, such as an unreachable host.",
+    title: "notifications.posthog-export-failed.title",
+    description: "notifications.posthog-export-failed.description",
   },
   "evaluator-blocked": {
-    title: "Evaluator deactivated",
-    description:
-      "Sent when an evaluator is deactivated due to an unrecoverable error, such as a deleted model or LLM connection.",
+    title: "notifications.evaluator-blocked.title",
+    description: "notifications.evaluator-blocked.description",
   },
 };
 
@@ -62,6 +61,7 @@ export function ProjectNotificationChannels({
 }: {
   projectId: string;
 }) {
+  const { t } = useTranslation("settingsMore");
   const {
     channels,
     isLoading,
@@ -78,10 +78,9 @@ export function ProjectNotificationChannels({
 
   return (
     <div>
-      <Header title="Project Notifications" />
+      <Header title={t("notifications.project")} />
       <p className="text-muted-foreground mb-4 text-sm">
-        Manage project notifications. Channel notifications are sent in addition
-        to the admin emails.
+        {t("notifications.projectHint")}
       </p>
 
       {mode === "list" ? (
@@ -99,11 +98,11 @@ export function ProjectNotificationChannels({
 
           <div className="flex flex-col gap-4">
             <div>
-              <h3 className="text-lg font-bold">Events</h3>
+              <h3 className="text-lg font-bold">{t("notifications.events")}</h3>
               <p className="text-muted-foreground text-sm">
                 {hasChannels
-                  ? "Choose which events are delivered to your channels."
-                  : "Configure a channel above to enable project notifications."}
+                  ? t("notifications.selectEvents")
+                  : t("notifications.configureFirst")}
               </p>
             </div>
             {NOTIFIED_EVENTS.map((event) => (
@@ -117,9 +116,9 @@ export function ProjectNotificationChannels({
                     !hasChannels && "opacity-50",
                   )}
                 >
-                  <p className="text-base font-bold">{event.title}</p>
+                  <p className="text-base font-bold">{t(event.title)}</p>
                   <p className="text-muted-foreground text-sm">
-                    {event.description}
+                    {t(event.description)}
                   </p>
                 </div>
                 <Switch
@@ -155,10 +154,8 @@ export function ProjectNotificationChannels({
       >
         <DialogContent className="max-w-4xl">
           <DialogHeader>
-            <DialogTitle>Webhook Secret Created</DialogTitle>
-            <DialogDescription>
-              Copy the webhook secret below — it will only be shown once.
-            </DialogDescription>
+            <DialogTitle>{t("webhook.created")}</DialogTitle>
+            <DialogDescription>{t("webhook.copySecret")}</DialogDescription>
           </DialogHeader>
           <DialogBody>
             {webhookSecret && (
@@ -167,7 +164,7 @@ export function ProjectNotificationChannels({
           </DialogBody>
           <DialogFooter>
             <Button onClick={actions.dismissWebhookSecret}>
-              {"I've saved the secret"}
+              {t("webhook.saved")}
             </Button>
           </DialogFooter>
         </DialogContent>

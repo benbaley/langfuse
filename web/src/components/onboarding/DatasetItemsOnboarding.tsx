@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useRef, useState } from "react";
 import { SplashScreen } from "@/src/components/ui/splash-screen";
 import { Braces, Code, ListTree, Upload } from "lucide-react";
@@ -30,6 +31,8 @@ const DatasetItemEntryPointRow = ({
   onClick,
   hasAccess = true,
 }: DatasetItemEntryPointRowProps) => {
+  const { t: tFeatures } = useTranslation("features");
+
   const disabled = !hasAccess;
   return (
     <div
@@ -54,9 +57,7 @@ const DatasetItemEntryPointRow = ({
           : undefined
       }
       title={
-        !hasAccess
-          ? "You don't have access to this feature, please contact your administrator"
-          : undefined
+        !hasAccess ? tFeatures("evalsMore:onboarding.noAccess") : undefined
       }
     >
       <div className="flex items-center">{icon}</div>
@@ -75,6 +76,8 @@ export const DatasetItemsOnboarding = ({
   projectId: string;
   datasetId: string;
 }) => {
+  const { t: tFeatures } = useTranslation("features");
+
   const capture = usePostHogClientCapture();
   const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
   const [isNewItemDialogOpen, setIsNewItemDialogOpen] = useState(false);
@@ -87,8 +90,8 @@ export const DatasetItemsOnboarding = ({
 
   return (
     <SplashScreen
-      title="Add items to your dataset"
-      description="Datasets are collections of specific edge cases and underrepresented patterns used to evaluate your application."
+      title={tFeatures("evalsMore:onboarding.itemsTitle")}
+      description={tFeatures("evalsMore:onboarding.itemsDescription")}
     >
       <div className="flex flex-col gap-4">
         <CsvUploadDialog
@@ -100,8 +103,8 @@ export const DatasetItemsOnboarding = ({
           <DialogTrigger asChild disabled={!hasProjectAccess}>
             <DatasetItemEntryPointRow
               icon={<Upload className="h-5 w-5" />}
-              title="Upload CSV"
-              description="Import dataset items from a CSV file"
+              title={tFeatures("evalsMore:onboarding.itemsUpload")}
+              description={tFeatures("evalsMore:onboarding.itemsUploadHelp")}
               onClick={() => {
                 if (hasProjectAccess) {
                   capture("dataset_item:upload_csv_button_click");
@@ -121,8 +124,8 @@ export const DatasetItemsOnboarding = ({
           <DialogTrigger asChild disabled={!hasProjectAccess}>
             <DatasetItemEntryPointRow
               icon={<Braces className="h-5 w-5" />}
-              title="Add Manually"
-              description="Manually input a single item"
+              title={tFeatures("evalsMore:onboarding.itemsManual")}
+              description={tFeatures("evalsMore:onboarding.itemsManualHelp")}
               onClick={() => {
                 if (hasProjectAccess) {
                   capture("dataset_item:new_form_open");
@@ -133,7 +136,9 @@ export const DatasetItemsOnboarding = ({
           </DialogTrigger>
           <DialogContent size="lg">
             <DialogHeader>
-              <DialogTitle>Create dataset item</DialogTitle>
+              <DialogTitle>
+                {tFeatures("evalsMore:onboarding.createItem")}
+              </DialogTitle>
             </DialogHeader>
             <NewDatasetItemForm
               projectId={projectId}
@@ -153,16 +158,18 @@ export const DatasetItemsOnboarding = ({
         >
           <DatasetItemEntryPointRow
             icon={<Code className="h-5 w-5" />}
-            title="Add via Code"
-            description="Use our Python/TS/JS SDKs or custom API"
+            title={tFeatures("evalsMore:onboarding.itemsCode")}
+            description={tFeatures("evalsMore:onboarding.itemsCodeHelp")}
           />
         </Link>
 
         <Link href={`/project/${projectId}/observations`}>
           <DatasetItemEntryPointRow
             icon={<ListTree className="h-5 w-5" />}
-            title="Select Observations"
-            description="Select observations in the observations table and use a batch action to add them to your dataset"
+            title={tFeatures("evalsMore:onboarding.itemsObservations")}
+            description={tFeatures(
+              "evalsMore:onboarding.itemsObservationsHelp",
+            )}
             onClick={() => {
               capture("dataset_item:select_observations_button_click");
             }}

@@ -14,6 +14,7 @@ import type {
   VariableFieldState,
 } from "@/src/features/evals/v2/types/variableMapping";
 import { cn } from "@/src/utils/tailwind";
+import { useTranslation } from "react-i18next";
 
 export type DecisionModelStateField = {
   key: string;
@@ -92,6 +93,7 @@ export function DecisionModelStateEditor({
   hasMatchingObservations: boolean;
   sourceUnavailableMessage?: string;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const [previewOpen, setPreviewOpen] = useState(false);
   const statePreview = useMemo(
     () => buildStatePreview(fields, sourceObject),
@@ -124,7 +126,7 @@ export function DecisionModelStateEditor({
       <div>
         <Button type="button" variant="outline" size="sm" onClick={onAddField}>
           <Plus className="mr-1 h-3.5 w-3.5" />
-          Add field
+          {tFeatures("ui.addField")}
         </Button>
       </div>
 
@@ -136,7 +138,9 @@ export function DecisionModelStateEditor({
           onClick={() => setPreviewOpen((open) => !open)}
         >
           <span className="flex items-center gap-2">
-            <span className="font-bold">State sent to the model</span>
+            <span className="font-bold">
+              {tFeatures("ui.stateSentToTheModel")}
+            </span>
             {statePreview ? (
               <span
                 className={cn(

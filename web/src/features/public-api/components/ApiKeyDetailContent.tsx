@@ -1,4 +1,5 @@
 /* eslint-disable @repo/no-style-props */
+import { useTranslation } from "react-i18next";
 import { SubHeader } from "@/src/components/layouts/header";
 import { CodeView } from "@/src/components/ui/CodeJsonViewer";
 import { Label } from "@/src/components/ui/label";
@@ -27,6 +28,7 @@ function encodeMcpCredential(publicKey: string, secretKey: string) {
 }
 
 export function ApiKeyDetailContent(props: ApiKeyDetailContentProps) {
+  const { t } = useTranslation("settings");
   const { scope, secretKey, publicKey, baseUrl, className, showMcpSection } =
     props;
   const envCode = getLangfuseEnvCode(baseUrl, { secretKey, publicKey });
@@ -35,15 +37,18 @@ export function ApiKeyDetailContent(props: ApiKeyDetailContentProps) {
   return (
     <div className={cn("space-y-6", className)}>
       <div>
-        <SubHeader title="Secret Key" />
+        <SubHeader title={t("secretKey")} />
         <div className="text-muted-foreground text-sm">
-          This key can only be viewed once. You can always create new keys in
-          the {scope} settings.
+          {t(
+            scope === "project"
+              ? "projectSecretKeyWarning"
+              : "organizationSecretKeyWarning",
+          )}
         </div>
         <CodeView content={secretKey} className="mt-2" />
       </div>
       <div>
-        <SubHeader title="Public Key" />
+        <SubHeader title={t("publicKey")} />
         <CodeView content={publicKey} className="mt-2" />
       </div>
       <div>
@@ -54,22 +59,21 @@ export function ApiKeyDetailContent(props: ApiKeyDetailContentProps) {
         <>
           <hr />
           <div>
-            <SubHeader title="Using with MCP" />
+            <SubHeader title={t("usingMcp")} />
             <p className="text-muted-foreground text-sm">
-              For a detailed guide on how to use this API key to connect to the
-              Langfuse MCP server, see the{" "}
+              {t("mcpSetupDescription")}{" "}
               <a
                 href="https://langfuse.com/docs/api-and-data-platform/features/mcp-server"
                 target="_blank"
                 rel="noreferrer"
                 className="text-foreground underline"
               >
-                MCP setup docs
+                {t("mcpSetupDocs")}
               </a>
               .
             </p>
             <div className="mt-4">
-              <Label>Header</Label>
+              <Label>{t("httpHeader")}</Label>
               <CodeView
                 content={`Authorization: Basic ${mcpCredential}`}
                 className="mt-2"

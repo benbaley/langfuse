@@ -23,6 +23,7 @@ import { type Prisma } from "@langfuse/shared";
 import { type EnrichedDatasetRunItem } from "@langfuse/shared/src/server";
 import { usePeekNavigation } from "@/src/components/table/peek/hooks/usePeekNavigation";
 import { TablePeekViewTraceDetail } from "@/src/components/table/peek/peek-trace-detail";
+import { useTranslation } from "react-i18next";
 
 export type DatasetCompareRunRowData = {
   id: string;
@@ -38,6 +39,8 @@ function DatasetCompareRunsTableInternal(props: {
   datasetId: string;
   runIds: string[];
 }) {
+  const { t: tMore } = useTranslation("coreMore");
+  const { t: tFeatures } = useTranslation("features");
   const { toggleField, isFieldSelected, setSelectedFields } =
     useDatasetCompareFields();
   const {
@@ -136,7 +139,7 @@ function DatasetCompareRunsTableInternal(props: {
   const columns: LangfuseColumnDef<DatasetCompareRunRowData>[] = [
     createLinkTableColumn<DatasetCompareRunRowData>({
       accessorKey: "id",
-      header: "Item id",
+      header: tFeatures("ui.itemId"),
       size: 90,
       enableHiding: true,
       defaultHidden: true,
@@ -153,26 +156,29 @@ function DatasetCompareRunsTableInternal(props: {
     }),
     createIOTableColumn<DatasetCompareRunRowData>({
       accessorKey: "input",
-      header: "Input",
+      header: tFeatures("ui.input"),
       size: 200,
       enableHiding: true,
     }),
     createIOTableColumn<DatasetCompareRunRowData>({
       accessorKey: "expectedOutput",
-      header: "Expected Output",
+      header: tFeatures("ui.expectedOutput"),
       size: 200,
       enableHiding: true,
       variant: "output",
     }),
     createIOTableColumn<DatasetCompareRunRowData>({
       accessorKey: "metadata",
-      header: "Metadata",
+      header: tFeatures("ui.metadata"),
       size: 200,
       enableHiding: true,
       defaultHidden: true,
     }),
     {
-      ...getDatasetRunAggregateColumnProps(cellsLoading),
+      ...getDatasetRunAggregateColumnProps(
+        cellsLoading,
+        tMore("datasets.experiments"),
+      ),
       columns: runAggregateColumns,
     },
   ];
@@ -206,7 +212,7 @@ function DatasetCompareRunsTableInternal(props: {
           content: (
             <div className="px-3 py-2">
               <p className="text-muted-foreground px-2 pb-1 text-xs">
-                Within each experiment
+                {tFeatures("ui.withinEachExperiment")}
               </p>
               {(
                 [
@@ -276,9 +282,11 @@ function DatasetCompareRunsTableInternal(props: {
         noResultsMessage={
           hasActiveRunFilters ? (
             <div className="text-muted-foreground flex flex-col items-center gap-1 text-sm">
-              <span>No dataset run items match the current filters.</span>
+              <span>
+                {tFeatures("ui.noDatasetRunItemsMatchTheCurrentFilters")}
+              </span>
               <span className="text-xs">
-                Adjust or clear filters to compare items again.
+                {tFeatures("ui.adjustOrClearFiltersToCompareItemsAgain")}
               </span>
             </div>
           ) : undefined

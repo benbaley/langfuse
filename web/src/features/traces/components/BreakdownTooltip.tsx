@@ -12,6 +12,7 @@ import { type Details } from "@/src/features/traces/fns/calculateAggregatedUsage
 import { ExternalLink } from "lucide-react";
 import { usdFormatter } from "@/src/utils/numbers";
 import { cva, type VariantProps } from "class-variance-authority";
+import { useTranslation } from "react-i18next";
 
 export interface PriceSource {
   projectId: string;
@@ -41,6 +42,8 @@ export const BreakdownTooltip = ({
   priceSource,
   costSource,
 }: BreakdownTooltipProps) => {
+  const { t: tMore } = useTranslation("coreMore");
+  const { t: tFeatures } = useTranslation("features");
   const [isOpen, setIsOpen] = useState(false);
 
   // Aggregate details if array is provided
@@ -106,12 +109,14 @@ export const BreakdownTooltip = ({
           <div className="grid min-w-0 grid-cols-[max-content_7rem_max-content] gap-x-3 gap-y-4 max-sm:w-full max-sm:grid-cols-[minmax(0,1fr)_6rem_max-content]">
             <div className="col-span-3 flex min-w-0 flex-col gap-1">
               <span className="font-bold">
-                {isCost ? "Cost breakdown" : "Usage breakdown"}
+                {isCost
+                  ? tFeatures("ui.costBreakdown")
+                  : tFeatures("ui.usageBreakdown")}
               </span>
 
               {isCost && resolvedCostSource === "provided" ? (
                 <span className="text-muted-foreground text-xs italic">
-                  Provided at ingestion
+                  {tFeatures("ui.providedAtIngestion")}
                 </span>
               ) : null}
 
@@ -124,9 +129,13 @@ export const BreakdownTooltip = ({
                 >
                   <span
                     className="min-w-0 truncate"
-                    title={`Calculated · ${priceSource.pricingTierName} Tier Pricing`}
+                    title={tMore("traces.calculatedTier", {
+                      name: priceSource.pricingTierName,
+                    })}
                   >
-                    Calculated · {priceSource.pricingTierName} Tier Pricing
+                    {tMore("traces.calculatedTier", {
+                      name: priceSource.pricingTierName,
+                    })}
                   </span>
                   <ExternalLink className="h-3 w-3 shrink-0" />
                 </Link>
@@ -134,19 +143,20 @@ export const BreakdownTooltip = ({
 
               {isCost && resolvedCostSource === "calculated" && !priceSource ? (
                 <span className="text-muted-foreground text-xs italic">
-                  Calculated from model pricing
+                  {tFeatures("ui.calculatedFromModelPricing")}
                 </span>
               ) : null}
 
               {Array.isArray(details) && details.length > 0 && (
                 <span className="text-muted-foreground text-xs italic">
-                  Aggregate across {details.length}{" "}
-                  {details.length === 1 ? "generation" : "generations"}
+                  {tMore("traces.aggregateGenerations", {
+                    count: details.length,
+                  })}
                 </span>
               )}
               {pricingTierName && (
                 <BreakdownRow
-                  label="Pricing Tier:"
+                  label={tFeatures("ui.pricingTier")}
                   value={pricingTierName}
                   variant="item"
                 />
@@ -155,7 +165,11 @@ export const BreakdownTooltip = ({
 
             {/* Input Section */}
             <Section
-              title={isCost ? "Input cost" : "Input usage"}
+              title={
+                isCost
+                  ? tFeatures("ui.inputCostTitle")
+                  : tFeatures("ui.inputUsage")
+              }
               entries={inputEntries}
               formatValue={formatValue}
               waterfallSegments={waterfallSegments}
@@ -163,7 +177,11 @@ export const BreakdownTooltip = ({
 
             {/* Output Section */}
             <Section
-              title={isCost ? "Output cost" : "Output usage"}
+              title={
+                isCost
+                  ? tFeatures("ui.outputCostTitle")
+                  : tFeatures("ui.outputUsage")
+              }
               entries={outputEntries}
               formatValue={formatValue}
               waterfallSegments={waterfallSegments}
@@ -173,7 +191,11 @@ export const BreakdownTooltip = ({
             {otherEntries.length > 0 && (
               <div className="col-span-3 grid min-w-0 grid-cols-subgrid gap-y-2">
                 <BreakdownRow
-                  label={isCost ? "Other cost" : "Other usage"}
+                  label={
+                    isCost
+                      ? tFeatures("ui.otherCost")
+                      : tFeatures("ui.otherUsage")
+                  }
                   value={formatValue(otherTotal)}
                   variant="section"
                 />
@@ -191,7 +213,11 @@ export const BreakdownTooltip = ({
 
             {/* Total */}
             <BreakdownRow
-              label={isCost ? "Total cost" : "Total usage"}
+              label={
+                isCost
+                  ? tFeatures("ui.totalCostTitle")
+                  : tFeatures("ui.totalUsage")
+              }
               value={formatValue(displayedTotal)}
               variant="total"
             />

@@ -13,6 +13,7 @@ import {
   type ExperimentDiffMode,
   type ExperimentResultsLayout,
 } from "@/src/features/experiments/hooks/useExperimentResultsState";
+import { useTranslation } from "react-i18next";
 
 type ExperimentDisplaySettingsProps = {
   layout: ExperimentResultsLayout;
@@ -64,6 +65,7 @@ export function ExperimentDisplaySettings({
   hasComparisons,
   hasBaseline,
 }: ExperimentDisplaySettingsProps) {
+  const { t: tFeatures } = useTranslation("features");
   const isItemVisibilityDisabled = !hasComparisons || !hasBaseline;
 
   return (
@@ -71,68 +73,70 @@ export function ExperimentDisplaySettings({
       <DropdownMenuTrigger asChild>
         <Button variant="outline">
           <Settings2 className="h-4 w-4" />
-          <span className="ml-2 hidden md:inline">Display</span>
+          <span className="ml-2 hidden md:inline">
+            {tFeatures("ui.display")}
+          </span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-64">
-        <DropdownMenuLabel>Layout</DropdownMenuLabel>
+        <DropdownMenuLabel>{tFeatures("ui.layout")}</DropdownMenuLabel>
         <OptionItem
           selected={layout === "list"}
           onSelect={() => onLayoutChange("list")}
         >
-          Diff — one row per item
+          {tFeatures("ui.diffOneRowPerItem")}
         </OptionItem>
         <OptionItem
           selected={layout === "grid"}
           onSelect={() => onLayoutChange("grid")}
         >
-          Side by side — a column per experiment
+          {tFeatures("ui.sideBySideAColumnPerExperiment")}
         </OptionItem>
         <OptionItem
           selected={layout === "matrix"}
           onSelect={() => onLayoutChange("matrix")}
         >
-          Score matrix — scores as rows, runs as columns
+          {tFeatures("ui.scoreMatrixScoresAsRowsRunsAsColumns")}
         </OptionItem>
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuLabel>Diff</DropdownMenuLabel>
+        <DropdownMenuLabel>{tFeatures("ui.diff")}</DropdownMenuLabel>
         <OptionItem
           selected={diffMode === "comparison"}
           onSelect={() => onDiffModeChange("comparison")}
         >
-          Comparison → Baseline
+          {tFeatures("ui.comparisonBaseline")}
         </OptionItem>
         <OptionItem
           selected={diffMode === "expected"}
           onSelect={() => onDiffModeChange("expected")}
         >
-          Expected → Output
+          {tFeatures("ui.expectedOutputTitleText")}
         </OptionItem>
         <OptionItem
           selected={diffMode === "off"}
           onSelect={() => onDiffModeChange("off")}
         >
-          Off — values only
+          {tFeatures("ui.offValuesOnly")}
         </OptionItem>
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuLabel>Item Visibility</DropdownMenuLabel>
+        <DropdownMenuLabel>{tFeatures("ui.itemVisibility")}</DropdownMenuLabel>
         <OptionItem
           selected={itemVisibility === "baseline-only"}
           disabled={isItemVisibilityDisabled}
           onSelect={() => onItemVisibilityChange("baseline-only")}
         >
-          Show only items in baseline
+          {tFeatures("ui.showOnlyItemsInBaseline")}
         </OptionItem>
         <OptionItem
           selected={itemVisibility === "all"}
           disabled={isItemVisibilityDisabled}
           onSelect={() => onItemVisibilityChange("all")}
         >
-          Show all items
+          {tFeatures("ui.showAllItems")}
         </OptionItem>
       </DropdownMenuContent>
     </DropdownMenu>

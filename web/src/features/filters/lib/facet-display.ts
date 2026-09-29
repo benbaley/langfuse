@@ -1,4 +1,5 @@
 /* eslint-disable no-nested-ternary */
+import type { TFunction } from "i18next";
 import type { UIFilter } from "@/src/features/filters/hooks/useSidebarFilterState";
 import { filterRank } from "@/src/features/search-bar";
 
@@ -8,7 +9,10 @@ import { filterRank } from "@/src/features/search-bar";
 const displayValue = (
   value: string,
   displayByValue?: Map<string, string>,
-): string => displayByValue?.get(value) ?? (value === "" ? "(empty)" : value);
+  t?: TFunction,
+): string =>
+  displayByValue?.get(value) ??
+  (value === "" ? (t?.("filters:summary.empty") ?? "(empty)") : value);
 
 /**
  * One-line header summary answering "what is selected?" for a facet.
@@ -25,7 +29,10 @@ const displayValue = (
  * Returns null when there is nothing useful to say (e.g. inactive facets of
  * types that have no all-checked ambiguity, or empty option lists).
  */
-export function getFacetSummary(filter: UIFilter): string | null {
+export function getFacetSummary(
+  filter: UIFilter,
+  t?: TFunction,
+): string | null {
   if (filter.type === "categorical") {
     if (!filter.isActive) {
       // "All" only makes sense once there are several options to keep; while
@@ -41,10 +48,13 @@ export function getFacetSummary(filter: UIFilter): string | null {
         filter.value.length < filter.options.length
       ) {
         return filter.value.length === 1
-          ? displayValue(filter.value[0], filter.displayByValue)
-          : `${filter.value.length} selected`;
+          ? displayValue(filter.value[0], filter.displayByValue, t)
+          : (t?.("filters:summary.selected", { count: filter.value.length }) ??
+              `${filter.value.length} selected`);
       }
-      return filter.options.length > 1 ? "All" : null;
+      return filter.options.length > 1
+        ? (t?.("filters:summary.all") ?? "All")
+        : null;
     }
 
     // A column can carry BOTH a checkbox filter and text filters (authorable
@@ -64,9 +74,15 @@ export function getFacetSummary(filter: UIFilter): string | null {
         filter.excludedValues ??
         filter.options.filter((option) => !kept.has(option));
       if (excluded.length === 1) {
-        parts.push(`not ${displayValue(excluded[0], filter.displayByValue)}`);
+        const value = displayValue(excluded[0], filter.displayByValue, t);
+        parts.push(
+          t?.("filters:summary.notValue", { value }) ?? `not ${value}`,
+        );
       } else if (excluded.length > 1) {
-        parts.push(`not ${excluded.length} values`);
+        parts.push(
+          t?.("filters:summary.excluded", { count: excluded.length }) ??
+            `not ${excluded.length} values`,
+        );
       }
     } else if (
       filter.value.length === 1 &&
@@ -75,7 +91,7 @@ export function getFacetSummary(filter: UIFilter): string | null {
       (filter.operator !== undefined ||
         filter.value.length < filter.options.length)
     ) {
-      parts.push(displayValue(filter.value[0], filter.displayByValue));
+      parts.push(displayValue(filter.value[0], filter.displayByValue, t));
     } else if (
       filter.value.length > 1 &&
       filter.value.length === filter.options.length &&
@@ -84,13 +100,16 @@ export function getFacetSummary(filter: UIFilter): string | null {
       // An explicit keep-everything filter (the managed-env column persists
       // an all-selected override): an ACTIVE "All" chip reads truer than
       // "N selected".
-      parts.push("All");
+      parts.push(t?.("filters:summary.all") ?? "All");
     } else if (
       filter.value.length > 1 &&
       (filter.value.length < filter.options.length ||
         filter.operator === "all of")
     ) {
-      parts.push(`${filter.value.length} selected`);
+      parts.push(
+        t?.("filters:summary.selected", { count: filter.value.length }) ??
+          `${filter.value.length} selected`,
+      );
     }
 
     if (filter.textFilters && filter.textFilters.length > 0) {
@@ -98,15 +117,23 @@ export function getFacetSummary(filter: UIFilter): string | null {
         const entry = filter.textFilters[0];
         parts.push(
           entry.operator === "contains"
-            ? `contains "${entry.value}"`
-            : `not "${entry.value}"`,
+            ? (t?.("filters:summary.contains", { value: entry.value }) ??
+                `contains "${entry.value}"`)
+            : (t?.("filters:summary.notText", { value: entry.value }) ??
+                `not "${entry.value}"`),
         );
       } else {
-        parts.push(`${filter.textFilters.length} text filters`);
+        parts.push(
+          t?.("filters:summary.textFilters", {
+            count: filter.textFilters.length,
+          }) ?? `${filter.textFilters.length} text filters`,
+        );
       }
     }
 
-    return parts.length > 0 ? parts.join(" · ") : "filtered";
+    return parts.length > 0
+      ? parts.join(" · ")
+      : (t?.("filters:summary.filtered") ?? "filtered");
   }
 
   if (filter.type === "numeric") {
@@ -129,7 +156,10 @@ export function getFacetSummary(filter: UIFilter): string | null {
   // name the key; several → count them.
   if (!filter.isActive) return null;
   if (filter.value.length === 1) return filter.value[0].key;
-  return `${filter.value.length} conditions`;
+  return (
+    t?.("filters:summary.conditions", { count: filter.value.length }) ??
+    `${filter.value.length} conditions`
+  );
 }
 
 /**

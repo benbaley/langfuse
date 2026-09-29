@@ -20,10 +20,10 @@ export const usePromptNameValidation = ({
       .includes(currentName);
 
     if (!isNewPrompt) {
-      form.setError("name", { message: "Prompt name already exists." });
+      form.setError("name", { message: "prompts.validation.nameExists" });
     } else {
       const currentError = form.getFieldState("name").error;
-      if (currentError?.message === "Prompt name already exists.") {
+      if (currentError?.message === "prompts.validation.nameExists") {
         form.clearErrors("name");
       }
     }

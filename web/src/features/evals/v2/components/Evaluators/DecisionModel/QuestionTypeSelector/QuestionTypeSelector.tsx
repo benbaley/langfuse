@@ -1,9 +1,13 @@
+import type { TFunction } from "i18next";
 import { DecisionModelQuestionType } from "@langfuse/shared";
 import { Gauge, ListChecks, ToggleLeft, type LucideIcon } from "lucide-react";
 
 import { cn } from "@/src/utils/tailwind";
+import { useTranslation } from "react-i18next";
 
-export const QUESTION_TYPE_COPY: Record<
+export const getQuestionTypeCopy = (
+  tFeatures: TFunction,
+): Record<
   DecisionModelQuestionType,
   {
     label: string;
@@ -13,35 +17,32 @@ export const QUESTION_TYPE_COPY: Record<
     example: string;
     whenToUse: string;
   }
-> = {
+> => ({
   [DecisionModelQuestionType.CHOICE]: {
-    label: "Choice",
+    label: tFeatures("evalsMore:decision.choice"),
     icon: ListChecks,
-    summary: "Pick one of a fixed set of labels.",
-    writes: "a categorical score",
-    example: "Which team should handle this ticket?",
-    whenToUse:
-      "The answer is one of a few options with no order between them. Add an “other” option if the list may not cover every input.",
+    summary: tFeatures("evalsMore:decision.choiceSummary"),
+    writes: tFeatures("evalsMore:decision.choiceWrites"),
+    example: tFeatures("evalsMore:decision.choiceExample"),
+    whenToUse: tFeatures("evalsMore:decision.choiceWhen"),
   },
   [DecisionModelQuestionType.SCORE]: {
-    label: "Score",
+    label: tFeatures("evalsMore:decision.score"),
     icon: Gauge,
-    summary: "Rate along ordered levels you describe.",
-    writes: "a numeric score (the expected level)",
-    example: "How frustrated is the customer?",
-    whenToUse:
-      "The answer sits on a spectrum you can describe in steps. Describe situations, not degrees: “broken but a workaround exists” beats “moderately severe”.",
+    summary: tFeatures("evalsMore:decision.scoreSummary"),
+    writes: tFeatures("evalsMore:decision.scoreWrites"),
+    example: tFeatures("evalsMore:decision.scoreExample"),
+    whenToUse: tFeatures("evalsMore:decision.scoreWhen"),
   },
   [DecisionModelQuestionType.NOUL]: {
-    label: "Yes / no",
+    label: tFeatures("evalsMore:decision.yesNo"),
     icon: ToggleLeft,
-    summary: "Get the probability a statement is true.",
-    writes: "a numeric score (probability 0–1)",
-    example: "Does the message request a refund?",
-    whenToUse:
-      "A clean yes/no where the probability itself is the signal. Define the condition precisely; 0.5 means undecided, not “medium”.",
+    summary: tFeatures("evalsMore:decision.yesNoSummary"),
+    writes: tFeatures("evalsMore:decision.yesNoWrites"),
+    example: tFeatures("evalsMore:decision.yesNoExample"),
+    whenToUse: tFeatures("evalsMore:decision.yesNoWhen"),
   },
-};
+});
 
 const ORDER: DecisionModelQuestionType[] = [
   DecisionModelQuestionType.CHOICE,
@@ -62,16 +63,17 @@ export function QuestionTypeSelector({
   onValueChange: (value: DecisionModelQuestionType) => void;
   disabled?: boolean;
 }) {
-  const active = QUESTION_TYPE_COPY[value];
+  const { t: tFeatures } = useTranslation("features");
+  const active = getQuestionTypeCopy(tFeatures)[value];
   return (
     <div className="@container flex flex-col gap-1.5">
       <div
         role="radiogroup"
-        aria-label="Question type"
+        aria-label={tFeatures("ui.questionType")}
         className="grid gap-2 @lg:grid-cols-3"
       >
         {ORDER.map((type) => {
-          const copy = QUESTION_TYPE_COPY[type];
+          const copy = getQuestionTypeCopy(tFeatures)[type];
           const selected = type === value;
           return (
             <button
@@ -96,14 +98,19 @@ export function QuestionTypeSelector({
               </span>
               <span className="text-muted-foreground">{copy.summary}</span>
               <span className="text-muted-foreground text-xs italic">
-                e.g. “{copy.example}”
+                {tFeatures("evalsMore:decision.example", {
+                  example: copy.example,
+                })}
               </span>
             </button>
           );
         })}
       </div>
       <p className="text-muted-foreground text-xs">
-        Writes {active.writes}. {active.whenToUse}
+        {tFeatures("evalsMore:decision.writesDescription", {
+          output: active.writes,
+          guidance: active.whenToUse,
+        })}
       </p>
     </div>
   );

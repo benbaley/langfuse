@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 /**
  * Hook for copy JSON functionality in LogView.
  *
@@ -38,6 +39,7 @@ export function useLogViewDownload({
   loadAllData,
   buildDataFromCache,
 }: UseLogViewDownloadParams) {
+  const { t: tMore } = useTranslation("coreMore");
   const [isActionLoading, setIsActionLoading] = useState(false);
 
   // Copy JSON handler - uses cache only or loads all based on threshold.
@@ -53,7 +55,7 @@ export function useLogViewDownload({
         try {
           const data = buildDataFromCache();
           copyTextToClipboard(stringify(data, undefined, 2));
-          toast.success("Copied to clipboard (cache only)");
+          toast.success(tMore("traces.copiedCache"));
         } finally {
           setIsActionLoading(false);
         }
@@ -68,7 +70,7 @@ export function useLogViewDownload({
             `Copied to clipboard. ${failedObservationIds.length} observation${failedObservationIds.length === 1 ? "" : "s"} failed to load and ${failedObservationIds.length === 1 ? "is" : "are"} missing I/O data.`,
           );
         } else {
-          toast.success("Copied to clipboard");
+          toast.success(tMore("traces.copied"));
         }
       } else {
         setIsActionLoading(true);
@@ -81,7 +83,7 @@ export function useLogViewDownload({
               `Copied to clipboard. ${failedObservationIds.length} observation${failedObservationIds.length === 1 ? "" : "s"} failed to load and ${failedObservationIds.length === 1 ? "is" : "are"} missing I/O data.`,
             );
           } else {
-            toast.success("Copied to clipboard");
+            toast.success(tMore("traces.copied"));
           }
         } finally {
           setIsActionLoading(false);
@@ -89,6 +91,7 @@ export function useLogViewDownload({
       }
     }
   }, [
+    tMore,
     isCacheOnly,
     allObservationsData,
     loadAllData,

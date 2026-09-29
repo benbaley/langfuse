@@ -20,6 +20,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { GripVertical } from "lucide-react";
 
 import { cn } from "@/src/utils/tailwind";
+import { useTranslation } from "react-i18next";
 
 function SortableRow({
   id,
@@ -32,6 +33,7 @@ function SortableRow({
   disabled: boolean;
   children: ReactNode;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const {
     attributes,
     listeners,
@@ -61,7 +63,7 @@ function SortableRow({
         disabled={disabled}
         className="text-muted-foreground hover:text-foreground focus-visible:ring-ring flex h-9 w-5 cursor-grab touch-none items-center justify-center rounded focus-visible:ring-2 focus-visible:outline-hidden active:cursor-grabbing disabled:cursor-default disabled:opacity-30"
         aria-label={`Reorder ${label}`}
-        title="Drag to reorder"
+        title={tFeatures("ui.dragToReorder")}
         {...attributes}
         {...listeners}
       >

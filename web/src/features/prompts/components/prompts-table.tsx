@@ -53,6 +53,7 @@ import { useTableViewManager } from "@/src/components/table/table-view-presets/h
 import { useTableViewFilterChange } from "@/src/components/table/table-view-presets/hooks/useTableViewFilterChange";
 
 import { PROMPTS_FIELD_REGISTRY } from "@/src/features/prompts/constants/promptsSearchRegistry";
+import { useTranslation } from "react-i18next";
 
 type PromptTableRow = {
   id: string;
@@ -85,6 +86,7 @@ function createRow(
 }
 
 export function PromptTable() {
+  const { t: tFeatures } = useTranslation("features");
   const projectId = useProjectIdFromURL() ?? "";
   const { setDetailPageList } = useDetailPageLists();
   const promptMetricsTimeWindow = useMemo(() => {
@@ -300,7 +302,7 @@ export function PromptTable() {
   const promptColumns: LangfuseColumnDef<PromptTableRow>[] = [
     createFolderKeyTableColumn<PromptTableRow>({
       accessorKey: "name",
-      header: "Name",
+      header: tFeatures("ui.name"),
       enableSorting: true,
       size: 250,
       getCell: (name, { row }) => {
@@ -327,7 +329,7 @@ export function PromptTable() {
     }),
     createNumberTableColumn<PromptTableRow>({
       accessorKey: "version",
-      header: "Versions",
+      header: tFeatures("ui.versions"),
       enableSorting: true,
       size: 70,
       formatter: (value) => String(value),
@@ -338,13 +340,13 @@ export function PromptTable() {
     }),
     createTextTableColumn<PromptTableRow>({
       accessorKey: "type",
-      header: "Type",
+      header: tFeatures("ui.type"),
       enableSorting: true,
       size: 60,
     }),
     createDateTableColumn({
       accessorKey: "createdAt",
-      header: "Latest Version Created At",
+      header: tFeatures("ui.latestVersionCreatedAt"),
       enableSorting: true,
       size: 200,
       getValue: (value, context) => {
@@ -357,7 +359,7 @@ export function PromptTable() {
     }),
     {
       accessorKey: "numberOfObservations",
-      header: "Number of Observations (7d)",
+      header: tFeatures("ui.numberOfObservations7d"),
       id: "numberOfObservations",
       size: 170,
       cell: ({ getValue, row }) => {
@@ -383,7 +385,7 @@ export function PromptTable() {
     },
     {
       accessorKey: "tags",
-      header: "Tags",
+      header: tFeatures("ui.tags"),
       id: "tags",
       enableSorting: true,
       size: 120,
@@ -414,7 +416,7 @@ export function PromptTable() {
     {
       accessorKey: "id",
       id: "actions",
-      header: "Actions",
+      header: tFeatures("ui.actions"),
       size: 70,
       enableSorting: false,
       cell: ({ row }) => {

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useEffect, useRef, useState, type RefObject } from "react";
 import { useRouter } from "next/router";
 import { type CommentObjectType } from "@langfuse/shared";
@@ -43,6 +44,7 @@ export function CommentConversation({
   containerRef: RefObject<HTMLDivElement | null>;
   onCommentChange: () => Promise<void>;
 }) {
+  const { i18n } = useTranslation("common");
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -170,7 +172,10 @@ export function CommentConversation({
                 comment.authorUserName ?? comment.authorUserId ?? "User"
               }
               authorImage={comment.authorUserImage}
-              timestamp={getRelativeTimestampFromNow(comment.createdAt)}
+              timestamp={getRelativeTimestampFromNow(
+                comment.createdAt,
+                i18n.resolvedLanguage,
+              )}
               content={comment.content}
               highlighted={highlightedCommentId === comment.id}
               isOwnComment={currentUserId === comment.authorUserId}

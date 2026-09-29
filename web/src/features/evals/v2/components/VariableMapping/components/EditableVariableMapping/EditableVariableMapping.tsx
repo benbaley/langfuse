@@ -33,6 +33,7 @@ import {
   experimentTargetEvalVariableColumns,
 } from "@langfuse/shared";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics";
+import { useTranslation } from "react-i18next";
 
 const TOOL_CALLS_COLUMN_ID = "toolCalls";
 
@@ -163,6 +164,7 @@ function TreeSelectorBody({
   onSelect: (columnId: string, segments: PathSegment[]) => void;
   onApplyJsonPath: (jsonSelector: string | null) => void;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const [pathEditing, setPathEditing] = useState(false);
   const { selectedColumnId } = fieldState;
 
@@ -217,7 +219,7 @@ function TreeSelectorBody({
         <p className="text-muted-foreground border-b p-3 text-sm">
           {sourceUnavailableMessage ??
             (hasMatchingObservations
-              ? "Loading sample data…"
+              ? tFeatures("ui.loadingSampleData")
               : "No observations match the current rule — mapping can be configured, but JSON paths cannot be validated yet.")}
         </p>
       ) : null}
@@ -234,12 +236,12 @@ function TreeSelectorBody({
           disabled={!selectedColumnId}
           title={
             selectedColumnId
-              ? "Enter a raw JSONPath (filters, slices, …)"
-              : "Pick a field in the tree first, then refine it as a path."
+              ? tFeatures("ui.enterARawJsonpathFiltersSlices")
+              : tFeatures("ui.pickAFieldInTheTreeFirstThenRefineItAsAPath")
           }
           onClick={() => setPathEditing(true)}
         >
-          Type a JSONPath instead
+          {tFeatures("ui.typeAJsonpathInstead")}
         </button>
       </div>
       <SampleDataTreeSelector
@@ -292,6 +294,7 @@ function VariableMappingRow({
   onChange: (next: VariableFieldState) => void;
   onDelete?: () => void;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const capture = usePostHogClientCapture();
   const segments = useMemo(
     () =>
@@ -378,11 +381,13 @@ function VariableMappingRow({
       ) : !sourceObject ? (
         <p className="text-muted-foreground p-3 text-sm">
           {sourceUnavailableMessage ??
-            "Pick a sample in the right pane to preview the value this mapping pulls in."}
+            tFeatures(
+              "ui.pickASampleInTheRightPaneToPreviewTheValueThisMappingPullsIn",
+            )}
         </p>
       ) : validationUnavailable ? (
         <p className="text-muted-foreground p-3 text-sm">
-          No sample value is available to preview this mapping yet.
+          {tFeatures("ui.noSampleValueIsAvailableToPreviewThisMappingYet")}
         </p>
       ) : extracted?.error ? (
         <div className="text-dark-yellow flex items-start gap-1.5 p-3 text-sm">
@@ -391,7 +396,7 @@ function VariableMappingRow({
         </div>
       ) : !extracted?.value ? (
         <p className="text-muted-foreground p-3 text-sm italic">
-          empty in the sample
+          {tFeatures("evalsMore:mapping.emptySample")}
         </p>
       ) : (
         <MappedValuePreview value={extracted.value} />

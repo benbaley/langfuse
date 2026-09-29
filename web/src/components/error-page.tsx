@@ -1,4 +1,5 @@
 /* eslint-disable no-nested-ternary */
+import { useTranslation } from "react-i18next";
 import { Button } from "@/src/components/ui/button";
 import { AlertCircle } from "lucide-react";
 import { useSession } from "next-auth/react";
@@ -9,7 +10,7 @@ import { reportError } from "@/src/utils/reportError";
 import { stripBasePath } from "@/src/utils/redirect";
 
 export const ErrorPage = ({
-  title = "Error",
+  title,
   message,
   additionalButton,
 }: {
@@ -25,6 +26,7 @@ export const ErrorPage = ({
         onClick: () => void;
       };
 }) => {
+  const { t } = useTranslation("settingsMore");
   const session = useSession();
   const router = useRouter();
   const newTargetPath = stripBasePath(router.asPath || "/");
@@ -37,14 +39,14 @@ export const ErrorPage = ({
   return (
     <div className="flex h-full flex-col items-center justify-center">
       <AlertCircle className="text-dark-red mb-4 h-12 w-12" />
-      <h1 className="mb-4 text-xl font-bold">{title}</h1>
+      <h1 className="mb-4 text-xl font-bold">{title ?? t("error.title")}</h1>
       <p className="mb-6 text-center">{message}</p>
       <div className="flex gap-3">
         {session.status === "unauthenticated" ? (
           <Button
             onClick={() => router.push(`/auth/sign-in${targetPathQuery}`)}
           >
-            Sign In
+            {t("error.signIn")}
           </Button>
         ) : null}
         {additionalButton ? (
@@ -94,7 +96,7 @@ export const ErrorPageWithSentry = ({
 
   return (
     <ErrorPage
-      title={title}
+      title={title === "Error" ? undefined : title}
       message={message}
       additionalButton={additionalButton}
     />

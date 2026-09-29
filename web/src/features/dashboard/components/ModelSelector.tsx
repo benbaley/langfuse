@@ -3,6 +3,7 @@ import { useAllModels } from "@/src/features/dashboard/components/hooks";
 import { type FilterState } from "@langfuse/shared";
 import { type ViewVersion } from "@langfuse/shared/query";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export const ModelSelectorPopover = ({
   allModels,
@@ -12,22 +13,25 @@ export const ModelSelectorPopover = ({
   allModels: { model: string }[];
   selectedModels: string[];
   setSelectedModels: React.Dispatch<React.SetStateAction<string[]>>;
-}) => (
-  <div className="w-80 max-w-full">
-    <MultiSelectTagInput
-      value={selectedModels}
-      options={allModels.map(({ model }) => ({
-        value: model,
-        label: model || "none",
-      }))}
-      onValueChange={setSelectedModels}
-      placeholder="Select models"
-      searchPlaceholder="Search models..."
-      emptyMessage="No model found."
-      selectAllLabel="Select All"
-    />
-  </div>
-);
+}) => {
+  const { t: tApp } = useTranslation("app");
+  return (
+    <div className="w-80 max-w-full">
+      <MultiSelectTagInput
+        value={selectedModels}
+        options={allModels.map(({ model }) => ({
+          value: model,
+          label: model || "none",
+        }))}
+        onValueChange={setSelectedModels}
+        placeholder={tApp("ui.SelectModels")}
+        searchPlaceholder="Search models..."
+        emptyMessage={tApp("ui.NoModelFound")}
+        selectAllLabel="Select All"
+      />
+    </div>
+  );
+};
 
 export const useModelSelection = (
   projectId: string,

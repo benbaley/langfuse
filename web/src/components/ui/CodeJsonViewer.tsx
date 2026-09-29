@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 /* eslint-disable no-nested-ternary */
 /* eslint-disable @repo/no-style-props */
 import { useMemo, useState } from "react";
@@ -50,6 +51,7 @@ export function JSONView(props: {
   preserveStrings?: boolean;
   customizeNode?: (node: unknown) => React.ReactElement | undefined;
 }) {
+  const { t: tMore } = useTranslation("coreMore");
   // some users ingest stringified json nested in json, parse it. Also decode
   // \uXXXX escapes (e.g. Japanese ingested with Python ensure_ascii=True) so
   // non-ASCII content renders as real characters. Already-decoded strings are
@@ -139,7 +141,14 @@ export function JSONView(props: {
               collapseStringMode="word"
               customizeCollapseStringUI={(fullSTring, truncated) =>
                 truncated ? (
-                  <div className="opacity-50">{`\n...expand (${Math.max(fullSTring.length - collapseStringsAfterLength, 0)} more characters)`}</div>
+                  <div className="opacity-50">
+                    {tMore("io.expandCharacters", {
+                      count: Math.max(
+                        fullSTring.length - collapseStringsAfterLength,
+                        0,
+                      ),
+                    })}
+                  </div>
                 ) : (
                   ""
                 )
@@ -166,7 +175,7 @@ export function JSONView(props: {
       {props.media && props.media.length > 0 && (
         <>
           <div className="text-muted-foreground my-1 px-0 py-1 text-xs">
-            Media
+            {tMore("io.media")}
           </div>
           <div className="ph-no-capture flex flex-wrap gap-2 pt-1 pb-4">
             {props.media.map((m) => (

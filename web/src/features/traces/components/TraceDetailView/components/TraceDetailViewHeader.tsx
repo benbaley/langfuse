@@ -47,6 +47,7 @@ import {
 import { DropdownMenu } from "@/src/components/design-system/DropdownMenu/DropdownMenu";
 import { cn } from "@/src/utils/tailwind";
 import { buildLocalIsoDatePresentation } from "@/src/utils/dates";
+import { useTranslation } from "react-i18next";
 
 export interface TraceDetailViewHeaderProps {
   trace: Omit<WithStringifiedMetadata<TraceDomain>, "input" | "output"> & {
@@ -72,6 +73,7 @@ export const TraceDetailViewHeader = memo(function TraceDetailViewHeader({
   commentCount,
   commentDrawerControl,
 }: TraceDetailViewHeaderProps) {
+  const { t: tFeatures } = useTranslation("features");
   const { isAnnotationMode } = useViewPreferences();
   const { isV4 } = useReadPath();
   const isMobile = useIsMobile();
@@ -114,10 +116,10 @@ export const TraceDetailViewHeader = memo(function TraceDetailViewHeader({
             >
               {({ getTriggerProps }) => (
                 <Button
-                  aria-label="Options"
+                  aria-label={tFeatures("ui.options")}
                   className="mt-0.5 shrink-0"
                   size="icon-xs"
-                  title="Options"
+                  title={tFeatures("ui.options")}
                   variant="ghost"
                   {...getTriggerProps()}
                 >
@@ -155,7 +157,7 @@ export const TraceDetailViewHeader = memo(function TraceDetailViewHeader({
                                   {
                                     type: "item" as const,
                                     id: "annotate",
-                                    title: "Annotate",
+                                    title: tFeatures("ui.annotate"),
                                     icon: annotationDisabled
                                       ? LockIcon
                                       : SquarePen,
@@ -212,7 +214,7 @@ export const TraceDetailViewHeader = memo(function TraceDetailViewHeader({
                             {
                               type: "submenu" as const,
                               id: "add-to",
-                              title: "Add to",
+                              title: tFeatures("ui.addTo"),
                               icon: PlusIcon,
                               items: addToItems,
                             },
@@ -227,7 +229,7 @@ export const TraceDetailViewHeader = memo(function TraceDetailViewHeader({
                             <Button
                               variant="outline"
                               size="icon"
-                              aria-label="More actions"
+                              aria-label={tFeatures("ui.moreActions")}
                               className="ml-auto shrink-0"
                               {...getTriggerProps({
                                 ref: mobileActionsTriggerRef,
@@ -265,7 +267,7 @@ export const TraceDetailViewHeader = memo(function TraceDetailViewHeader({
                   {...getTriggerProps()}
                 >
                   <PlusIcon className="h-3.5 w-3.5" />
-                  <span>Add to</span>
+                  <span>{tFeatures("ui.addTo")}</span>
                   <ChevronDown className="h-3 w-3" />
                 </Button>
               )}
@@ -302,7 +304,7 @@ export const TraceDetailViewHeader = memo(function TraceDetailViewHeader({
                     ) : (
                       <SquarePen className="mr-1.5 h-3.5 w-3.5" />
                     )}
-                    <span>Annotate</span>
+                    <span>{tFeatures("ui.annotate")}</span>
                   </Button>
                 )}
               </AnnotateDrawerController>

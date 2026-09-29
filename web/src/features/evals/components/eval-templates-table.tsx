@@ -58,6 +58,7 @@ import { SiPython, SiTypescript } from "react-icons/si";
 import { createDateTableColumn } from "@/src/components/design-system/table/columns/createDateTableColumn";
 import { createNumberTableColumn } from "@/src/components/design-system/table/columns/createNumberTableColumn";
 import { createIdTableColumn } from "@/src/components/design-system/table/columns/createIdTableColumn";
+import { useTranslation } from "react-i18next";
 
 export type EvalsTemplateRow = {
   name: string;
@@ -143,6 +144,7 @@ const EvalTemplateRowActionsMenu = ({
   onEdit: () => void;
   onClone: () => void;
 }) => {
+  const { t: tFeatures } = useTranslation("features");
   // undefined = never opened: keeps the dialog unmounted for untouched rows,
   // while close (false) keeps it mounted so the exit animation can play.
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>();
@@ -157,16 +159,22 @@ const EvalTemplateRowActionsMenu = ({
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon-xs" aria-label="actions">
-            <span className="sr-only relative">Open menu</span>
+          <Button
+            variant="ghost"
+            size="icon-xs"
+            aria-label={tFeatures("evalsMore:actions.menu")}
+          >
+            <span className="sr-only relative">
+              {tFeatures("evalsMore:actions.openMenu")}
+            </span>
             <MoreVertical className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+          <DropdownMenuLabel>{tFeatures("ui.actions")}</DropdownMenuLabel>
           {showClone ? (
             <DropdownMenuItem
-              aria-label="clone"
+              aria-label={tFeatures("evalsMore:actions.clone")}
               disabled={!hasAccess}
               onClick={(e) => {
                 e.stopPropagation();
@@ -174,13 +182,13 @@ const EvalTemplateRowActionsMenu = ({
               }}
             >
               <Copy className="mr-2 h-4 w-4" />
-              Clone
+              {tFeatures("ui.clone")}
             </DropdownMenuItem>
           ) : null}
           {showEditAndDelete ? (
             <>
               <DropdownMenuItem
-                aria-label="edit"
+                aria-label={tFeatures("evalsMore:actions.edit")}
                 disabled={!hasAccess}
                 onClick={(e) => {
                   e.stopPropagation();
@@ -188,10 +196,10 @@ const EvalTemplateRowActionsMenu = ({
                 }}
               >
                 <Pen className="mr-2 h-4 w-4" />
-                Edit
+                {tFeatures("ui.edit")}
               </DropdownMenuItem>
               <DropdownMenuItem
-                aria-label="delete"
+                aria-label={tFeatures("evalsMore:actions.delete")}
                 disabled={!hasTemplateWriteAccess}
                 onClick={(e) => {
                   e.stopPropagation();
@@ -202,7 +210,7 @@ const EvalTemplateRowActionsMenu = ({
                 }}
               >
                 <Trash className="mr-2 h-4 w-4" />
-                Delete
+                {tFeatures("ui.delete")}
               </DropdownMenuItem>
             </>
           ) : null}
@@ -233,6 +241,7 @@ export default function EvalsTemplateTable({
 }: {
   projectId: string;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const router = useRouter();
   const codeEvalCapabilities = useIsCodeEvalEnabled();
   const { enabled: isCodeEvalEnabled, supportedSourceCodeLanguages } =
@@ -335,11 +344,11 @@ export default function EvalsTemplateTable({
   const columns = [
     createIdTableColumn<EvalsTemplateRow>({
       accessorKey: "name",
-      header: "Name",
+      header: tFeatures("ui.name"),
     }),
     columnHelper.accessor("type", {
       id: "type",
-      header: "Type",
+      header: tFeatures("ui.type"),
       size: 120,
       cell: ({ row }) => (
         <TemplateTypeBadge
@@ -350,7 +359,7 @@ export default function EvalsTemplateTable({
     }),
     columnHelper.accessor("resultType", {
       id: "resultType",
-      header: "Score Result Type",
+      header: tFeatures("ui.scoreResultType"),
       size: 120,
       cell: (row) => {
         const resultType = row.getValue();
@@ -364,7 +373,7 @@ export default function EvalsTemplateTable({
     }),
     columnHelper.accessor("maintainer", {
       id: "maintainer",
-      header: "Maintainer",
+      header: tFeatures("ui.maintainer"),
       size: 150,
       cell: (row) => {
         return (
@@ -379,12 +388,12 @@ export default function EvalsTemplateTable({
     }),
     createDateTableColumn<EvalsTemplateRow>({
       accessorKey: "latestCreatedAt",
-      header: "Last Edited",
+      header: tFeatures("ui.lastEdited"),
       size: 150,
     }),
     createNumberTableColumn<EvalsTemplateRow>({
       accessorKey: "usageCount",
-      header: "Usage Count",
+      header: tFeatures("ui.usageCount"),
       enableHiding: true,
       size: 80,
       formatter: (value) => String(value),
@@ -394,7 +403,7 @@ export default function EvalsTemplateTable({
     }),
     createNumberTableColumn<EvalsTemplateRow>({
       accessorKey: "latestVersion",
-      header: "Latest Version",
+      header: tFeatures("ui.latestVersionTitle"),
       enableHiding: true,
       size: 80,
       formatter: (value) => String(value),
@@ -406,7 +415,7 @@ export default function EvalsTemplateTable({
       enableHiding: true,
     }),
     columnHelper.accessor("actions", {
-      header: "Actions",
+      header: tFeatures("ui.actions"),
       id: "actions",
       size: 100,
       cell: ({ row }) => {
@@ -421,11 +430,13 @@ export default function EvalsTemplateTable({
             <ActionButton
               variant="outline"
               size="sm"
-              aria-label="apply"
+              aria-label={tFeatures("evalsMore:actions.apply")}
               disabled={isInvalid}
               title={
                 isInvalid
-                  ? "Evaluator requires project-level evaluation model. Set it up and start running evaluations."
+                  ? tFeatures(
+                      "ui.evaluatorRequiresProjectLevelEvaluationModelSetItUpAndStartRunningEvaluations",
+                    )
                   : undefined
               }
               hasAccess={hasAccess}
@@ -446,7 +457,7 @@ export default function EvalsTemplateTable({
                 }
               }}
             >
-              Use Evaluator
+              {tFeatures("ui.useEvaluator")}
             </ActionButton>
             {hasMenuItems && id ? (
               <EvalTemplateRowActionsMenu
@@ -593,7 +604,7 @@ export default function EvalsTemplateTable({
           }
         >
           <DialogHeader>
-            <DialogTitle>Edit evaluator</DialogTitle>
+            <DialogTitle>{tFeatures("ui.editEvaluator")}</DialogTitle>
           </DialogHeader>
           <EvalTemplateForm
             projectId={projectId}
@@ -629,7 +640,7 @@ export default function EvalsTemplateTable({
           }
         >
           <DialogHeader>
-            <DialogTitle>Clone evaluator</DialogTitle>
+            <DialogTitle>{tFeatures("ui.cloneEvaluator")}</DialogTitle>
           </DialogHeader>
           <EvalTemplateForm
             projectId={projectId}
@@ -658,7 +669,7 @@ export default function EvalsTemplateTable({
               setCloneTemplateId(null);
               utils.evals.templateNames.invalidate();
               showSuccessToast({
-                title: "Evaluator cloned successfully",
+                title: tFeatures("ui.evaluatorClonedSuccessfully"),
                 description:
                   "This evaluator is now available and maintained on project level. ",
               });

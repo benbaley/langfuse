@@ -39,6 +39,7 @@ import {
 } from "@/src/utils/numbers";
 import { cn } from "@/src/utils/tailwind";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics";
+import { useTranslation } from "react-i18next";
 
 type ModernSessionHeaderProps = {
   projectId: string;
@@ -108,21 +109,24 @@ const scoreChipValue = (
     : score.value.toFixed(2);
 };
 
-const UserChip = ({ projectId, user }: { projectId: string; user: string }) => (
-  <ModernSessionHeaderPill
-    variant="link"
-    href={`/project/${projectId}/users/${encodeURIComponent(user)}`}
-  >
-    user{" "}
-    <span
-      className="text-foreground group-hover:text-link truncate"
-      title={user}
+const UserChip = ({ projectId, user }: { projectId: string; user: string }) => {
+  const { t: tMore } = useTranslation("coreMore");
+  return (
+    <ModernSessionHeaderPill
+      variant="link"
+      href={`/project/${projectId}/users/${encodeURIComponent(user)}`}
     >
-      {user}
-    </span>
-    <ArrowUpRight className="text-link h-3 w-3 shrink-0" />
-  </ModernSessionHeaderPill>
-);
+      {tMore("sessions.user")}{" "}
+      <span
+        className="text-foreground group-hover:text-link truncate"
+        title={user}
+      >
+        {user}
+      </span>
+      <ArrowUpRight className="text-link h-3 w-3 shrink-0" />
+    </ModernSessionHeaderPill>
+  );
+};
 
 const SessionHeaderDetailWithVisibilityControl = ({
   detail,
@@ -140,7 +144,8 @@ const SessionHeaderDetailWithVisibilityControl = ({
     control: HTMLButtonElement,
   ) => void;
 }) => {
-  const action = isHidden ? "Show" : "Hide";
+  const { t: tMore } = useTranslation("coreMore");
+
   return (
     <span
       className={cn(
@@ -151,8 +156,20 @@ const SessionHeaderDetailWithVisibilityControl = ({
       {detail.content}
       <button
         type="button"
-        aria-label={`${action} ${detail.visibilityLabel} in session header`}
-        title={`${action} in session header`}
+        aria-label={
+          isHidden
+            ? tMore("sessions.showHeaderDetail", {
+                detail: detail.visibilityLabel,
+              })
+            : tMore("sessions.hideHeaderDetail", {
+                detail: detail.visibilityLabel,
+              })
+        }
+        title={
+          isHidden
+            ? tMore("sessions.showInHeader")
+            : tMore("sessions.hideInHeader")
+        }
         className="bg-header hover:bg-muted focus-visible:ring-ring absolute right-0 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-sm border opacity-0 shadow-sm transition-opacity group-focus-within:opacity-100 group-hover:opacity-100 focus-visible:ring-1 focus-visible:outline-none [@media(hover:none)]:opacity-100"
         onClick={(event) =>
           onVisibilityChange(detail, !isHidden, location, event.currentTarget)
@@ -204,32 +221,38 @@ const MetadataJsonPathPill = ({
 }: {
   display: ReturnType<typeof getConfiguredMetadataDisplay>;
   onRemove: (path: string) => void;
-}) => (
-  <span className="group flex items-center">
-    <ModernSessionHeaderPill variant="display">
-      <span className="max-w-40 truncate" title={display.path}>
-        {display.label}
-      </span>
-      <span
-        className="text-foreground max-w-56 truncate"
-        title={display.displayValue}
-      >
-        {display.displayValue}
-      </span>
-      <span className="-ml-1.5 inline-flex w-0 overflow-hidden transition-[width,margin] group-focus-within:ml-0 group-focus-within:w-4 group-hover:ml-0 group-hover:w-4">
-        <button
-          type="button"
-          aria-label={`Remove metadata JSONPath ${display.path}`}
-          title="Remove metadata JSONPath"
-          className="hover:bg-muted focus-visible:ring-ring inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-sm opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100 focus-visible:ring-1 focus-visible:outline-none"
-          onClick={() => onRemove(display.path)}
+}) => {
+  const { t: tMore } = useTranslation("coreMore");
+  const { t: tFeatures } = useTranslation("features");
+  return (
+    <span className="group flex items-center">
+      <ModernSessionHeaderPill variant="display">
+        <span className="max-w-40 truncate" title={display.path}>
+          {display.label}
+        </span>
+        <span
+          className="text-foreground max-w-56 truncate"
+          title={display.displayValue}
         >
-          <X className="h-3 w-3" />
-        </button>
-      </span>
-    </ModernSessionHeaderPill>
-  </span>
-);
+          {display.displayValue}
+        </span>
+        <span className="-ml-1.5 inline-flex w-0 overflow-hidden transition-[width,margin] group-focus-within:ml-0 group-focus-within:w-4 group-hover:ml-0 group-hover:w-4">
+          <button
+            type="button"
+            aria-label={tMore("sessions.removeJsonPath", {
+              path: display.path,
+            })}
+            title={tFeatures("ui.removeMetadataJsonpath")}
+            className="hover:bg-muted focus-visible:ring-ring inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-sm opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100 focus-visible:ring-1 focus-visible:outline-none"
+            onClick={() => onRemove(display.path)}
+          >
+            <X className="h-3 w-3" />
+          </button>
+        </span>
+      </ModernSessionHeaderPill>
+    </span>
+  );
+};
 
 const MetadataJsonPathEditorContent = ({
   metadataJsonPaths,
@@ -240,6 +263,8 @@ const MetadataJsonPathEditorContent = ({
   onClose: () => void;
   onSave: (path: string) => void;
 }) => {
+  const { t: tMore } = useTranslation("coreMore");
+  const { t: tFeatures } = useTranslation("features");
   const [draftPath, setDraftPath] = useState("");
   const normalizedDraftPath = draftPath.trim();
   const draftResolution = resolveAgainstSource(
@@ -264,11 +289,13 @@ const MetadataJsonPathEditorContent = ({
     <PopoverContent
       align="end"
       className="w-96"
-      aria-label="Add metadata JSONPath"
+      aria-label={tFeatures("ui.addMetadataJsonpath")}
     >
       <form className="flex flex-col gap-3" onSubmit={handleSubmit}>
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor="session-metadata-jsonpath">Metadata JSONPath</Label>
+          <Label htmlFor="session-metadata-jsonpath">
+            {tFeatures("ui.metadataJsonpath")}
+          </Label>
           <Input
             id="session-metadata-jsonpath"
             value={draftPath}
@@ -279,52 +306,56 @@ const MetadataJsonPathEditorContent = ({
           />
         </div>
         <div className="bg-muted/40 flex min-h-14 flex-col gap-1 rounded-md border p-2 text-xs">
-          <span className="text-muted-foreground font-bold">Preview</span>
+          <span className="text-muted-foreground font-bold">
+            {tFeatures("ui.preview")}
+          </span>
           {normalizedDraftPath.length === 0 ? (
             <span className="text-muted-foreground">
-              Enter a JSONPath to preview metadata.
+              {tFeatures("ui.enterAJsonpathToPreviewMetadata")}
             </span>
           ) : draftIsDuplicate ? (
             <span className="text-muted-foreground">
-              This JSONPath is already shown.
+              {tFeatures("ui.thisJsonpathIsAlreadyShown")}
             </span>
           ) : draftResolution.state === "match" ? (
             <span className="font-mono break-all">
               {draftResolution.displayValue}
             </span>
           ) : draftResolution.state === "invalid" ? (
-            <span className="text-destructive">{draftResolution.message}</span>
+            <span className="text-destructive">
+              {tMore("sessions.invalidJsonPath")}
+            </span>
           ) : draftResolution.state === "loading" ||
             draftResolution.state === "idle" ? (
             <span className="text-muted-foreground">
-              Loading first visible observation…
+              {tFeatures("ui.loadingFirstVisibleObservation")}
             </span>
           ) : draftResolution.state === "error" ? (
             <span className="text-destructive">
-              Could not load the first visible observation.
+              {tFeatures("ui.couldNotLoadTheFirstVisibleObservation")}
             </span>
           ) : draftResolution.state === "empty" ? (
             <span className="text-muted-foreground">
-              No observation matches the current view.
+              {tFeatures("ui.noObservationMatchesTheCurrentView")}
             </span>
           ) : (
             <span className="text-muted-foreground">
-              No match on the first visible observation.
+              {tFeatures("ui.noMatchOnTheFirstVisibleObservation")}
             </span>
           )}
           {metadataJsonPaths.source.state === "ready" &&
           metadataJsonPaths.source.metadataTruncated ? (
             <span className="text-amber-600 dark:text-amber-500">
-              Metadata is truncated in this session preview.
+              {tFeatures("ui.metadataIsTruncatedInThisSessionPreview")}
             </span>
           ) : null}
         </div>
         <div className="flex items-center justify-end gap-2">
           <Button type="button" variant="ghost" size="sm" onClick={onClose}>
-            Cancel
+            {tFeatures("ui.cancel")}
           </Button>
           <Button type="submit" size="sm" disabled={!draftIsValid}>
-            Save
+            {tFeatures("ui.save")}
           </Button>
         </div>
       </form>
@@ -345,6 +376,8 @@ export function ModernSessionHeader({
   metadataJsonPaths,
   scores,
 }: ModernSessionHeaderProps) {
+  const { t: tMore } = useTranslation("coreMore");
+  const { t: tFeatures } = useTranslation("features");
   const capture = usePostHogClientCapture();
   const [rawHiddenDetailKeys, setRawHiddenDetailKeys] =
     useLocalStorage<unknown>(
@@ -401,18 +434,22 @@ export function ModernSessionHeader({
     {
       key: "traces",
       searchText: `traces ${countTraces} spans ${spanCount ?? ""}`,
-      visibilityLabel: "trace and span counts",
+      visibilityLabel: tMore("sessions.visibility.traces"),
       type: "traces",
       content: (
         <ModernSessionHeaderPill variant="display">
           <span>
-            <ChipValue>{numberFormatter(countTraces, 0)}</ChipValue> traces
+            {tMore("sessions.traces", {
+              count: numberFormatter(countTraces, 0),
+            })}
           </span>
           {spanCount !== null ? (
             <>
               <ChipDot />
               <span>
-                <ChipValue>{numberFormatter(spanCount, 0)}</ChipValue> spans
+                {tMore("sessions.spans", {
+                  count: numberFormatter(spanCount, 0),
+                })}
               </span>
             </>
           ) : null}
@@ -425,7 +462,7 @@ export function ModernSessionHeader({
     pills.push({
       key: "latency",
       searchText: `latency p50 ${p50LatencyMs} p95 ${p95LatencyMs ?? ""}`,
-      visibilityLabel: "latency percentiles",
+      visibilityLabel: tMore("sessions.visibility.latency"),
       type: "latency",
       content: (
         <ModernSessionHeaderPill variant="display">
@@ -454,15 +491,15 @@ export function ModernSessionHeader({
     pills.push({
       key: "tokens",
       searchText: `tokens ${tokensIn} ${tokensOut} ${totalTokens}`,
-      visibilityLabel: "token usage",
+      visibilityLabel: tMore("sessions.visibility.tokens"),
       type: "tokens",
       content: (
         <ModernSessionHeaderPill
           variant="display"
-          title={`tokens ${exactTokenCounts}`}
+          title={tMore("sessions.tokenCounts", { value: exactTokenCounts })}
         >
           <span>
-            tokens{" "}
+            {tMore("sessions.tokens")}{" "}
             <ChipValue>
               {compactTokenFormatter(tokensIn)} →{" "}
               {compactTokenFormatter(tokensOut)} (Σ{" "}
@@ -477,15 +514,16 @@ export function ModernSessionHeader({
   pills.push({
     key: "cost",
     searchText: `cost ${totalCost}`,
-    visibilityLabel: "cost",
+    visibilityLabel: tMore("sessions.cost"),
     type: "cost",
     content: (
       <ModernSessionHeaderPill
         variant="display"
-        title={`exact $${totalCost.toFixed(6)}`}
+        title={tMore("sessions.exactCost", { cost: totalCost.toFixed(6) })}
       >
         <span>
-          cost <ChipValue>{usdFormatter(totalCost, 2, 3)}</ChipValue>
+          {tMore("sessions.cost")}{" "}
+          <ChipValue>{usdFormatter(totalCost, 2, 3)}</ChipValue>
         </span>
       </ModernSessionHeaderPill>
     ),
@@ -502,7 +540,7 @@ export function ModernSessionHeader({
     pills.push({
       key: sessionHeaderDynamicDetailKey("score", score.id),
       searchText: `score ${score.name} ${value}`,
-      visibilityLabel: `score ${index + 1}`,
+      visibilityLabel: tMore("sessions.visibility.score", { index: index + 1 }),
       type: "score",
       content: (
         <ModernSessionHeaderPill variant="display" title={score.name}>
@@ -522,12 +560,12 @@ export function ModernSessionHeader({
     pills.push({
       key: "environment",
       searchText: `environment env ${environment}`,
-      visibilityLabel: "environment",
+      visibilityLabel: tMore("sessions.env"),
       type: "environment",
       content: (
         <ModernSessionHeaderPill variant="display">
           <span>
-            env <ChipValue>{environment}</ChipValue>
+            {tMore("sessions.env")} <ChipValue>{environment}</ChipValue>
           </span>
         </ModernSessionHeaderPill>
       ),
@@ -538,7 +576,7 @@ export function ModernSessionHeader({
     (user, index): SessionHeaderDetail => ({
       key: sessionHeaderDynamicDetailKey("user", user),
       searchText: `user ${user}`,
-      visibilityLabel: `user ${index + 1}`,
+      visibilityLabel: tMore("sessions.visibility.user", { index: index + 1 }),
       type: "user",
       content: <UserChip projectId={projectId} user={user} />,
     }),
@@ -562,7 +600,9 @@ export function ModernSessionHeader({
     pills.push({
       key: sessionHeaderDynamicDetailKey("metadata", path),
       searchText: `metadata ${display.path} ${display.label} ${display.displayValue}`,
-      visibilityLabel: `metadata ${index + 1}`,
+      visibilityLabel: tMore("sessions.visibility.metadata", {
+        index: index + 1,
+      }),
       type: "metadata",
       content: (
         <MetadataJsonPathPill
@@ -703,7 +743,7 @@ export function ModernSessionHeader({
               <PopoverContent
                 align="end"
                 className="w-80 p-0"
-                aria-label="All session details"
+                aria-label={tFeatures("ui.allSessionDetails")}
               >
                 <div className="relative border-b p-2">
                   <Search className="text-muted-foreground absolute top-1/2 left-4 h-3.5 w-3.5 -translate-y-1/2" />
@@ -714,14 +754,14 @@ export function ModernSessionHeader({
                       setSearch(event.target.value);
                       setVisibleUserCount(SESSION_USERS_PER_PAGE);
                     }}
-                    placeholder="Search session details"
-                    aria-label="Search session details"
+                    placeholder={tFeatures("ui.searchSessionDetails")}
+                    aria-label={tFeatures("ui.searchSessionDetails")}
                     className="h-8 pl-8 text-xs"
                   />
                 </div>
                 <div
                   role="region"
-                  aria-label="Session detail results"
+                  aria-label={tFeatures("ui.sessionDetailResults")}
                   className="flex max-h-72 flex-col items-start gap-2 overflow-y-auto p-2"
                   onScroll={(event) => {
                     const element = event.currentTarget;
@@ -762,7 +802,7 @@ export function ModernSessionHeader({
                     </>
                   ) : (
                     <p className="text-muted-foreground px-2 py-4 text-xs">
-                      No session details found.
+                      {tFeatures("ui.noSessionDetailsFound")}
                     </p>
                   )}
                 </div>

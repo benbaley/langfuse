@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 /**
  * App Layout
  *
@@ -39,6 +40,8 @@ import { useLayoutMetadata } from "./hooks/useLayoutMetadata";
  * - User permissions
  */
 export function AppLayout(props: PropsWithChildren) {
+const { t: tUi } = useTranslation("uiMore");
+
   const router = useRouter();
   const session = useSession();
   const { organization } = useQueryProjectOrOrganization();
@@ -112,7 +115,7 @@ export function AppLayout(props: PropsWithChildren) {
     // every mount (thousands of events / hundreds of users of pure noise).
     return (
       <ErrorPage
-        title="Project Not Found"
+        title={tUi("projectNotFound")}
         message="The project you are trying to access does not exist or you do not have access to it."
         additionalButton={{
           label: "Go to Home",

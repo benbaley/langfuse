@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 /* eslint-disable no-nested-ternary */
 import {
   type default as React,
@@ -1034,6 +1035,7 @@ export function useSidebarFilterPresentation(
   options: FacetOptions,
   presentationOptions: SidebarFilterPresentationOptions = {},
 ) {
+  const { t } = useTranslation("filters");
   const { loading, loadingColumns } = presentationOptions;
   const [draftResetKey, setDraftResetKey] = useState(0);
   const isV4Surface = presentationOptions.isV4 ?? false;
@@ -1380,7 +1382,18 @@ export function useSidebarFilterPresentation(
     };
 
     return config.facets
-      .map((facet): UIFilter | null => {
+      .map((rawFacet): UIFilter | null => {
+        // Localize presentation only; config and persisted filter values remain stable.
+        const facet = {
+          ...rawFacet,
+          label: rawFacet.labelKey ? t(rawFacet.labelKey) : rawFacet.label,
+          tooltip: rawFacet.tooltipKey
+            ? t(rawFacet.tooltipKey)
+            : rawFacet.tooltip,
+          help: rawFacet.help?.descriptionKey
+            ? { ...rawFacet.help, description: t(rawFacet.help.descriptionKey) }
+            : rawFacet.help,
+        };
         if (facet.type === "numeric") {
           const conditions = filterState.filter(
             (
@@ -2012,6 +2025,7 @@ export function useSidebarFilterPresentation(
       })
       .filter((f): f is UIFilter => f !== null);
   }, [
+    t,
     config,
     options,
     loading,

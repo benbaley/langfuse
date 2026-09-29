@@ -10,6 +10,7 @@ import {
 } from "@/src/components/ui/popover";
 import { api } from "@/src/utils/api";
 import useProjectIdFromURL from "@/src/hooks/useProjectIdFromURL";
+import { useTranslation } from "react-i18next";
 
 export interface MediaButtonGroupProps {
   media: MediaReturnType[];
@@ -27,12 +28,13 @@ interface GroupedMedia {
  * AudioPlayer - Renders HTML5 audio player with controls
  */
 function AudioPlayer({ src }: { src?: string }) {
+  const { t: tFeatures } = useTranslation("features");
   if (!src) return null;
 
   return (
     <audio controls className="w-full" preload="metadata">
       <source src={src} />
-      Your browser does not support the audio element.
+      {tFeatures("ui.yourBrowserDoesNotSupportTheAudioElement")}
     </audio>
   );
 }
@@ -41,12 +43,13 @@ function AudioPlayer({ src }: { src?: string }) {
  * VideoPlayer - Renders HTML5 video player with controls
  */
 function VideoPlayer({ src }: { src?: string }) {
+  const { t: tFeatures } = useTranslation("features");
   if (!src) return null;
 
   return (
     <video controls className="w-full" preload="metadata" playsInline>
       <source src={src} />
-      Your browser does not support the video element.
+      {tFeatures("ui.yourBrowserDoesNotSupportTheVideoElement")}
     </video>
   );
 }
@@ -55,6 +58,8 @@ function VideoPlayer({ src }: { src?: string }) {
  * ImagePreview - Renders 96x96px image that opens in new tab when clicked
  */
 function ImagePreview({ src }: { src?: string }) {
+  const { t: tMore } = useTranslation("coreMore");
+  const { t: tFeatures } = useTranslation("features");
   if (!src) return null;
 
   const openInNewTab = () => {
@@ -65,12 +70,12 @@ function ImagePreview({ src }: { src?: string }) {
     <button
       onClick={openInNewTab}
       className="bg-muted h-24 w-24 overflow-hidden rounded-md border transition-opacity hover:opacity-80"
-      aria-label="Open image in new tab"
+      aria-label={tFeatures("ui.openImageInNewTab")}
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={src}
-        alt="Media preview"
+        alt={tMore("io.mediaPreview")}
         className="h-full w-full object-cover"
       />
     </button>

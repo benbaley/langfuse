@@ -9,8 +9,11 @@ import { RulesTable } from "@/src/features/evals/v2/components/Rules/RulesTable/
 import { useHasProjectAccess } from "@/src/features/rbac";
 import { EVALS_V2_TABS, getEvalsV2Tabs } from "@/src/features/navigation";
 import { V4MigrationUpdateRequiredBadge } from "@/src/features/v4-migration/V4MigrationDelayBadge";
+import { useTranslation, useTranslation as useNavigationTranslation } from "react-i18next";
 
 export function RulesPage() {
+  const { t: tNavigation } = useNavigationTranslation("navigation");
+  const { t: tFeatures } = useTranslation("features");
   const router = useRouter();
   const projectId = router.query.projectId as string;
   const [createOpen, setCreateOpen] = useState(false);
@@ -28,7 +31,7 @@ export function RulesPage() {
   return (
     <Page
       headerProps={{
-        title: "Rules",
+        title: tFeatures("ui.rules"),
         titleBadges: <V4MigrationUpdateRequiredBadge />,
         help: {
           description:
@@ -39,11 +42,11 @@ export function RulesPage() {
             disabled={!hasWriteAccess}
             onClick={() => setCreateOpen(true)}
           >
-            <Plus className="mr-2 h-4 w-4" /> New rule
+            <Plus className="mr-2 h-4 w-4" /> {tFeatures("ui.newRule")}
           </Button>
         ),
         tabsProps: {
-          tabs: getEvalsV2Tabs(projectId),
+          tabs: getEvalsV2Tabs(projectId, tNavigation),
           activeTab: EVALS_V2_TABS.RULES,
         },
       }}

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useId } from "react";
 import { useForm } from "react-hook-form";
@@ -24,10 +25,11 @@ export type DeleteProjectDialogProps = {
 };
 
 export function DeleteProjectDialog(props: DeleteProjectDialogProps) {
+  const { t } = useTranslation("settings");
   const formId = useId();
   const formSchema = z.object({
     name: z.string().includes(props.confirmMessage, {
-      message: `Please confirm with "${props.confirmMessage}"`,
+      message: t("confirmWith", { value: props.confirmMessage }),
     }),
   });
 
@@ -40,10 +42,10 @@ export function DeleteProjectDialog(props: DeleteProjectDialogProps) {
 
   return (
     <Dialog
-      title="Delete Project"
+      title={t("deleteProject")}
       actions={[
         {
-          label: "Delete project",
+          label: t("deleteProjectAction"),
           type: "submit",
           form: formId,
           variant: "destructive",
@@ -54,7 +56,7 @@ export function DeleteProjectDialog(props: DeleteProjectDialogProps) {
       <Form {...form}>
         <form id={formId} onSubmit={form.handleSubmit(props.onSubmit)}>
           <Dialog.Body>
-            <p>{`To confirm, type "${props.confirmMessage}" in the input box`}</p>
+            <p>{t("typeConfirmation", { value: props.confirmMessage })}</p>
             <FormField
               control={form.control}
               name="name"

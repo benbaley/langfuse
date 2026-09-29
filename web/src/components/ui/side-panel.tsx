@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 /* eslint-disable @repo/no-style-props, @repo/no-abstracted-overlay-trigger, @repo/no-null-render */
 import { default as React, useState, useCallback, type ReactNode } from "react";
 import { Button } from "@/src/components/ui/button";
@@ -56,6 +57,8 @@ const SidePanel = ({
     onOpenChange: (open: boolean) => void;
   };
 }) => {
+const { t: tUi } = useTranslation("uiMore");
+
   const isControlled = openState !== undefined;
   const controlledOpen = openState?.open;
   const onOpenChange = openState?.onOpenChange;
@@ -113,7 +116,7 @@ const SidePanel = ({
                 variant="ghost"
                 size="icon"
                 className="h-8 w-8"
-                title="Show details"
+                title={tUi("showDetails")}
               >
                 <ChevronLeft className="h-4 w-4" />
               </Button>
@@ -162,6 +165,8 @@ const SidePanel = ({
 };
 
 const SidePanelHeader = ({ children }: { children: ReactNode }) => {
+const { t: tUi } = useTranslation("uiMore");
+
   const context = React.useContext(SidePanelContext);
 
   if (!context) return null;
@@ -185,7 +190,7 @@ const SidePanelHeader = ({ children }: { children: ReactNode }) => {
         variant="ghost"
         size="icon"
         onClick={() => setShowPanel(true)}
-        title="Show details"
+        title={tUi("showDetails")}
       >
         <ChevronLeft className="h-4 w-4" />
       </Button>
@@ -200,7 +205,7 @@ const SidePanelHeader = ({ children }: { children: ReactNode }) => {
           variant="outline"
           size="icon"
           onClick={() => setShowPanel(false)}
-          title="Hide details"
+          title={tUi("hideDetails")}
         >
           <ChevronRight className="h-4 w-4" />
         </Button>

@@ -1,6 +1,7 @@
 import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { Group, Panel, Separator, useGroupRef } from "react-resizable-panels";
 import { cn } from "@/src/utils/tailwind";
+import { useTranslation } from "react-i18next";
 
 const NAVIGATION_PREFERENCE_KEY = "trace-review-navigation-collapsed";
 
@@ -29,6 +30,7 @@ export function TraceReviewLayout({
     toggle: () => void;
   }) => ReactNode;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const rootRef = useRef<HTMLDivElement>(null);
   const groupRef = useGroupRef();
   const [size, setSize] = useState({
@@ -134,7 +136,7 @@ export function TraceReviewLayout({
         </Panel>
         <Separator
           disabled={!open}
-          aria-label="Resize review panel"
+          aria-label={tFeatures("ui.resizeReviewPanel")}
           className={cn(
             "bg-border",
             vertical ? "h-px" : "w-px",

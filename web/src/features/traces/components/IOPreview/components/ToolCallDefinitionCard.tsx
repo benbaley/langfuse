@@ -13,6 +13,7 @@ import {
   HoverCardTrigger,
 } from "@/src/components/ui/hover-card";
 import type { ToolCallInvocation } from "../../../hooks/useChatMLParser";
+import { useTranslation } from "react-i18next";
 
 // Tool definition extracted from messages
 export interface ToolDefinition {
@@ -68,6 +69,7 @@ function ToolCallArgumentsList({
   toolCalls: ToolCallInvocation[];
   className?: string;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   return (
     <div className={cn("flex flex-col gap-3", className)}>
       {toolCalls.map((toolCall) => {
@@ -80,7 +82,7 @@ function ToolCallArgumentsList({
           >
             <div className="mb-1.5 flex min-w-0 items-center justify-between gap-2">
               <div className="text-foreground font-mono text-xs font-bold">
-                Call {toolCall.invocationNumber}
+                {tFeatures("ui.call")} {toolCall.invocationNumber}
               </div>
               {toolCall.id && (
                 <div
@@ -99,7 +101,7 @@ function ToolCallArgumentsList({
               />
             ) : (
               <div className="text-muted-foreground rounded-sm border px-2 py-1.5 text-xs">
-                No arguments
+                {tFeatures("ui.noArguments")}
               </div>
             )}
           </div>
@@ -266,6 +268,7 @@ function ToolCallStatusBadge({
   statusText: string;
   toolCalls: ToolCallInvocation[];
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const badge = (
     <Badge
       variant={isCalled ? undefined : "secondary"}
@@ -296,7 +299,7 @@ function ToolCallStatusBadge({
       >
         <div className="border-border border-b px-3 py-2">
           <div className="text-foreground text-xs font-bold">
-            Tool call arguments
+            {tFeatures("ui.toolCallArguments")}
           </div>
           <div className="text-muted-foreground text-xs">
             {toolCalls.length === 1 ? "1 call" : `${toolCalls.length} calls`}
@@ -327,6 +330,7 @@ function ToolDefinitionRow({
   currentView: "formatted" | "json";
   setCurrentView: (value: "formatted" | "json") => void;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const isCalled = callCount > 0;
   const statusText = getStatusText(callCount);
 
@@ -377,7 +381,11 @@ function ToolDefinitionRow({
                 }
               >
                 <Tabs.List size="sm">
-                  <Tabs.Trigger value="formatted" size="sm" label="Formatted" />
+                  <Tabs.Trigger
+                    value="formatted"
+                    size="sm"
+                    label={tFeatures("ui.formatted")}
+                  />
                   <Tabs.Trigger value="json" size="sm" label="JSON" />
                 </Tabs.List>
               </Tabs>
@@ -389,7 +397,7 @@ function ToolDefinitionRow({
               {tool.description && (
                 <div>
                   <div className="text-muted-foreground mb-1.5 text-xs font-bold">
-                    Description
+                    {tFeatures("ui.description")}
                   </div>
                   <div className="ph-no-capture text-foreground text-sm">
                     {tool.description}
@@ -400,7 +408,7 @@ function ToolDefinitionRow({
               {tool.parameters && (
                 <div>
                   <div className="text-muted-foreground mb-1.5 text-xs font-bold">
-                    Parameters
+                    {tFeatures("ui.parameters")}
                   </div>
                   <PrettyJsonView
                     json={tool.parameters}
@@ -413,7 +421,7 @@ function ToolDefinitionRow({
               {toolCalls.length > 0 && (
                 <div>
                   <div className="text-muted-foreground mb-1.5 text-xs font-bold">
-                    Tool call arguments
+                    {tFeatures("ui.toolCallArguments")}
                   </div>
                   <ToolCallArgumentsList toolCalls={toolCalls} />
                 </div>
@@ -423,7 +431,7 @@ function ToolDefinitionRow({
                 !tool.parameters &&
                 toolCalls.length === 0 && (
                   <div className="text-muted-foreground text-sm">
-                    No additional details available
+                    {tFeatures("ui.noAdditionalDetailsAvailable")}
                   </div>
                 )}
             </div>

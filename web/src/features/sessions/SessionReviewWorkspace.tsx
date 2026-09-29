@@ -5,6 +5,7 @@ import { TraceReviewPanel } from "@/src/features/traces/components/TraceReviewPa
 import { useTraceReviewPanel } from "@/src/features/traces/contexts/TraceReviewPanelContext";
 import { useElementSize } from "@/src/hooks/useElementSize";
 import { cn } from "@/src/utils/tailwind";
+import { useTranslation } from "react-i18next";
 
 export function SessionReviewWorkspace({
   projectId,
@@ -13,6 +14,7 @@ export function SessionReviewWorkspace({
   projectId: string;
   children: ReactNode;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const store = useTraceReviewPanel();
   const active = useStore(store, (state) => state.active);
   const open = active !== null;
@@ -77,7 +79,7 @@ export function SessionReviewWorkspace({
         </Panel>
         <Separator
           disabled={!open}
-          aria-label="Resize review panel"
+          aria-label={tFeatures("ui.resizeReviewPanel")}
           className={cn(
             "bg-border",
             vertical ? "h-px" : "w-px",

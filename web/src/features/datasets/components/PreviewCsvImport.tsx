@@ -27,6 +27,7 @@ import { useCsvDragAndDrop } from "@/src/features/datasets/hooks/useCsvDragAndDr
 import { useCsvImport } from "@/src/features/datasets/hooks/useCsvImport";
 import { createPortal } from "react-dom";
 import type { CsvPreviewResult } from "@/src/features/datasets/lib/csv/types";
+import { useTranslation } from "react-i18next";
 
 // Helper to extract schema keys from object schema
 function extractSchemaKeys(schema: unknown): string[] | null {
@@ -53,6 +54,8 @@ export function PreviewCsvImport({
   setPreview: (preview: CsvPreviewResult | null) => void;
   setOpen?: (open: boolean) => void;
 }) {
+  const { t: tMore } = useTranslation("coreMore");
+  const { t: tFeatures } = useTranslation("features");
   const capture = usePostHogClientCapture();
 
   // Fetch dataset schema
@@ -246,22 +249,23 @@ export function PreviewCsvImport({
               htmlFor="wrapSingleColumn"
               className="cursor-pointer text-sm font-normal"
             >
-              Force Objects
+              {tFeatures("ui.forceObjects")}
             </Label>
             <Tooltip>
               <TooltipTrigger asChild>
                 <InfoIcon className="text-muted-foreground h-3.5 w-3.5" />
               </TooltipTrigger>
               <TooltipContent className="max-w-[300px]">
-                When a single csv column is mapped to a dataset item field, wrap
-                its value in an object instead of using the raw value. Example:{" "}
-                {`{"columnName": "value"}`} instead of {`"value"`}
+                {tMore("datasets.wrapColumnHelp", {
+                  objectExample: '{"columnName": "value"}',
+                  valueExample: '"value"',
+                })}
               </TooltipContent>
             </Tooltip>
           </div>
         )}
         <Button variant="outline" onClick={handleCancel}>
-          Cancel
+          {tFeatures("ui.cancel")}
         </Button>
         <Button
           disabled={
@@ -271,8 +275,8 @@ export function PreviewCsvImport({
           onClick={handleImport}
         >
           {csvImport.progress.status === "processing"
-            ? "Importing..."
-            : "Import"}
+            ? tFeatures("ui.importingMessage")
+            : tFeatures("ui.import")}
         </Button>
         {csvImport.progress.status === "processing" && (
           <div className="mt-2">

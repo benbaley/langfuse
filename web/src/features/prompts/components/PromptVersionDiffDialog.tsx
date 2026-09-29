@@ -8,6 +8,7 @@ import {
 } from "@/src/components/ui/dialog";
 import { type Prompt } from "@langfuse/shared";
 import DiffViewer from "@/src/components/DiffViewer";
+import { useTranslation } from "react-i18next";
 
 type PromptVersionDiffDialogProps = {
   leftPrompt: Prompt;
@@ -53,24 +54,33 @@ const createSmartDiff = (
 export const PromptVersionDiffDialogContent = (
   props: PromptVersionDiffDialogProps,
 ) => {
+  const { t: tMore } = useTranslation("coreMore");
+  const { t: tFeatures } = useTranslation("features");
   const { leftPrompt, rightPrompt, closeDialog } = props;
 
   return (
     <>
       <DialogHeader>
         <DialogTitle>
-          Changes v{leftPrompt.version} → v{rightPrompt.version}
+          {tMore("prompts.versionChanges", {
+            left: leftPrompt.version,
+            right: rightPrompt.version,
+          })}
         </DialogTitle>
 
         <DialogDescription className="flex items-center gap-2">
-          <span className="font-bold">Prompt {leftPrompt.name}</span>
+          <span className="font-bold">
+            {tFeatures("ui.prompt")} {leftPrompt.name}
+          </span>
         </DialogDescription>
       </DialogHeader>
       <DialogBody>
         <div className="space-y-6">
           <div className="space-y-4">
             <div>
-              <h3 className="mb-2 text-base font-bold">Content</h3>
+              <h3 className="mb-2 text-base font-bold">
+                {tFeatures("ui.content")}
+              </h3>
               <DiffViewer
                 {...createSmartDiff(leftPrompt, rightPrompt)}
                 oldLabel={`v${leftPrompt.version}`}
@@ -80,7 +90,9 @@ export const PromptVersionDiffDialogContent = (
               />
             </div>
             <div>
-              <h3 className="mb-2 text-base font-bold">Config</h3>
+              <h3 className="mb-2 text-base font-bold">
+                {tFeatures("ui.config")}
+              </h3>
               <DiffViewer
                 oldString={JSON.stringify(leftPrompt.config, null, 2)}
                 newString={JSON.stringify(rightPrompt.config, null, 2)}
@@ -93,7 +105,7 @@ export const PromptVersionDiffDialogContent = (
       </DialogBody>
 
       <DialogFooter>
-        <Button onClick={closeDialog}>Close</Button>
+        <Button onClick={closeDialog}>{tFeatures("ui.close")}</Button>
       </DialogFooter>
     </>
   );

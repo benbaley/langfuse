@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  localizeAuthMessage,
+  localizeAuthResolver,
+} from "@/src/features/auth/lib/localizeAuthResolver";
 import * as z from "zod";
 import Head from "next/head";
 import { Button } from "@/src/components/ui/button";
@@ -28,6 +32,7 @@ import { passwordSchema } from "@/src/features/auth";
 import { useLangfuseCloudRegion } from "@/src/features/organizations";
 import { PASSWORD_SETUP_EMAIL_STORAGE_KEY } from "@/src/features/auth-credentials/lib/credentialsUtils";
 import { getDemoTargetPath } from "@/src/features/onboarding/lib/demoCallbackRedirect";
+import { useTranslation } from "react-i18next";
 
 const resetPasswordSchema = z
   .object({
@@ -51,6 +56,8 @@ export function ResetPasswordPage({
   initialEmail?: string;
   intent?: "reset" | "setup";
 }) {
+  const { t: tAuth } = useTranslation("auth");
+  const { t: tApp } = useTranslation("app");
   const session = useSession();
   const router = useRouter();
   const { isLangfuseCloud, region } = useLangfuseCloudRegion();
@@ -77,7 +84,7 @@ export function ResetPasswordPage({
   const effectiveEmail = session.data?.user?.email ?? email;
 
   const form = useForm({
-    resolver: zodResolver(resetPasswordSchema),
+    resolver: localizeAuthResolver(zodResolver(resetPasswordSchema)),
     defaultValues: {
       token: "",
       password: "",
@@ -101,7 +108,7 @@ export function ResetPasswordPage({
     setFormError(null);
     setIsSuccess(false);
     if (!z.email().safeParse(effectiveEmail).success) {
-      setFormError("Enter a valid email address.");
+      setFormError("errors.validEmail");
       return;
     }
     capture(
@@ -147,7 +154,7 @@ export function ResetPasswordPage({
         setFormError(error.message);
       } else {
         console.error(error);
-        setFormError("An unknown error occurred");
+        setFormError("errors.unknown");
       }
     }
   }
@@ -155,10 +162,10 @@ export function ResetPasswordPage({
   if (!passwordResetAvailable)
     return (
       <ErrorPage
-        title="Not available"
+        title={tApp("ui.NotAvailable")}
         message="Password reset is not configured on this instance"
         additionalButton={{
-          label: "Setup instructions",
+          label: tApp("ui.SetupInstructions"),
           href: "https://langfuse.com/self-hosting/security/authentication-and-sso#auth-email-password",
         }}
       />
@@ -191,7 +198,7 @@ export function ResetPasswordPage({
               <Button asChild variant="ghost">
                 <Link href="/auth/sign-in">
                   <ArrowLeft className="mr-2 h-3 w-3" />
-                  Back to sign in
+                  {tApp("ui.BackToSignIn")}
                 </Link>
               </Button>
             </div>
@@ -206,7 +213,7 @@ export function ResetPasswordPage({
                 onSubmit={form.handleSubmit(onSubmit)}
               >
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel>{tApp("ui.Email")}</FormLabel>
                   <FormControl>
                     <Input
                       placeholder="jsdoe@example.com"
@@ -221,25 +228,30 @@ export function ResetPasswordPage({
                 {codeRequested ? (
                   <>
                     <p className="text-muted-foreground text-sm">
-                      Enter the 6-digit code from your email together with your
-                      new password. The code is valid for 3 minutes.
+                      {tApp(
+                        "ui.EnterThe6DigitCodeFromYourEmailTogetherWithYourNewPasswordTheCodeIsValidFor3Minutes",
+                      )}
                     </p>
                     <FormField
                       control={form.control}
                       name="token"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Verification code</FormLabel>
+                          <FormLabel>{tApp("ui.VerificationCode")}</FormLabel>
                           <FormControl>
                             <Input
                               inputMode="numeric"
                               autoComplete="one-time-code"
                               maxLength={6}
-                              placeholder="6-digit code"
+                              placeholder={tApp("ui.6DigitCode")}
                               {...field}
                             />
                           </FormControl>
-                          <FormMessage />
+                          <FormMessage
+                            translateError={(message) =>
+                              localizeAuthMessage(tAuth, message)
+                            }
+                          />
                         </FormItem>
                       )}
                     />
@@ -249,7 +261,9 @@ export function ResetPasswordPage({
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>
-                            {isSetMode ? "Password" : "New Password"}
+                            {isSetMode
+                              ? tApp("ui.Password")
+                              : tApp("ui.NewPassword")}
                           </FormLabel>
                           <FormControl>
                             <PasswordInput
@@ -257,7 +271,11 @@ export function ResetPasswordPage({
                               {...field}
                             />
                           </FormControl>
-                          <FormMessage />
+                          <FormMessage
+                            translateError={(message) =>
+                              localizeAuthMessage(tAuth, message)
+                            }
+                          />
                         </FormItem>
                       )}
                     />
@@ -268,8 +286,8 @@ export function ResetPasswordPage({
                         <FormItem>
                           <FormLabel>
                             {isSetMode
-                              ? "Confirm Password"
-                              : "Confirm New Password"}
+                              ? tApp("ui.ConfirmPassword")
+                              : tApp("ui.ConfirmNewPassword")}
                           </FormLabel>
                           <FormControl>
                             <PasswordInput
@@ -277,7 +295,11 @@ export function ResetPasswordPage({
                               {...field}
                             />
                           </FormControl>
-                          <FormMessage />
+                          <FormMessage
+                            translateError={(message) =>
+                              localizeAuthMessage(tAuth, message)
+                            }
+                          />
                         </FormItem>
                       )}
                     />
@@ -295,7 +317,7 @@ export function ResetPasswordPage({
                       email={effectiveEmail}
                       callbackUrl={isSetMode ? setupPasswordPath : undefined}
                       onEmailSent={() => setCodeRequested(true)}
-                      label="Send another code"
+                      label={tApp("ui.SendAnotherCode")}
                     />
                   </>
                 ) : (
@@ -309,7 +331,7 @@ export function ResetPasswordPage({
             </Form>
             {formError ? (
               <div className="text-destructive text-center text-sm font-bold">
-                {formError}
+                {localizeAuthMessage(tAuth, formError)}
               </div>
             ) : null}
             {isSuccess && (
@@ -321,11 +343,11 @@ export function ResetPasswordPage({
         </div>
         {!isSetMode && session.status !== "authenticated" && (
           <div className="text-muted-foreground mx-auto mt-10 max-w-lg text-center text-xs">
-            You will only receive an email if an account with this email exists
-            and you have signed up with email and password. If you used an
-            authentication provider like Google, Gitlab, Okta, or GitHub, please{" "}
+            {tApp(
+              "ui.YouWillOnlyReceiveAnEmailIfAnAccountWithThisEmailExistsAndYouHaveSignedUpWithEmailAndPasswordIfYouUsedAnAuthenticationProviderLikeGoogleGitlabOktaOrGithubPlease",
+            )}{" "}
             <Link href="/auth/sign-in" className="underline">
-              sign in
+              {tApp("ui.SignIn")}
             </Link>
             .
           </div>

@@ -21,20 +21,35 @@ export const formatIntervalSeconds = (seconds: number, scale = 2) => {
   return `${seconds.toFixed(scale)}s`;
 };
 
-export const formatApproximateDuration = (secondsRemaining: number) => {
+export const formatApproximateDuration = (
+  secondsRemaining: number,
+  locale?: string,
+) => {
   const seconds = Math.max(1, secondsRemaining);
+  const formatUnit = (value: number, unit: string) =>
+    new Intl.NumberFormat(locale, {
+      style: "unit",
+      unit,
+      unitDisplay: "long",
+    }).format(value);
 
   if (seconds < 60) {
-    return `${seconds} second${seconds === 1 ? "" : "s"}`;
+    return locale
+      ? formatUnit(seconds, "second")
+      : `${seconds} second${seconds === 1 ? "" : "s"}`;
   }
 
   const minutes = Math.ceil(seconds / 60);
   if (minutes < 60) {
-    return `${minutes} minute${minutes === 1 ? "" : "s"}`;
+    return locale
+      ? formatUnit(minutes, "minute")
+      : `${minutes} minute${minutes === 1 ? "" : "s"}`;
   }
 
   const hours = Math.ceil(minutes / 60);
-  return `${hours} hour${hours === 1 ? "" : "s"}`;
+  return locale
+    ? formatUnit(hours, "hour")
+    : `${hours} hour${hours === 1 ? "" : "s"}`;
 };
 
 type Accuracy = "day" | "hour" | "minute" | "second" | "millisecond";
@@ -104,33 +119,66 @@ export const getTimezoneDetails = () => {
 
 // Compact relative time: "just now", "3m ago", "5h ago", "15d ago",
 // "2mo ago", "1y ago" — largest sensible unit, no live refresh implied.
-export const formatCompactRelativeTime = (timestamp: Date): string => {
+export const formatCompactRelativeTime = (
+  timestamp: Date,
+  locale?: string,
+): string => {
   const diffInSeconds = Math.max(0, (Date.now() - timestamp.getTime()) / 1000);
-  if (diffInSeconds < 60) return "just now";
+  const relative = locale
+    ? new Intl.RelativeTimeFormat(locale, { numeric: "auto", style: "short" })
+    : undefined;
+  if (diffInSeconds < 60)
+    return relative ? relative.format(0, "second") : "just now";
   const minutes = diffInSeconds / 60;
-  if (minutes < 60) return `${Math.floor(minutes)}m ago`;
+  if (minutes < 60)
+    return relative
+      ? relative.format(-Math.floor(minutes), "minute")
+      : `${Math.floor(minutes)}m ago`;
   const hours = minutes / 60;
-  if (hours < 24) return `${Math.floor(hours)}h ago`;
+  if (hours < 24)
+    return relative
+      ? relative.format(-Math.floor(hours), "hour")
+      : `${Math.floor(hours)}h ago`;
   const days = hours / 24;
-  if (days < 30) return `${Math.floor(days)}d ago`;
-  if (days < 365) return `${Math.floor(days / 30)}mo ago`;
-  return `${Math.floor(days / 365)}y ago`;
+  if (days < 30)
+    return relative
+      ? relative.format(-Math.floor(days), "day")
+      : `${Math.floor(days)}d ago`;
+  if (days < 365)
+    return relative
+      ? relative.format(-Math.floor(days / 30), "month")
+      : `${Math.floor(days / 30)}mo ago`;
+  return relative
+    ? relative.format(-Math.floor(days / 365), "year")
+    : `${Math.floor(days / 365)}y ago`;
 };
 
-export const getRelativeTimestampFromNow = (timestamp: Date): string => {
+export const getRelativeTimestampFromNow = (
+  timestamp: Date,
+  locale?: string,
+): string => {
   const diffInMs = Math.max(0, new Date().getTime() - timestamp.getTime());
   const diffInMinutes = diffInMs / (1000 * 60);
   const diffInHours = diffInMinutes / 60;
   const diffInDays = diffInHours / 24;
+  const relative = locale
+    ? new Intl.RelativeTimeFormat(locale, { numeric: "always" })
+    : undefined;
 
   if (diffInHours < 1) {
-    return `${Math.floor(diffInMinutes)} minutes ago`;
+    return relative
+      ? relative.format(-Math.floor(diffInMinutes), "minute")
+      : `${Math.floor(diffInMinutes)} minutes ago`;
   } else if (diffInHours < 24) {
-    return `${Math.floor(diffInHours)} hours ago`;
+    return relative
+      ? relative.format(-Math.floor(diffInHours), "hour")
+      : `${Math.floor(diffInHours)} hours ago`;
   } else if (diffInDays < 7) {
-    return `${Math.floor(diffInDays)} days ago`;
+    return relative
+      ? relative.format(-Math.floor(diffInDays), "day")
+      : `${Math.floor(diffInDays)} days ago`;
   }
-  return timestamp.toLocaleDateString("en-US", {
+  return timestamp.toLocaleDateString(locale ?? "en-US", {
     year: "2-digit",
     month: "numeric",
     day: "numeric",

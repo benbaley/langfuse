@@ -21,6 +21,7 @@ import { Button } from "@/src/components/ui/button";
 import { ActionButton } from "@/src/components/ActionButton";
 import { BookOpen, X } from "lucide-react";
 import type { ObservationStatusMessage } from "./components/statusMessagePresentation";
+import { useTranslation } from "react-i18next";
 
 export type { ViewMode };
 export type IOPreviewContentMode = "all" | "conversation";
@@ -155,6 +156,8 @@ export function IOPreview({
   environment = "default",
   showCorrections = true,
 }: IOPreviewProps) {
+  const { t: tMore } = useTranslation("coreMore");
+  const { t: tFeatures } = useTranslation("features");
   const capture = usePostHogClientCapture();
   const [dismissedTraceViewNotifications, setDismissedTraceViewNotifications] =
     useLocalStorage<string[]>(STORAGE_KEY, []);
@@ -329,7 +332,7 @@ export function IOPreview({
                     : [...prev, EMPTY_IO_ALERT_ID],
                 );
               }}
-              title="Dismiss"
+              title={tFeatures("ui.dismiss")}
             >
               <X className="h-3.5 w-3.5" />
             </Button>
@@ -337,12 +340,10 @@ export function IOPreview({
               <div className="bg-accent flex h-8 w-8 items-center justify-center rounded-full">
                 <BookOpen className="text-muted-foreground h-4 w-4" />
               </div>
-              <h3 className="text-sm font-bold">
-                Looks like this trace didn&apos;t receive an input or output.
-              </h3>
+              <h3 className="text-sm font-bold">{tMore("io.noTraceIO")}</h3>
             </div>
             <p className="text-muted-foreground max-w-sm text-sm">
-              Add it in your code to make debugging a lot easier.
+              {tFeatures("ui.addItInYourCodeToMakeDebuggingALotEasier")}
             </p>
             <ActionButton
               variant="outline"
@@ -351,7 +352,7 @@ export function IOPreview({
               trackingEventName="notification:click_link"
               trackingProps={{ notification_id: EMPTY_IO_ALERT_ID }}
             >
-              View Documentation
+              {tFeatures("ui.viewDocumentation")}
             </ActionButton>
           </div>
         </div>

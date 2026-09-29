@@ -26,6 +26,7 @@ import { useMemo } from "react";
 import { toast } from "sonner";
 
 import { type EvalFormType } from "@/src/features/evals/utils/evaluator-form-utils";
+import { useTranslation } from "react-i18next";
 
 type CodeEvalTestRunResult =
   | RouterOutputs["evals"]["testRunCodeEval"]
@@ -52,6 +53,7 @@ export function CodeEvalTestRunCard({
   scoreName: EvalFormType["scoreName"];
   enableExecutionTracePeek?: boolean;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const { isV4 } = useReadPath();
   const previewPointer = useFirstEvalPreviewPointer({
     target,
@@ -105,7 +107,7 @@ export function CodeEvalTestRunCard({
       <Card className="flex min-w-0 flex-col gap-4 p-4">
         <div className="flex items-center justify-between gap-3">
           <div className="flex min-w-0 items-center gap-2">
-            <span className="text-sm font-bold">Test run</span>
+            <span className="text-sm font-bold">{tFeatures("ui.testRun")}</span>
           </div>
           <div className="flex shrink-0 items-center gap-2">
             {evalTemplate.projectId ? (
@@ -115,7 +117,7 @@ export function CodeEvalTestRunCard({
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  Source code
+                  {tFeatures("ui.sourceCode")}
                   <ExternalLink className="ml-1 h-3.5 w-3.5" />
                 </Link>
               </Button>
@@ -123,9 +125,9 @@ export function CodeEvalTestRunCard({
               <Button
                 variant="outline"
                 disabled
-                title="Only user-managed templates can be edited"
+                title={tFeatures("ui.onlyUserManagedTemplatesCanBeEdited")}
               >
-                Source code
+                {tFeatures("ui.sourceCode")}
                 <ExternalLink className="ml-1 h-3.5 w-3.5" />
               </Button>
             )}
@@ -155,7 +157,7 @@ export function CodeEvalTestRunCard({
               ) : (
                 <Play className="mr-1.5 h-3.5 w-3.5" />
               )}
-              Test
+              {tFeatures("ui.test")}
             </Button>
           </div>
         </div>
@@ -180,8 +182,9 @@ export function CodeEvalTestRunCard({
         ) : null}
 
         <p className="text-muted-foreground text-xs">
-          Read-only preview. Inputs are sampled from the first matching
-          observation.
+          {tFeatures(
+            "ui.readOnlyPreviewInputsAreSampledFromTheFirstMatchingObservation",
+          )}
         </p>
       </Card>
       {enableExecutionTracePeek ? (
@@ -200,6 +203,7 @@ function CodeEvalTestRunInputPreview({
   isLoading: boolean;
   includeExperimentVariables: boolean;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   if (isLoading) {
     const skeletonCount = includeExperimentVariables ? 5 : 3;
     return (
@@ -214,7 +218,7 @@ function CodeEvalTestRunInputPreview({
   if (!previewData) {
     return (
       <div className="text-muted-foreground flex min-h-32 items-center justify-center rounded-md border border-dashed p-4 text-center text-sm">
-        No matching observation
+        {tFeatures("ui.noMatchingObservation")}
       </div>
     );
   }
@@ -234,6 +238,7 @@ function CodeEvalTestRunInputCards({
   previewData: CodeEvalInputPreviewData;
   includeExperimentVariables: boolean;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   // Mirrors the payload shape buildCodeEvalPayload hands to the evaluator,
   // so the preview shows exactly what the code receives.
   const inputPreviewJson = useMemo(() => {
@@ -266,7 +271,7 @@ function CodeEvalTestRunInputCards({
     <div className="bg-muted/20 min-w-0 rounded-md border">
       <div className="flex items-center justify-between gap-3 border-b px-3 py-2">
         <span className="text-muted-foreground text-xs font-bold">
-          Evaluator input
+          {tFeatures("ui.evaluatorInput")}
         </span>
       </div>
       <PrettyJsonView
@@ -290,6 +295,7 @@ function CodeEvalTestRunResultView({
   result: Exclude<CodeEvalTestRunResult, undefined>;
   onShowExecutionTrace?: (executionTraceId: string) => void;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   const resultJson = result.success
     ? { scores: result.result.scores.map(toUserFacingCodeEvalScore) }
     : { error: result.error };
@@ -298,7 +304,7 @@ function CodeEvalTestRunResultView({
     <div className="flex min-w-0 flex-col gap-3">
       <div className="flex items-center justify-between gap-3">
         <Badge variant={result.success ? "success" : "error"} className="w-fit">
-          {result.success ? "Success" : "Failed"}
+          {result.success ? tFeatures("ui.success") : tFeatures("ui.failed")}
         </Badge>
         {onShowExecutionTrace ? (
           <Button
@@ -308,7 +314,7 @@ function CodeEvalTestRunResultView({
             onClick={() => onShowExecutionTrace(result.executionTraceId)}
           >
             <ListTree className="mr-1.5 h-3.5 w-3.5" />
-            Show execution trace
+            {tFeatures("ui.showExecutionTrace")}
           </Button>
         ) : null}
       </div>

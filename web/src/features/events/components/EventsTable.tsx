@@ -176,6 +176,7 @@ import {
   useObservedMetadataRecorder,
 } from "@/src/hooks/useObservedMetadata";
 import { AddTracesToAnnotationQueueDialogController } from "@/src/features/annotation-queues";
+import { useTranslation } from "react-i18next";
 
 export type EventsTableRow = {
   // Identity fields
@@ -316,6 +317,7 @@ export default function ObservationsEventsTable({
   enableAppRootDefault = false,
   isolateTableState = false,
 }: EventsTableProps) {
+  const { t: tFeatures } = useTranslation("features");
   const peekContext = usePeekTableState();
   const hasBatchExportAccess = useHasProjectAccess({
     projectId,
@@ -1046,7 +1048,7 @@ export default function ObservationsEventsTable({
   const traceDeleteMutation = api.traces.deleteMany.useMutation({
     onSuccess: () => {
       showSuccessToast({
-        title: "Traces deleted",
+        title: tFeatures("ui.tracesDeleted"),
         description:
           "Selected traces will be deleted. Traces are removed asynchronously and may continue to be visible for up to 15 minutes.",
       });
@@ -1144,7 +1146,7 @@ export default function ObservationsEventsTable({
           {
             id: ActionId.TraceDelete,
             type: BatchActionType.Delete,
-            label: "Delete Traces",
+            label: tFeatures("ui.deleteTraces"),
             description: `${itemCountDisplay} ${selectedItemCount === 1 ? "item is" : "items are"} selected, spanning ${traceCountDisplay} unique ${selectedUniqueTraceCount === 1 ? "trace" : "traces"}. A trace is always deleted as a whole — if at least one of its observations is selected, all of its observations are deleted with it. This action cannot be undone. Trace deletion happens asynchronously and may take up to 24 hours.`,
             // Select-all is not gated on the visible-page selection: the
             // batch path deletes by query and ignores traceIds. Page
@@ -1176,7 +1178,7 @@ export default function ObservationsEventsTable({
     {
       id: ActionId.ObservationAddToAnnotationQueue,
       type: BatchActionType.Create,
-      label: "Add to Annotation Queue",
+      label: tFeatures("ui.addToAnnotationQueue"),
       description: `Add ${itemCountDisplay} selected observations to an annotation queue.`,
       customDialog: true,
       accessCheck: {
@@ -1186,7 +1188,7 @@ export default function ObservationsEventsTable({
     {
       id: ActionId.ObservationAddToDataset,
       type: BatchActionType.Create,
-      label: "Add to Dataset",
+      label: tFeatures("ui.addToDataset"),
       description: "Add selected observations to a dataset",
       customDialog: true,
       disabled: isSelectAllCountUnavailable,
@@ -1198,7 +1200,7 @@ export default function ObservationsEventsTable({
     {
       id: ActionId.ObservationBatchEvaluation,
       type: BatchActionType.Create,
-      label: "Evaluate",
+      label: tFeatures("ui.evaluate"),
       description: "Run evaluations on selected observations.",
       customDialog: true,
       icon: <LightbulbIcon className="h-4 w-4 sm:mr-2" />,
@@ -1265,7 +1267,7 @@ export default function ObservationsEventsTable({
     }),
     createIOTableColumn<EventsTableRow>({
       accessorKey: "metadata",
-      header: "Metadata",
+      header: tFeatures("ui.metadata"),
       size: 300,
       headerTooltip: {
         description: "Add metadata to traces to track additional information.",
@@ -1343,7 +1345,7 @@ export default function ObservationsEventsTable({
     },
     {
       accessorKey: "cost",
-      header: "Cost",
+      header: tFeatures("ui.cost"),
       id: "cost",
       enableHiding: true,
       defaultHidden: true,
@@ -1427,7 +1429,7 @@ export default function ObservationsEventsTable({
     },
     {
       accessorKey: "usage",
-      header: "Usage",
+      header: tFeatures("ui.usage"),
       id: "usage",
       enableHiding: true,
       defaultHidden: true,
@@ -1448,7 +1450,7 @@ export default function ObservationsEventsTable({
             return Number((usage.outputUsage / latency).toFixed(1));
           },
           id: "tokensPerSecond",
-          header: "Tokens per second",
+          header: tFeatures("ui.tokensPerSecond"),
           size: 200,
           formatter: (value) => String(value),
           defaultHidden: true,
@@ -1554,7 +1556,7 @@ export default function ObservationsEventsTable({
     }),
     {
       accessorKey: "scores",
-      header: "Scores",
+      header: tFeatures("ui.scores"),
       id: "scores",
       enableHiding: true,
       defaultHidden: true,

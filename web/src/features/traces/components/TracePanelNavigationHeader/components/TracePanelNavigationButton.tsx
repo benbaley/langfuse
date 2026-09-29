@@ -3,6 +3,7 @@ import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics";
 import { useTraceAnalyticsDimensions } from "@/src/features/traces/hooks/useTraceAnalyticsDimensions";
+import { useTranslation } from "react-i18next";
 
 interface TracePanelNavigationButtonProps {
   isPanelCollapsed: boolean;
@@ -15,6 +16,7 @@ export function TracePanelNavigationButton({
   onTogglePanel,
   shouldPulseToggle = false,
 }: TracePanelNavigationButtonProps) {
+  const { t: tFeatures } = useTranslation("features");
   const capture = usePostHogClientCapture();
   const analyticsDimensions = useTraceAnalyticsDimensions();
   return (
@@ -29,7 +31,11 @@ export function TracePanelNavigationButton({
         }}
         variant="ghost"
         size="icon"
-        title={isPanelCollapsed ? "Expand panel" : "Collapse panel"}
+        title={
+          isPanelCollapsed
+            ? tFeatures("ui.expandPanel")
+            : tFeatures("ui.collapsePanel")
+        }
         className="h-7 w-7 shrink-0"
       >
         {isPanelCollapsed ? (

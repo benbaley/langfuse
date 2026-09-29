@@ -1,4 +1,5 @@
 "use client";
+import { useTranslation } from "react-i18next";
 
 import {
   useCallback,
@@ -91,6 +92,8 @@ export function ChartLegend({
     onDeselectAll: () => void;
   };
 }) {
+const { t: tUi } = useTranslation("uiMore");
+
   const containerRef = useRef<HTMLDivElement>(null);
   const itemRefs = useRef<Array<HTMLDivElement | null>>([]);
   const overflowTriggerRefs = useRef<Array<HTMLSpanElement | null>>([]);
@@ -167,7 +170,7 @@ export function ChartLegend({
         ))}
         {hiddenItems.length > 0 ? (
           <DropdownMenu
-            title="Additional series"
+            title={tUi("additionalSeries")}
             items={[
               ...(selectionActions
                 ? [

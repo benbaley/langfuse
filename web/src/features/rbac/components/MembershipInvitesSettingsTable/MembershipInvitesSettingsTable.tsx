@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useCallback, useMemo } from "react";
 import { Trash } from "lucide-react";
 import { type Role } from "@langfuse/shared";
@@ -35,40 +36,41 @@ export function MembershipInvitesSettingsTable({
   onDelete: (invite: MembershipInvitesSettingsTableRow) => void;
   pagination: PaginationBarProps;
 }) {
+  const { t } = useTranslation("settings");
   const columns = useMemo<
     LangfuseColumnDef<MembershipInvitesSettingsTableRow>[]
   >(
     () => [
       createTextTableColumn<MembershipInvitesSettingsTableRow>({
         accessorKey: "email",
-        header: "Email",
+        header: t("email"),
       }),
       createBadgeTableColumn<MembershipInvitesSettingsTableRow>({
         accessorKey: "orgRole",
-        header: "Organization Role",
+        header: t("organizationRole"),
       }),
       ...(showProjectRole
         ? [
             createTextTableColumn<MembershipInvitesSettingsTableRow>({
               accessorKey: "projectRole",
-              header: "Project Role",
+              header: t("projectRole"),
               nullValue: "-",
             }),
           ]
         : []),
       createUserTableColumn<MembershipInvitesSettingsTableRow>({
         accessorKey: "invitedByUser",
-        header: "Invited By",
+        header: t("invitedBy"),
         variant: "avatar",
         nullValue: "-",
       }),
       createDateTableColumn<MembershipInvitesSettingsTableRow>({
         accessorKey: "createdAt",
-        header: "Invited On",
+        header: t("invitedOn"),
         mode: "relative",
       }),
     ],
-    [showProjectRole],
+    [showProjectRole, t],
   );
   const actions = useCallback<
     NonNullable<TableProps<MembershipInvitesSettingsTableRow>["actions"]>
@@ -77,21 +79,21 @@ export function MembershipInvitesSettingsTable({
       {
         id: "delete",
         type: "item",
-        title: "Cancel invitation",
+        title: t("cancelInvitation"),
         icon: Trash,
         variant: "destructive",
         disabled: hasCudAccess
           ? undefined
-          : { reason: "You do not have permission to cancel this invitation" },
+          : { reason: t("cancelInvitationForbidden") },
         onClick: () => onDelete(invite),
       },
     ],
-    [hasCudAccess, onDelete],
+    [hasCudAccess, onDelete, t],
   );
 
   return (
     <SettingsTable
-      tableName="membership invites"
+      tableName={t("membershipInvites")}
       columns={columns}
       actions={actions}
       pagination={pagination}

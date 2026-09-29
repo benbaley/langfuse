@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Button } from "@/src/components/ui/button";
 import type * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -22,8 +23,26 @@ export const NewOrganizationForm = ({
   isLangfuseCloud: boolean;
   onSubmit: (values: z.infer<typeof organizationFormSchema>) => Promise<void>;
 }) => {
+  const { t } = useTranslation("settings");
   const form = useForm({
-    resolver: zodResolver(organizationFormSchema),
+    resolver: async (values, context, options) => {
+      const result = await zodResolver(organizationFormSchema)(
+        values,
+        context,
+        options,
+      );
+      const error = result.errors.name;
+      if (error?.message) {
+        const translationKeys: Record<string, string> = {
+          "Must have at least 3 characters": "nameMinimum",
+          "Must have at most 60 characters": "nameMaximum",
+          "Text cannot contain HTML tags": "noHtml",
+        };
+        const key = translationKeys[error.message];
+        if (key) error.message = t(key);
+      }
+      return result;
+    },
     defaultValues: {
       name: "",
       aiFeaturesEnabled: true,
@@ -39,7 +58,7 @@ export const NewOrganizationForm = ({
         message:
           error instanceof Error
             ? error.message
-            : "Failed to create organization",
+            : t("createOrganizationFailed"),
       });
     }
   }
@@ -62,7 +81,7 @@ export const NewOrganizationForm = ({
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Organization name</FormLabel>
+              <FormLabel>{t("organizationNameLabel")}</FormLabel>
               <FormControl>
                 <Input
                   placeholder="my-org"
@@ -80,11 +99,11 @@ export const NewOrganizationForm = ({
           render={({ field }) => (
             <FormItem className="flex flex-row items-start justify-between gap-4 rounded-md border p-3">
               <div className="flex flex-col gap-1">
-                <FormLabel>Enable AI powered features</FormLabel>
+                <FormLabel>{t("newOrgAiFeatures")}</FormLabel>
                 <p className="text-muted-foreground text-sm">
                   {isLangfuseCloud
-                    ? "Relevant project data can be sent to AWS Bedrock within your Langfuse data region. Your data will not be used for training models."
-                    : "Relevant project data can be sent to the model provider configured by your instance administrator."}{" "}
+                    ? t("newOrgAiCloudDescription")
+                    : t("newOrgAiSelfHostedDescription")}{" "}
                   {isLangfuseCloud && (
                     <a
                       href="https://langfuse.com/security/ai-features"
@@ -92,7 +111,7 @@ export const NewOrganizationForm = ({
                       rel="noopener noreferrer"
                       className="text-primary inline-flex items-center gap-1 hover:underline"
                     >
-                      Learn more
+                      {t("learnMore")}
                       <ExternalLink className="h-3 w-3" />
                     </a>
                   )}
@@ -102,14 +121,14 @@ export const NewOrganizationForm = ({
                 <Switch
                   checked={field.value}
                   onCheckedChange={field.onChange}
-                  aria-label="Enable AI powered features"
+                  aria-label={t("newOrgAiFeatures")}
                 />
               </FormControl>
             </FormItem>
           )}
         />
         <Button type="submit" loading={form.formState.isSubmitting}>
-          Create
+          {t("create")}
         </Button>
       </form>
     </Form>

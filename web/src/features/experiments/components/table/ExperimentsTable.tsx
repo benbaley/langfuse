@@ -87,6 +87,7 @@ import {
   scoreColumnScopeToggledProps,
 } from "@/src/features/experiments/lib/analytics";
 import { type ColumnGroupTogglePayload } from "@/src/components/table/data-table-column-visibility-filter";
+import { useTranslation } from "react-i18next";
 
 /**
  * LFE-10460: the metadata column's default position moved from last to right
@@ -128,6 +129,8 @@ function ExperimentsMultiSelectActionMenu({
   store: ExperimentsTableStore;
   datasetIdByExperimentId: Record<string, string>;
 }) {
+  const { t: tMore } = useTranslation("coreMore");
+  const { t: tFeatures } = useTranslation("features");
   const router = useRouter();
   const capture = usePostHogClientCapture();
   const [showRunEvaluationDialog, setShowRunEvaluationDialog] = useState(false);
@@ -218,8 +221,8 @@ function ExperimentsMultiSelectActionMenu({
     {
       id: ActionId.ExperimentCompare,
       type: BatchActionType.Create,
-      label: "Compare",
-      description: "Compare selected experiments",
+      label: tFeatures("ui.compare"),
+      description: tMore("experiments.compareSelected"),
       icon: <GitCompareArrows className="h-4 w-4 sm:mr-2" />,
       customDialog: true,
       disabled: tooManySelected,
@@ -235,8 +238,8 @@ function ExperimentsMultiSelectActionMenu({
           {
             id: ActionId.ObservationBatchEvaluation,
             type: BatchActionType.Create,
-            label: "Run Evaluator",
-            description: "Run evaluators on selected experiments",
+            label: tFeatures("ui.runEvaluator"),
+            description: tMore("experiments.evaluateSelected"),
             icon: <LightbulbIcon className="h-4 w-4 sm:mr-2" />,
             customDialog: true,
             accessCheck: {
@@ -288,6 +291,8 @@ export default function ExperimentsTable({
   sessionFilterContextId,
   showControlsInPageHeader = false,
 }: ExperimentsTableProps) {
+  const { t: tMore } = useTranslation("coreMore");
+  const { t: tFeatures } = useTranslation("features");
   const router = useRouter();
 
   const { setDetailPageList } = useDetailPageLists();
@@ -625,7 +630,7 @@ export default function ExperimentsTable({
                 },
               ],
             })}
-            aria-label={`View ${formatted} failing items`}
+            aria-label={tMore("experiments.failingItems", { count: formatted })}
           >
             <Badge
               variant="destructive"
@@ -719,7 +724,7 @@ export default function ExperimentsTable({
       size: 100,
       enableHiding: true,
       headerTooltip: {
-        description: "Average duration of the root span per experiment item.",
+        description: tMore("experiments.durationHelp"),
       },
       formatter: (value) => `Ø ${numberFormatter(value / 1000, 4)}s`,
       metricsLoading,
@@ -735,7 +740,7 @@ export default function ExperimentsTable({
     }),
     {
       accessorKey: "traceItemScores",
-      header: "Trace Scores",
+      header: tFeatures("ui.traceScores"),
       id: "traceItemScores",
       enableHiding: true,
       cell: () => {
@@ -747,7 +752,7 @@ export default function ExperimentsTable({
     },
     {
       accessorKey: "observationItemScores",
-      header: "Observation Scores",
+      header: tFeatures("ui.observationScores"),
       id: "observationItemScores",
       enableHiding: true,
       cell: () => {
@@ -759,7 +764,7 @@ export default function ExperimentsTable({
     },
     {
       accessorKey: "experimentScores",
-      header: "Experiment Scores",
+      header: tFeatures("ui.experimentScores"),
       id: "experimentScores",
       enableHiding: true,
       cell: () => {
@@ -1003,11 +1008,7 @@ export default function ExperimentsTable({
 
           {isShowingMostRecent && (
             <div className="text-muted-foreground border-t px-3 py-1.5 text-xs">
-              No experiments started in the selected time range. Showing the{" "}
-              {mostRecentCount === 1
-                ? "most recent run"
-                : `${mostRecentCount} most recent runs`}{" "}
-              instead.
+              {tMore("experiments.mostRecent", { count: mostRecentCount })}
             </div>
           )}
 

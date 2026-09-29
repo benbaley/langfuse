@@ -15,8 +15,10 @@ import {
 import { useLazyEvaluatorExecutionCounts } from "@/src/features/evals/hooks/useLazyEvaluatorExecutionCounts";
 import { Alert } from "@/src/components/design-system/Alert/Alert";
 import { AlertTriangle } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export const EvaluatorDetail = () => {
+  const { t: tFeatures } = useTranslation("features");
   const router = useRouter();
   const projectId = router.query.projectId as string;
   const evaluatorId = router.query.evaluatorId as string;
@@ -60,11 +62,11 @@ export const EvaluatorDetail = () => {
     allTemplates.isLoading ||
     !allTemplates.data
   ) {
-    return <div className="p-3">Loading...</div>;
+    return <div className="p-3">{tFeatures("ui.loading")}</div>;
   }
 
   if (evaluator.data && evaluator.data.evalTemplate === null) {
-    return <div>Evaluator not found</div>;
+    return <div>{tFeatures("evalsMore:evaluator.notFound")}</div>;
   }
 
   const existingEvaluator =
@@ -127,11 +129,9 @@ export const EvaluatorDetail = () => {
           {filterValidation && !filterValidation.isValid && (
             <div className="mx-3 mt-3">
               <Alert variant="destructive" icon={AlertTriangle}>
-                <Alert.Title>Unsupported filters</Alert.Title>
+                <Alert.Title>{tFeatures("ui.unsupportedFilters")}</Alert.Title>
                 <Alert.Description>
-                  This evaluator contains deprecated or unsupported filters. The
-                  filters must be removed. Until the filters are removed, the
-                  evaluator is paused and will not be run.{" "}
+                  {tFeatures("evalsMore:rules.unsupportedPaused")}{" "}
                 </Alert.Description>
               </Alert>
             </div>

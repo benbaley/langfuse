@@ -31,6 +31,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/src/components/ui/input";
 import { RadioGroup } from "@/src/components/design-system/RadioGroup/RadioGroup";
 import { usePromptNameValidation } from "@/src/features/prompts/hooks/usePromptNameValidation";
+import { useTranslation } from "react-i18next";
 
 enum CopySettings {
   SINGLE_VERSION = "single_version",
@@ -49,6 +50,8 @@ const DuplicatePromptForm: React.FC<{
   promptVersion: number;
   onFormSuccess: () => void;
 }> = ({ projectId, promptId, promptName, promptVersion, onFormSuccess }) => {
+  const { t: tMore } = useTranslation("coreMore");
+  const { t: tFeatures } = useTranslation("features");
   const capture = usePostHogClientCapture();
   const router = useRouter();
   const form = useForm({
@@ -116,11 +119,17 @@ const DuplicatePromptForm: React.FC<{
             name="name"
             render={({ field }) => (
               <FormItem className="flex flex-col gap-2">
-                <FormLabel>Name</FormLabel>
+                <FormLabel>{tFeatures("ui.name")}</FormLabel>
                 <FormControl>
                   <Input {...field} type="text" />
                 </FormControl>
-                <FormMessage />
+                <FormMessage
+                  translateError={(message) =>
+                    message === "prompts.validation.nameExists"
+                      ? tMore("prompts.validation.nameExists")
+                      : undefined
+                  }
+                />
               </FormItem>
             )}
           />
@@ -129,7 +138,7 @@ const DuplicatePromptForm: React.FC<{
             name="isCopySingleVersion"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Settings</FormLabel>
+                <FormLabel>{tFeatures("ui.settings")}</FormLabel>
                 <FormControl>
                   <RadioGroup
                     value={field.value}
@@ -141,7 +150,9 @@ const DuplicatePromptForm: React.FC<{
                         <RadioGroup.Item value={CopySettings.SINGLE_VERSION} />
                       </FormControl>
                       <FormLabel className="font-normal">
-                        Copy only version {promptVersion}
+                        {tMore("prompts.copyVersion", {
+                          version: promptVersion,
+                        })}
                       </FormLabel>
                     </FormItem>
                     <FormItem className="flex items-center space-y-0 space-x-3">
@@ -149,12 +160,18 @@ const DuplicatePromptForm: React.FC<{
                         <RadioGroup.Item value={CopySettings.ALL_VERSIONS} />
                       </FormControl>
                       <FormLabel className="font-normal">
-                        Copy all prompt versions and labels
+                        {tFeatures("ui.copyAllPromptVersionsAndLabels")}
                       </FormLabel>
                     </FormItem>
                   </RadioGroup>
                 </FormControl>
-                <FormMessage />
+                <FormMessage
+                  translateError={(message) =>
+                    message === "prompts.validation.nameExists"
+                      ? tMore("prompts.validation.nameExists")
+                      : undefined
+                  }
+                />
               </FormItem>
             )}
           />
@@ -165,7 +182,7 @@ const DuplicatePromptForm: React.FC<{
             loading={duplicatePrompt.isPending}
             className="mt-auto w-full"
           >
-            Submit
+            {tFeatures("ui.submit")}
           </Button>
         </DialogFooter>
       </form>
@@ -179,6 +196,7 @@ export const DuplicatePromptButton: React.FC<{
   promptName: string;
   promptVersion: number;
 }> = ({ projectId, promptId, promptName, promptVersion }) => {
+  const { t: tFeatures } = useTranslation("features");
   const [open, setOpen] = useState(false);
   const hasAccess = useHasProjectAccess({
     projectId,
@@ -206,7 +224,7 @@ export const DuplicatePromptButton: React.FC<{
           hasAccess={hasAccess}
           trackingEventName="prompt_detail:duplicate_button_click"
           variant="outline"
-          title="Duplicate prompt"
+          title={tFeatures("ui.duplicatePrompt")}
           usageLimit={
             typeof promptLimit === "number"
               ? {
@@ -216,12 +234,14 @@ export const DuplicatePromptButton: React.FC<{
               : undefined
           }
         >
-          <span className="hidden md:ml-1 md:inline">Duplicate</span>
+          <span className="hidden md:ml-1 md:inline">
+            {tFeatures("ui.duplicate")}
+          </span>
         </ActionButton>
       </DialogTrigger>
       <DialogContent className="max-h-[90vh] min-h-0">
         <DialogHeader>
-          <DialogTitle>Duplicate prompt</DialogTitle>
+          <DialogTitle>{tFeatures("ui.duplicatePrompt")}</DialogTitle>
         </DialogHeader>
         <DuplicatePromptForm
           projectId={projectId}

@@ -4,6 +4,7 @@ import { usePostHogClientCapture } from "@/src/features/posthog-analytics";
 import { api } from "@/src/utils/api";
 import { useRouter } from "next/router";
 import type * as React from "react";
+import { useTranslation } from "react-i18next";
 
 export const DeleteDatasetRunDialogController = ({
   projectId,
@@ -21,6 +22,7 @@ export const DeleteDatasetRunDialogController = ({
     openDialog: () => void;
   }) => React.ReactNode;
 }) => {
+  const { t: tFeatures } = useTranslation("features");
   const capture = usePostHogClientCapture();
   const hasAccess = useHasProjectAccess({
     projectId: projectId,
@@ -36,8 +38,10 @@ export const DeleteDatasetRunDialogController = ({
 
   return (
     <ConfirmationDialogController
-      title="Please confirm"
-      text="This action cannot be undone. Traces linked to this run must be deleted manually."
+      title={tFeatures("ui.pleaseConfirm")}
+      text={tFeatures(
+        "ui.thisActionCannotBeUndoneTracesLinkedToThisRunMustBeDeletedManually",
+      )}
       confirmLabel="Delete Dataset Run"
       variant="destructive"
       disabled={!hasAccess}

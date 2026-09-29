@@ -39,6 +39,10 @@ import {
   useReadyRouteParams,
 } from "@/src/hooks/useReadyRouteParams";
 import { DatasetActionMenu } from "@/src/features/datasets/components/DatasetActionMenu";
+import {
+  useTranslation,
+  useTranslation as useNavigationTranslation,
+} from "react-i18next";
 
 export default function DatasetExperimentsPage() {
   const route = useReadyRouteParams(["projectId", "datasetId"]);
@@ -58,6 +62,9 @@ function DatasetExperimentsView({
   projectId: string;
   datasetId: string;
 }) {
+  const { t: tNavigation } = useNavigationTranslation("navigation");
+  const { t: tFeatures } = useTranslation("features");
+  const { t: tCore } = useTranslation("core");
   const capture = usePostHogClientCapture();
   const utils = api.useUtils();
   const [isCreateExperimentDialogOpen, setIsCreateExperimentDialogOpen] =
@@ -114,10 +121,10 @@ function DatasetExperimentsView({
     }
 
     showSuccessToast({
-      title: "Experiment triggered successfully",
-      description: "Waiting for experiment to complete...",
+      title: tFeatures("ui.experimentTriggeredSuccessfully"),
+      description: tCore("experiments.waiting"),
       link: {
-        text: "View experiment",
+        text: tCore("experiments.view"),
         href: isExperimentsBetaActive
           ? singleRunToExperimentsUrl(projectId, data.runId)
           : `/project/${projectId}/datasets/${data.datasetId}/compare?runs=${data.runId}`,
@@ -201,7 +208,7 @@ function DatasetExperimentsView({
           itemType: "DATASET",
           breadcrumb,
           tabsProps: {
-            tabs: getDatasetTabs(projectId, datasetId),
+            tabs: getDatasetTabs(projectId, datasetId, tNavigation),
             activeTab: DATASET_TABS.EXPERIMENTS,
           },
           actionButtonsRight: (
@@ -216,7 +223,9 @@ function DatasetExperimentsView({
                     onClick={() => capture("dataset_run:new_form_open")}
                   >
                     <FlaskConical className="h-4 w-4" />
-                    <span className="ml-2 hidden md:block">Run experiment</span>
+                    <span className="ml-2 hidden md:block">
+                      {tFeatures("ui.runExperiment")}
+                    </span>
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="max-h-[90vh] max-w-3xl overflow-y-auto">
@@ -265,7 +274,7 @@ function DatasetExperimentsView({
             }
           : undefined,
         tabsProps: {
-          tabs: getDatasetTabs(projectId, datasetId),
+          tabs: getDatasetTabs(projectId, datasetId, tNavigation),
           activeTab: DATASET_TABS.EXPERIMENTS,
         },
         actionButtonsRight: (
@@ -280,7 +289,9 @@ function DatasetExperimentsView({
                   onClick={() => capture("dataset_run:new_form_open")}
                 >
                   <FlaskConical className="h-4 w-4" />
-                  <span className="ml-2 hidden md:block">Run experiment</span>
+                  <span className="ml-2 hidden md:block">
+                    {tFeatures("ui.runExperiment")}
+                  </span>
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-h-[90vh] max-w-3xl overflow-y-auto">
@@ -344,7 +355,7 @@ function DatasetExperimentsView({
                 <Button
                   variant="outline"
                   size="icon"
-                  aria-label="Dataset actions"
+                  aria-label={tFeatures("ui.datasetActions")}
                   {...getTriggerProps()}
                 >
                   <MoreVertical className="h-4 w-4" />
@@ -374,8 +385,10 @@ function DatasetExperimentsView({
           <DialogContent className="max-h-[90vh] max-w-(--breakpoint-md) overflow-y-auto">
             <DialogHeader>
               <DialogTitle>
-                {selectedEvaluatorData.evaluator.id ? "Edit" : "Configure"}{" "}
-                Evaluator
+                {selectedEvaluatorData.evaluator.id
+                  ? tFeatures("ui.edit")
+                  : tFeatures("ui.configure")}{" "}
+                {tFeatures("ui.evaluator")}
               </DialogTitle>
             </DialogHeader>
             <EvaluatorForm

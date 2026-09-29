@@ -51,6 +51,7 @@ import {
   type CodeEvalSourceCodeLanguage,
   type CodeEvalValidationResult,
 } from "@/src/features/evals/utils/code-eval-template-validation";
+import { useTranslation } from "react-i18next";
 
 type CodeEvalTemplateFormBodyProps = {
   sourceCode: string;
@@ -232,6 +233,7 @@ export function CodeEvalTemplateFormBody({
   ctxSample,
   headerAction,
 }: CodeEvalTemplateFormBodyProps) {
+  const { t: tFeatures } = useTranslation("features");
   const { resolvedTheme } = useTheme();
   const [isFormatting, setIsFormatting] = useState(false);
   const codeMirrorTheme = resolvedTheme === "dark" ? darkTheme : lightTheme;
@@ -407,7 +409,7 @@ export function CodeEvalTemplateFormBody({
       onClick={() => formatSource()}
     >
       {isFormatting && <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />}
-      Format
+      {tFeatures("ui.format")}
       <span className="ml-2 hidden md:inline-flex">
         <KeyboardShortcut size="sm" keys={["Shift", "Alt", "F"]} />
       </span>
@@ -455,7 +457,7 @@ export function CodeEvalTemplateFormBody({
           rel="noopener noreferrer"
           className="underline"
         >
-          See full type definitions.
+          {tFeatures("ui.seeFullTypeDefinitions")}
         </a>
       </p>
     </div>

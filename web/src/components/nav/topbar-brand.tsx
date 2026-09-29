@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 /* eslint-disable no-nested-ternary */
 /* eslint-disable @repo/no-style-props */
 import { cn } from "@/src/utils/tailwind";
@@ -28,6 +29,8 @@ export const TopbarBrand = ({
   className?: string;
   variant?: "icon" | "wordmark";
 }) => {
+const { t: tUi } = useTranslation("uiMore");
+
   const uiCustomization = useUiCustomization();
   const logoLight = uiCustomization?.logoLightModeHref;
   const logoDark = uiCustomization?.logoDarkModeHref;
@@ -35,7 +38,7 @@ export const TopbarBrand = ({
   return (
     <Link
       href="/"
-      aria-label="Langfuse home"
+      aria-label={tUi("langfuseHome")}
       className={cn("flex shrink-0 items-center gap-1", className)}
     >
       {logoLight && logoDark ? (

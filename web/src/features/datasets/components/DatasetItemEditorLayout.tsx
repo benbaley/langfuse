@@ -1,5 +1,6 @@
 import { type ReactNode } from "react";
 import { JSONView } from "@/src/components/ui/CodeJsonViewer";
+import { useTranslation } from "react-i18next";
 
 export function DatasetItemEditorLayout({
   selector,
@@ -12,6 +13,7 @@ export function DatasetItemEditorLayout({
   preview: ReactNode;
   previewDescription: string;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <div className="shrink-0 border-b p-4">{selector}</div>
@@ -21,7 +23,9 @@ export function DatasetItemEditorLayout({
         </div>
         <aside className="bg-muted/20 flex min-w-0 flex-col gap-4 border-t p-4 md:overflow-y-auto md:border-t-0 md:border-l">
           <div className="flex flex-col gap-1">
-            <h3 className="text-sm font-bold">Dataset item preview</h3>
+            <h3 className="text-sm font-bold">
+              {tFeatures("ui.datasetItemPreview")}
+            </h3>
             <p className="text-muted-foreground text-xs">
               {previewDescription}
             </p>
@@ -42,12 +46,15 @@ export function DatasetItemPreviewField({
   value: unknown;
   feedback: ReactNode;
 }) {
+  const { t: tFeatures } = useTranslation("features");
   return (
     <section className="ph-no-capture bg-background flex flex-col overflow-hidden rounded-md border">
       <h4 className="border-b px-3 py-2 text-xs font-bold">{label}</h4>
       <div className="max-h-64 overflow-auto">
         {value === undefined ? (
-          <p className="text-muted-foreground p-3 text-xs">No value</p>
+          <p className="text-muted-foreground p-3 text-xs">
+            {tFeatures("ui.noValue")}
+          </p>
         ) : (
           <JSONView json={value} className="text-xs" />
         )}

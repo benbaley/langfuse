@@ -55,28 +55,33 @@ const SESSION_FIELD_OVERLAY = {
     aliases: ["sessionid", "session_id", "session"],
     label: "Session ID",
     description: "Session identifier",
+    descriptionKey: "search.session_identifier",
   },
   environment: { aliases: ["env"] },
   userIds: {
     aliases: ["userid", "user_id", "user", "users", "userids"],
     label: "User IDs",
     description: "User ids seen in the session",
+    descriptionKey: "search.user_ids_seen_in_the_session",
   },
   tags: {
     aliases: ["tag", "tracetags", "trace_tags"],
     label: "Trace tags",
     description: "Tags on the session's traces",
+    descriptionKey: "search.tags_on_the_session_s_traces",
   },
   sessionDuration: {
     aliases: ["duration", "sessionduration", "session_duration"],
     label: "Session duration",
     description: "Session duration in seconds",
+    descriptionKey: "search.session_duration_in_seconds",
     unit: "s",
   },
   countTraces: {
     aliases: ["traces", "tracecount", "trace_count", "counttraces"],
     label: "Trace count",
     description: "Number of traces in the session",
+    descriptionKey: "search.number_of_traces_in_the_session",
   },
   inputTokens: { aliases: ["inputtokens", "input_tokens"] },
   outputTokens: { aliases: ["outputtokens", "output_tokens"] },
@@ -89,6 +94,7 @@ const SESSION_FIELD_OVERLAY = {
     aliases: ["commentcontent", "comment_content", "comment"],
     label: "Comment text",
     description: "Text of comments on the session",
+    descriptionKey: "search.text_of_comments_on_the_session",
   },
 };
 
