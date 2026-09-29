@@ -24,7 +24,7 @@ export function TruncatedLabels({
   className,
   showSimpleBadges = false,
 }: TruncatedLabelsProps) {
-const { t: tUi } = useTranslation("uiMore");
+  const { t: tUi } = useTranslation("uiMore");
 
   // Enhanced sorting: prioritize latest and production labels
   const sortedLabels = [...labels].sort((a, b) => {

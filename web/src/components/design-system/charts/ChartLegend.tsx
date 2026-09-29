@@ -92,7 +92,7 @@ export function ChartLegend({
     onDeselectAll: () => void;
   };
 }) {
-const { t: tUi } = useTranslation("uiMore");
+  const { t: tUi } = useTranslation("uiMore");
 
   const containerRef = useRef<HTMLDivElement>(null);
   const itemRefs = useRef<Array<HTMLDivElement | null>>([]);

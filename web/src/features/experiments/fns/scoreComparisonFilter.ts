@@ -1,3 +1,4 @@
+import type { TFunction } from "i18next";
 import { type AggregatedScoreData } from "@langfuse/shared";
 import {
   readOrderedScoreValue,
@@ -202,14 +203,16 @@ export const describeEmptyScoreComparison = ({
   operator,
   scoreName,
   comparisonName,
+  t,
 }: {
   operator: ScoreComparisonOperator;
   scoreName: string;
   comparisonName: string;
+  t: TFunction<"coreMore">;
 }): string => {
   if (operator === "differs")
-    return `No item on this page scored ${scoreName} differently from ${comparisonName}.`;
+    return t("experiments.emptyDiffers", { scoreName, comparisonName });
   if (operator === "lower")
-    return `No regressions on this score — no item on this page scored lower on ${scoreName} than ${comparisonName}.`;
-  return `No item on this page scored higher on ${scoreName} than ${comparisonName}.`;
+    return t("experiments.emptyLower", { scoreName, comparisonName });
+  return t("experiments.emptyHigher", { scoreName, comparisonName });
 };

@@ -104,7 +104,7 @@ export function SplashScreen({
   children,
   videoPosition = "top",
 }: SplashScreenProps) {
-const { t: tUi } = useTranslation("uiMore");
+  const { t: tUi } = useTranslation("uiMore");
 
   const mediaBlock = (
     <>

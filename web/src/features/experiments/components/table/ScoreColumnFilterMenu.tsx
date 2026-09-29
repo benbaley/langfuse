@@ -23,10 +23,10 @@ export type ScoreComparisonTarget = {
   experimentName: string;
 };
 
-const OPERATOR_LABELS: Record<ScoreComparisonOperator, string> = {
-  lower: "Worse than",
-  higher: "Better than",
-  differs: "Different from",
+const OPERATOR_KEYS: Record<ScoreComparisonOperator, string> = {
+  lower: "experiments.worseThan",
+  higher: "experiments.betterThan",
+  differs: "experiments.differentFrom",
 };
 
 const ORDERED_OPERATORS: ScoreComparisonOperator[] = [
@@ -127,15 +127,15 @@ export const ScoreColumnFilterMenu = ({
                 )}
                 <span
                   className="truncate"
-                  title={`${OPERATOR_LABELS[operator]} ${targets[0].experimentName}`}
+                  title={`${tMore(OPERATOR_KEYS[operator])} ${targets[0].experimentName}`}
                 >
-                  {OPERATOR_LABELS[operator]} {targets[0].experimentName}
+                  {tMore(OPERATOR_KEYS[operator])} {targets[0].experimentName}
                 </span>
               </DropdownMenuItem>
             ) : (
               <DropdownMenuSub key={operator}>
                 <DropdownMenuSubTrigger>
-                  {OPERATOR_LABELS[operator]}…
+                  {tMore(OPERATOR_KEYS[operator])}…
                 </DropdownMenuSubTrigger>
                 <DropdownMenuPortal>
                   <DropdownMenuSubContent className="w-56">

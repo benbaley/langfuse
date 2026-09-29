@@ -9,7 +9,10 @@ import { RulesTable } from "@/src/features/evals/v2/components/Rules/RulesTable/
 import { useHasProjectAccess } from "@/src/features/rbac";
 import { EVALS_V2_TABS, getEvalsV2Tabs } from "@/src/features/navigation";
 import { V4MigrationUpdateRequiredBadge } from "@/src/features/v4-migration/V4MigrationDelayBadge";
-import { useTranslation, useTranslation as useNavigationTranslation } from "react-i18next";
+import {
+  useTranslation,
+  useTranslation as useNavigationTranslation,
+} from "react-i18next";
 
 export function RulesPage() {
   const { t: tNavigation } = useNavigationTranslation("navigation");

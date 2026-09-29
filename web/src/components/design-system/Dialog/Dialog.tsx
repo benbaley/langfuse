@@ -58,7 +58,7 @@ function DialogRoot({
   text,
   title,
 }: DialogProps) {
-const { t: tUi } = useTranslation("uiMore");
+  const { t: tUi } = useTranslation("uiMore");
 
   const container = useLayerContainer("modal");
   const cancelButtonRef = React.useRef<HTMLButtonElement>(null);
@@ -135,7 +135,11 @@ const { t: tUi } = useTranslation("uiMore");
         {actions?.length ? (
           <DialogFooter>
             <DialogPrimitive.Close asChild>
-              <Button ref={cancelButtonRef} variant="secondary" text={tUi("cancel")} />
+              <Button
+                ref={cancelButtonRef}
+                variant="secondary"
+                text={tUi("cancel")}
+              />
             </DialogPrimitive.Close>
             {actions.map(
               ({ icon: Icon, label, variant, ...buttonProps }, index) => (

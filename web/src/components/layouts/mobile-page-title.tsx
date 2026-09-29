@@ -38,7 +38,7 @@ export const MobilePageTitle = ({
 }: {
   headerProps: Omit<PageHeaderProps, "container">;
 }) => {
-const { t: tUi } = useTranslation("uiMore");
+  const { t: tUi } = useTranslation("uiMore");
 
   const {
     title,

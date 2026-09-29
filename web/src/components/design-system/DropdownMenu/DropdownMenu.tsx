@@ -178,7 +178,7 @@ function DropdownMenuNode({
   search,
   title,
 }: DropdownMenuProps) {
-const { t: tUi } = useTranslation("uiMore");
+  const { t: tUi } = useTranslation("uiMore");
 
   const [isOpen, setIsOpen] = React.useState(false);
   const [activeIndex, setActiveIndex] = React.useState<number | null>(null);

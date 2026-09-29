@@ -4,7 +4,10 @@ export const TRACING_TABS = {
   OBSERVATIONS: "observations",
 } as const;
 
-export const getTracingTabs = (projectId: string, t: TFunction<"navigation">) => [
+export const getTracingTabs = (
+  projectId: string,
+  t: TFunction<"navigation">,
+) => [
   {
     value: TRACING_TABS.TRACES,
     label: t("tracing.traces"),

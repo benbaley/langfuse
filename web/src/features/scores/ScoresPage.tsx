@@ -6,7 +6,10 @@ import { api } from "@/src/utils/api";
 import { ScoresOnboarding } from "@/src/components/onboarding/ScoresOnboarding";
 import { getScoresTabs, SCORES_TABS } from "@/src/features/navigation";
 import { useReadPath } from "@/src/features/events";
-import { useTranslation, useTranslation as useNavigationTranslation } from "react-i18next";
+import {
+  useTranslation,
+  useTranslation as useNavigationTranslation,
+} from "react-i18next";
 
 export default function ScoresPage() {
   const { t: tNavigation } = useNavigationTranslation("navigation");

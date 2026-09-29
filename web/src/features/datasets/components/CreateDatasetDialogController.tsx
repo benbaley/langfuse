@@ -6,6 +6,7 @@ import {
 } from "@/src/features/datasets/components/CreateDatasetDialogContent";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics";
 import { type ReactNode, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export function CreateDatasetDialogController({
   children,
@@ -16,6 +17,7 @@ export function CreateDatasetDialogController({
     openDialog: () => void;
   }) => ReactNode;
 }) {
+  const { t: tMore } = useTranslation("coreMore");
   const capture = usePostHogClientCapture();
   const [open, setOpen] = useState(false);
   const hasAccess = useHasProjectAccess({
@@ -25,7 +27,7 @@ export function CreateDatasetDialogController({
 
   const disabled = hasAccess
     ? undefined
-    : { reason: "You don't have permission to create a dataset." };
+    : { reason: tMore("datasets.permissionCreate") };
 
   const openDialog = () => {
     if (!hasAccess) return;

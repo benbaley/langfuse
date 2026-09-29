@@ -6,7 +6,10 @@ import { api } from "@/src/utils/api";
 import { TracesOnboarding } from "@/src/components/onboarding/TracesOnboarding";
 import { getTracingTabs, TRACING_TABS } from "@/src/features/navigation";
 import { useQueryProject } from "@/src/features/projects";
-import { useTranslation, useTranslation as useNavigationTranslation } from "react-i18next";
+import {
+  useTranslation,
+  useTranslation as useNavigationTranslation,
+} from "react-i18next";
 
 export default function EventsPage() {
   const { t: tNavigation } = useNavigationTranslation("navigation");

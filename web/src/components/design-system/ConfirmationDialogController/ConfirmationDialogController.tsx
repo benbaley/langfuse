@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 /* eslint-disable boundaries/dependencies */
-"use client";
+("use client");
 
 import * as React from "react";
 
@@ -47,7 +47,7 @@ function ConfirmationDialogController<TValue = undefined>({
   title: ConfirmationDialogContent<TValue>;
   variant: "default" | "destructive";
 }) {
-const { t: tUi } = useTranslation("uiMore");
+  const { t: tUi } = useTranslation("uiMore");
 
   const [confirmationInput, setConfirmationInput] = React.useState("");
 

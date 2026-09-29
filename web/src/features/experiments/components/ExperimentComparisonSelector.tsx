@@ -323,7 +323,7 @@ export function ExperimentComparisonSelector({
   return (
     <div className="space-y-2">
       <MultiSelectCombobox<ComparisonRow>
-        labelLeft="Compare"
+        labelLeft={tMore("experiments.compare")}
         selectedItems={selectedRows}
         onItemsChange={handleItemsChange}
         searchQuery={searchQuery}
@@ -333,7 +333,9 @@ export function ExperimentComparisonSelector({
         onOpenChange={handleOpenChange}
         placeholder={
           isMaxReached
-            ? `Max ${MAX_SELECTED_EXPERIMENTS} experiments`
+            ? tMore("experiments.maxSelected", {
+                count: MAX_SELECTED_EXPERIMENTS,
+              })
             : tFeatures("ui.searchExperiments")
         }
         disabled={isLoading}
@@ -475,7 +477,7 @@ export function ExperimentComparisonSelector({
             ) : null;
           }
 
-          // A comparison should never be on an{tMore("experiments.otherDataset")}, but the URL can say
+          // A comparison should never be on another dataset, but the URL can say
           // anything, so name the dataset rather than leaving it unexplained.
           const isOtherDataset =
             baselineDatasetKey !== null &&
@@ -485,8 +487,10 @@ export function ExperimentComparisonSelector({
           const chipTitle = [
             option.experimentName,
             option.startTime
-              ? `Started ${option.startTime.toLocaleString()}`
-              : "This experiment is no longer available",
+              ? tMore("experiments.started", {
+                  time: option.startTime.toLocaleString(),
+                })
+              : tMore("experiments.noLongerAvailable"),
             isOtherDataset
               ? tMore("experiments.dataset", { name: datasetLabelOf(option) })
               : null,

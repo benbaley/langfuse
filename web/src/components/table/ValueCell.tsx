@@ -235,7 +235,7 @@ function ValueCellActionsMenuContent({
   row: Row<JsonTableRow>;
   metadataActions: MetadataFilterActions;
 }) {
-const { t: tUi } = useTranslation("uiMore");
+  const { t: tUi } = useTranslation("uiMore");
 
   const router = useRouter();
   const { value, type, hasChildren, level } = row.original;
@@ -302,7 +302,9 @@ const { t: tUi } = useTranslation("uiMore");
         {hasChildren ? "Copy structure" : "Copy value"}
       </DropdownMenuItem>
       <DropdownMenuItem className="text-xs" onSelect={handleCopyPath}>
-        <Copy className="mr-2 h-3.5 w-3.5 shrink-0" />{tUi("copyPath")}</DropdownMenuItem>
+        <Copy className="mr-2 h-3.5 w-3.5 shrink-0" />
+        {tUi("copyPath")}
+      </DropdownMenuItem>
       {isScalarLeaf && (
         <>
           <DropdownMenuSeparator />
@@ -359,7 +361,7 @@ export const ValueCell = memo(
     /** Replaces the built-in menu, for tables with their own row actions. */
     rowActions?: (row: Row<JsonTableRow>) => React.ReactNode;
   }) => {
-const { t: tUi } = useTranslation("uiMore");
+    const { t: tUi } = useTranslation("uiMore");
 
     const { value, type } = row.original;
     const cellId = `${row.id}-value`;

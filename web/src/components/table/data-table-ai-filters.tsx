@@ -22,7 +22,7 @@ interface DataTableAIFiltersProps {
 export function DataTableAIFilters({
   onFiltersGenerated,
 }: DataTableAIFiltersProps) {
-const { t: tUi } = useTranslation("uiMore");
+  const { t: tUi } = useTranslation("uiMore");
 
   const [aiPrompt, setAiPrompt] = useState("");
   const [aiError, setAiError] = useState<string | null>(null);
@@ -69,7 +69,9 @@ const { t: tUi } = useTranslation("uiMore");
   // When AI features are not enabled
   if (!organization?.aiFeaturesEnabled) {
     return (
-      <AIFeaturesDisabledNotice organizationId={organization?.id}>{tUi("aiFilterDescription")}</AIFeaturesDisabledNotice>
+      <AIFeaturesDisabledNotice organizationId={organization?.id}>
+        {tUi("aiFilterDescription")}
+      </AIFeaturesDisabledNotice>
     );
   }
 

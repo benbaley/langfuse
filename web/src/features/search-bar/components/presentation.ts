@@ -7,9 +7,14 @@ import type { ComposerSegment } from "@/src/features/search-bar/lib/composer-seg
 import type { FieldRegistry } from "@/src/features/search-bar/lib/fields";
 
 /** Per-view: the examples have to name fields the view actually has. */
-export function composerPlaceholder(registry: FieldRegistry, t?: TFunction): string {
+export function composerPlaceholder(
+  registry: FieldRegistry,
+  t?: TFunction,
+): string {
   return registry.searchExamples.length > 0
-    ? (t?.("filters:ui.searchExamples", { examples: registry.searchExamples.join(", ") }) ?? `Search — e.g. ${registry.searchExamples.join(", ")}`)
+    ? (t?.("filters:ui.searchExamples", {
+        examples: registry.searchExamples.join(", "),
+      }) ?? `Search — e.g. ${registry.searchExamples.join(", ")}`)
     : (t?.("filters:ui.search") ?? "Search");
 }
 

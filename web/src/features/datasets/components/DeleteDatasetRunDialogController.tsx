@@ -42,7 +42,7 @@ export const DeleteDatasetRunDialogController = ({
       text={tFeatures(
         "ui.thisActionCannotBeUndoneTracesLinkedToThisRunMustBeDeletedManually",
       )}
-      confirmLabel="Delete Dataset Run"
+      confirmLabel={tFeatures("ui.deleteDatasetRun")}
       variant="destructive"
       disabled={!hasAccess}
       loading={mutDelete.isPending}

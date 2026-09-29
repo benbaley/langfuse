@@ -97,13 +97,13 @@ export function ChatMessage({
         <div style={{ display: shouldRenderMarkdown ? "block" : "none" }}>
           <MarkdownJsonView
             title={tFeatures("ui.placeholder")}
-            content={message.name || "Unnamed placeholder"}
+            content={message.name || tFeatures("ui.unnamedPlaceholder")}
           />
         </div>
         <div style={{ display: shouldRenderMarkdown ? "none" : "block" }}>
           <PrettyJsonView
             title={tFeatures("ui.placeholder")}
-            json={message.name || "Unnamed placeholder"}
+            json={message.name || tFeatures("ui.unnamedPlaceholder")}
             currentView={currentView}
           />
         </div>

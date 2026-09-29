@@ -29,7 +29,7 @@ export const TopbarBrand = ({
   className?: string;
   variant?: "icon" | "wordmark";
 }) => {
-const { t: tUi } = useTranslation("uiMore");
+  const { t: tUi } = useTranslation("uiMore");
 
   const uiCustomization = useUiCustomization();
   const logoLight = uiCustomization?.logoLightModeHref;

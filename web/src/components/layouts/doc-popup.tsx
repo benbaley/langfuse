@@ -22,7 +22,7 @@ export default function DocPopup({
   href,
   className,
 }: DocPopupProps) {
-const { t: tUi } = useTranslation("uiMore");
+  const { t: tUi } = useTranslation("uiMore");
 
   const capture = usePostHogClientCapture();
   // Controlled so a CLICK/TAP on the icon also opens the card: HoverCard
@@ -82,7 +82,9 @@ const { t: tUi } = useTranslation("uiMore");
                 });
               }}
               className="text-muted-foreground hover:text-primary mt-2 inline-flex items-center gap-1 text-xs underline underline-offset-2"
-            >{tUi("readDocs")}<ExternalLink className="h-3 w-3" />
+            >
+              {tUi("readDocs")}
+              <ExternalLink className="h-3 w-3" />
             </a>
           )}
         </HoverCardContent>

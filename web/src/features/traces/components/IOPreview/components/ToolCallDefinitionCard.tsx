@@ -111,10 +111,13 @@ function ToolCallArgumentsList({
   );
 }
 
-function getStatusText(callCount: number) {
-  if (callCount === 0) return "not called";
-  if (callCount === 1) return "called";
-  return `called ${callCount}x`;
+function getStatusText(
+  callCount: number,
+  t: (key: string, options?: { count: number }) => string,
+) {
+  if (callCount === 0) return t("io.toolNotCalled");
+  if (callCount === 1) return t("io.toolCalled");
+  return t("io.toolCalledCount", { count: callCount });
 }
 
 function ToolGroupHoverContent({
@@ -126,6 +129,7 @@ function ToolGroupHoverContent({
   toolCallCounts: Map<string, number>;
   toolNameToDefinitionNumber?: Map<string, number>;
 }) {
+  const { t: tMore } = useTranslation("coreMore");
   return (
     <HoverCardContent
       side="bottom"
@@ -165,7 +169,7 @@ function ToolGroupHoverContent({
                     "bg-light-green text-dark-green hover:bg-light-green border-transparent select-none",
                 )}
               >
-                {getStatusText(callCount)}
+                {getStatusText(callCount, tMore)}
               </Badge>
             </div>
           );
@@ -190,10 +194,12 @@ function ToolGroupSummary({
   toolCallCounts: Map<string, number>;
   toolNameToDefinitionNumber?: Map<string, number>;
 }) {
+  const { t: tMore } = useTranslation("coreMore");
+  const { t: tFeatures } = useTranslation("features");
   const isCalledGroup = kind === "called";
   const summaryText = isCalledGroup
-    ? `${tools.length} ${tools.length === 1 ? "tool was" : "tools were"} called`
-    : `${tools.length} available ${tools.length === 1 ? "tool was" : "tools were"} not called`;
+    ? tMore("io.toolsCalled", { count: tools.length })
+    : tMore("io.toolsNotCalled", { count: tools.length });
 
   const summaryButton = (
     <button
@@ -232,7 +238,7 @@ function ToolGroupSummary({
               "bg-light-green text-dark-green hover:bg-light-green border-transparent select-none",
           )}
         >
-          {expanded ? "hide" : "show"}
+          {expanded ? tFeatures("ui.hide") : tFeatures("ui.show")}
         </Badge>
         {expanded ? (
           <ChevronDown className="text-muted-foreground h-3.5 w-3.5" />
@@ -330,9 +336,10 @@ function ToolDefinitionRow({
   currentView: "formatted" | "json";
   setCurrentView: (value: "formatted" | "json") => void;
 }) {
+  const { t: tMore } = useTranslation("coreMore");
   const { t: tFeatures } = useTranslation("features");
   const isCalled = callCount > 0;
-  const statusText = getStatusText(callCount);
+  const statusText = getStatusText(callCount, tMore);
 
   return (
     <div className="w-full overflow-hidden rounded-sm border">
@@ -386,7 +393,11 @@ function ToolDefinitionRow({
                     size="sm"
                     label={tFeatures("ui.formatted")}
                   />
-                  <Tabs.Trigger value="json" size="sm" label="JSON" />
+                  <Tabs.Trigger
+                    value="json"
+                    size="sm"
+                    label={tFeatures("ui.json")}
+                  />
                 </Tabs.List>
               </Tabs>
             </div>

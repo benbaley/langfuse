@@ -61,7 +61,7 @@ function SelectInputInner<V extends string>(
   }: SelectInputProps<V>,
   ref: React.ForwardedRef<HTMLButtonElement>,
 ) {
-const { t: tUi } = useTranslation("uiMore");
+  const { t: tUi } = useTranslation("uiMore");
 
   const container = useLayerContainer("popover");
   const [open, setOpen] = React.useState(false);

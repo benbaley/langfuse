@@ -4,7 +4,11 @@ export const DATASET_TABS = {
   EXPERIMENTS: "experiments",
 } as const;
 
-export const getDatasetTabs = (projectId: string, datasetId: string, t: TFunction<"navigation">) => {
+export const getDatasetTabs = (
+  projectId: string,
+  datasetId: string,
+  t: TFunction<"navigation">,
+) => {
   return [
     {
       value: DATASET_TABS.ITEMS,

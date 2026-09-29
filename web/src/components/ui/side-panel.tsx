@@ -57,7 +57,7 @@ const SidePanel = ({
     onOpenChange: (open: boolean) => void;
   };
 }) => {
-const { t: tUi } = useTranslation("uiMore");
+  const { t: tUi } = useTranslation("uiMore");
 
   const isControlled = openState !== undefined;
   const controlledOpen = openState?.open;
@@ -165,7 +165,7 @@ const { t: tUi } = useTranslation("uiMore");
 };
 
 const SidePanelHeader = ({ children }: { children: ReactNode }) => {
-const { t: tUi } = useTranslation("uiMore");
+  const { t: tUi } = useTranslation("uiMore");
 
   const context = React.useContext(SidePanelContext);
 

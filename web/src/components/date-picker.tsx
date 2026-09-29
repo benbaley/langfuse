@@ -45,7 +45,7 @@ export function DatePicker({
   disabled?: boolean;
   includeTimePicker?: boolean;
 }) {
-const { t: tUi } = useTranslation("uiMore");
+  const { t: tUi } = useTranslation("uiMore");
 
   const { t, i18n } = useTranslation("common");
   const locale = i18n.resolvedLanguage === "zh-CN" ? zhCN : enUS;

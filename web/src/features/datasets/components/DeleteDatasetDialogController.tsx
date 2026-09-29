@@ -5,6 +5,7 @@ import {
 } from "@/src/features/datasets/components/DeleteDatasetDialog";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics";
 import { type ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 
 export type DeleteDatasetDialogSource = "dataset" | "table-single-row";
 
@@ -19,6 +20,7 @@ export function DeleteDatasetDialogController({
     openDialog: () => void;
   }) => ReactNode;
 }) {
+  const { t: tMore } = useTranslation("coreMore");
   const capture = usePostHogClientCapture();
   const hasAccess = useHasProjectAccess({
     projectId: props.projectId,
@@ -27,7 +29,7 @@ export function DeleteDatasetDialogController({
 
   const disabled = hasAccess
     ? undefined
-    : { reason: "You don't have permission to delete this dataset." };
+    : { reason: tMore("datasets.permissionDelete") };
 
   return (
     <DeleteDatasetDialog {...props}>

@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 /* eslint-disable @repo/no-style-props, @repo/no-margin-on-root-elements */
-"use client";
+("use client");
 
 import * as React from "react";
 import { useRouter } from "next/router";
@@ -296,7 +296,7 @@ const SidebarTrigger = React.forwardRef<
   React.ComponentRef<typeof Button>,
   React.ComponentProps<typeof Button>
 >(({ className, onClick, ...props }, ref) => {
-const { t: tUi } = useTranslation("uiMore");
+  const { t: tUi } = useTranslation("uiMore");
 
   const { toggleSidebar } = useSidebar();
 
@@ -330,7 +330,7 @@ const SidebarRail = React.forwardRef<
   HTMLButtonElement,
   React.ComponentProps<"button">
 >(({ className, ...props }, ref) => {
-const { t: tUi } = useTranslation("uiMore");
+  const { t: tUi } = useTranslation("uiMore");
 
   const { toggleSidebar } = useSidebar();
 

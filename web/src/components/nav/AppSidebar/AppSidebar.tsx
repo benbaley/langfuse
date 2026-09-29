@@ -578,7 +578,7 @@ const DemoBadge = () => {
 };
 
 const VersionLabel = ({ state }: { state: SidebarVersionState }) => {
-const { t: tUi } = useTranslation("uiMore");
+  const { t: tUi } = useTranslation("uiMore");
 
   const { t } = useTranslation("navigation");
   const selfHostedPlanLabel =
@@ -669,7 +669,9 @@ const { t: tUi } = useTranslation("uiMore");
         {state.deployment === "self-hosted" && (
           <DropdownMenuItem asChild>
             <Link href="/background-migrations">
-              <ArrowUp10 size={16} className="mr-2" />{tUi("backgroundMigrations")}{backgroundMigrationStatus && (
+              <ArrowUp10 size={16} className="mr-2" />
+              {tUi("backgroundMigrations")}
+              {backgroundMigrationStatus && (
                 <StatusBadge
                   type={backgroundMigrationStatus}
                   showText={false}

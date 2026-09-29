@@ -1,4 +1,5 @@
 import {
+  copyFileSync,
   existsSync,
   lstatSync,
   mkdirSync,
@@ -11,8 +12,11 @@ import {
 } from "node:fs";
 import { dirname, relative, resolve } from "node:path";
 import process from "node:process";
+import { fileURLToPath } from "node:url";
 
-const repoRoot = resolve(new URL("../..", import.meta.url).pathname);
+const repoRoot = fileURLToPath(new URL("../..", import.meta.url));
+const repoRelative = (filePath) =>
+  relative(repoRoot, filePath).replaceAll("\\", "/");
 const sourcePath = resolve(repoRoot, ".agents/config.json");
 const config = JSON.parse(readFileSync(sourcePath, "utf8"));
 const servers = config.mcpServers;
@@ -322,7 +326,7 @@ const isInsideRepoDirectory = (candidate) => {
     return false;
   }
 
-  const [topLevel] = relativePath.split("/");
+  const [topLevel] = relativePath.split(/[\\/]/);
 
   return existsSync(resolve(repoRoot, topLevel));
 };
@@ -368,11 +372,51 @@ const findBrokenReferences = () => {
 
 const isMatchingSymlink = (path, target) => {
   const stats = lstatSync(path);
-  if (!stats.isSymbolicLink()) {
-    return false;
+  if (stats.isSymbolicLink()) {
+    return resolve(dirname(path), readlinkSync(path)) === target;
   }
 
-  return resolve(dirname(path), readlinkSync(path)) === target;
+  // Windows without symlink privilege falls back to a same-content copy.
+  if (stats.isFile() && existsSync(target) && lstatSync(target).isFile()) {
+    return readFileSync(path).equals(readFileSync(target));
+  }
+
+  return false;
+};
+
+const createShimLink = (output) => {
+  const targetIsDirectory = lstatSync(output.target).isDirectory();
+  const linkTarget = relative(dirname(output.path), output.target);
+
+  try {
+    symlinkSync(
+      linkTarget,
+      output.path,
+      targetIsDirectory ? "dir" : "file",
+    );
+    console.log(`Linked ${output.path}`);
+    return;
+  } catch (error) {
+    if (
+      !(
+        error &&
+        typeof error === "object" &&
+        "code" in error &&
+        (error.code === "EPERM" || error.code === "EACCES")
+      )
+    ) {
+      throw error;
+    }
+  }
+
+  if (targetIsDirectory) {
+    symlinkSync(output.target, output.path, "junction");
+    console.log(`Linked ${output.path}`);
+    return;
+  }
+
+  copyFileSync(output.target, output.path);
+  console.log(`Copied ${output.path}`);
 };
 
 const findUnexpectedChildren = ({ path, expectedChildren }) => {
@@ -478,12 +522,7 @@ for (const output of symlinkOutputs) {
   }
 
   rmSync(output.path, { force: true, recursive: true });
-  symlinkSync(
-    relative(dirname(output.path), output.target),
-    output.path,
-    lstatSync(output.target).isDirectory() ? "dir" : "file",
-  );
-  console.log(`Linked ${output.path}`);
+  createShimLink(output);
 }
 
 for (const directory of managedDirectoryEntries) {
@@ -514,7 +553,7 @@ if (checkPaths) {
   for (const { filePath, raw } of findBrokenReferences()) {
     hasMismatch = true;
     console.error(
-      `Broken path reference in ${relative(repoRoot, filePath)}: ${raw} does not exist.`,
+      `Broken path reference in ${repoRelative(filePath)}: ${raw} does not exist.`,
     );
   }
 }

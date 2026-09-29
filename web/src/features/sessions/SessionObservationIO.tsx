@@ -174,8 +174,8 @@ export const SessionObservationIO = ({
       });
     } catch {
       showErrorToast(
-        "Download failed",
-        "Could not fetch the observation's full I/O. Please try again.",
+        tMore("sessions.downloadFailed"),
+        tMore("sessions.downloadFailedDescription"),
       );
     } finally {
       setIsDownloading(false);

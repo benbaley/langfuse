@@ -27,7 +27,7 @@ const CodeBlock: FC<Props> = memo(
     showLanguage = true,
     variant = "default",
   }) => {
-const { t: tUi } = useTranslation("uiMore");
+    const { t: tUi } = useTranslation("uiMore");
 
     const [isCopied, setIsCopied] = useState(false);
     const { resolvedTheme } = useTheme();

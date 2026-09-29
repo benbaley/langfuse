@@ -68,7 +68,7 @@ export function Callout({
   actions,
   onDismiss,
 }: CalloutProps) {
-const { t: tUi } = useTranslation("uiMore");
+  const { t: tUi } = useTranslation("uiMore");
 
   return (
     <div role="alert" className={calloutVariants({ variant })}>

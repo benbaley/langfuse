@@ -291,11 +291,7 @@ export function DatasetItemsTable({
               disabled={!hasAccess || !!selectedVersion}
               className="text-destructive"
               onClick={() => {
-                if (
-                  window.confirm(
-                    "Are you sure you want to delete this item? This will also delete all run items that belong to this item.",
-                  )
-                ) {
+                if (window.confirm(tMore("datasets.deleteItemConfirm"))) {
                   capture("dataset_item:delete");
                   mutDelete.mutate({
                     projectId: projectId,

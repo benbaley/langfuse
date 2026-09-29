@@ -14,6 +14,7 @@ import { NewDatasetItemFromExistingObjectDialogController } from "@/src/features
 import { showErrorToast } from "@/src/features/notifications";
 import { useHasProjectAccess } from "@/src/features/rbac";
 import { api, sendAsPostOption, type RouterOutputs } from "@/src/utils/api";
+import { useTranslation } from "react-i18next";
 
 const BATCH_IO_SIZE = 50;
 
@@ -67,6 +68,7 @@ export function ConnectedSessionConversationTimeline({
   ) => void;
   onLoadMoreObservations?: () => void;
 }) {
+  const { t: tMore } = useTranslation("coreMore");
   const utils = api.useUtils();
   const hasDatasetAccess = useHasProjectAccess({
     projectId,
@@ -289,8 +291,8 @@ export function ConnectedSessionConversationTimeline({
                           });
                         } catch {
                           showErrorToast(
-                            "Failed to load observation",
-                            "Could not fetch the observation's full I/O. Please try again.",
+                            tMore("sessions.loadObservationFailed"),
+                            tMore("sessions.loadObservationFailedDescription"),
                           );
                         }
                       },

@@ -4,7 +4,10 @@ export const EVALS_V2_TABS = {
   RULES: "rules",
 } as const;
 
-export const getEvalsV2Tabs = (projectId: string, t: TFunction<"navigation">) => [
+export const getEvalsV2Tabs = (
+  projectId: string,
+  t: TFunction<"navigation">,
+) => [
   {
     value: EVALS_V2_TABS.EVALUATORS,
     label: t("evals.evaluators"),

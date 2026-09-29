@@ -51,7 +51,7 @@ export function MultiSelectTagInput<V extends string>({
   "aria-describedby": ariaDescribedBy,
   "aria-invalid": ariaInvalid,
 }: MultiSelectTagInputProps<V>) {
-const { t: tUi } = useTranslation("uiMore");
+  const { t: tUi } = useTranslation("uiMore");
 
   const container = useLayerContainer("popover");
   const [open, setOpen] = React.useState(false);

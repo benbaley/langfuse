@@ -23,5 +23,7 @@ pnpm run agents:sync
 # validates that every path cited by an `AGENTS.md` resolves: that is a lint
 # concern, and failing it here would break `pnpm i` and with it every CI job
 # that installs. The lint job runs the full check.
-node scripts/agents/sync-agent-shims.mjs --check
+# Use `pnpm exec node` so Git Bash on Windows still finds Node when it is not
+# on bash's PATH.
+pnpm exec node scripts/agents/sync-agent-shims.mjs --check
 

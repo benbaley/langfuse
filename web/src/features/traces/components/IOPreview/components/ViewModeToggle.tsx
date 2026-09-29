@@ -40,7 +40,7 @@ export function ViewModeToggle({
               size="sm"
               label={tFeatures("ui.formatted")}
             />
-            <Tabs.Trigger value="json" size="sm" label="JSON" />
+            <Tabs.Trigger value="json" size="sm" label={tFeatures("ui.json")} />
           </Tabs.List>
         </Tabs>
       </div>

@@ -4,7 +4,11 @@ export const PROMPT_TABS = {
   METRICS: "metrics",
 } as const;
 
-export const getPromptTabs = (projectId: string, promptName: string, t: TFunction<"navigation">) => [
+export const getPromptTabs = (
+  projectId: string,
+  promptName: string,
+  t: TFunction<"navigation">,
+) => [
   {
     value: PROMPT_TABS.VERSIONS,
     label: t("prompts.versions"),

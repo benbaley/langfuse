@@ -131,11 +131,7 @@ export const DatasetItemDetailPage = ({
 
   const handleDelete = () => {
     if (!hasAccess || mutDelete.isPending) return;
-    if (
-      window.confirm(
-        "Are you sure you want to delete this item? This will also delete all run items that belong to this item.",
-      )
-    ) {
+    if (window.confirm(tMore("datasets.deleteItemConfirm"))) {
       capture("dataset_item:delete");
       mutDelete.mutate({
         projectId,

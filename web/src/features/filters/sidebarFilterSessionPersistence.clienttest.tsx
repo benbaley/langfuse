@@ -110,19 +110,41 @@ describe("numeric conditions restored from the URL", () => {
   it("switches facet language without rewriting URL filters or observed values", async () => {
     queryParamStore.clear();
     deferredQueryParams.clear();
-    const filters: FilterState = [{ column: "name", type: "stringOptions", operator: "any of", value: ["Name"] }];
+    const filters: FilterState = [
+      {
+        column: "name",
+        type: "stringOptions",
+        operator: "any of",
+        value: ["Name"],
+      },
+    ];
     const encoded = encodeFiltersGeneric(filters);
     queryParamStore.set("filter", encoded);
     const instance = createUiI18n("en");
     const config = getScoreFilterConfig();
     const { result } = renderHook(
-      () => useSidebarFilterState(config, { name: ["Name", "quality"] }, { stateLocation: "url" }),
-      { wrapper: ({ children }) => <I18nextProvider i18n={instance}>{children}</I18nextProvider> },
+      () =>
+        useSidebarFilterState(
+          config,
+          { name: ["Name", "quality"] },
+          { stateLocation: "url" },
+        ),
+      {
+        wrapper: ({ children }) => (
+          <I18nextProvider i18n={instance}>{children}</I18nextProvider>
+        ),
+      },
     );
     const before = result.current.explicitFilterState;
-    expect(result.current.filters.find((facet) => facet.column === "name")?.label).toBe("Name");
-    await act(async () => { await instance.changeLanguage("zh-CN"); });
-    const nameFacet = result.current.filters.find((facet) => facet.column === "name");
+    expect(
+      result.current.filters.find((facet) => facet.column === "name")?.label,
+    ).toBe("Name");
+    await act(async () => {
+      await instance.changeLanguage("zh-CN");
+    });
+    const nameFacet = result.current.filters.find(
+      (facet) => facet.column === "name",
+    );
     expect(nameFacet?.label).toBe("名称");
     expect(nameFacet?.value).toEqual(["Name"]);
     expect(result.current.explicitFilterState).toEqual(before);

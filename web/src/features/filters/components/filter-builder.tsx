@@ -424,7 +424,11 @@ export function InlineFilterState({
       >
         <FilterToken deactivated={false} title={undefined}>
           <span className="text-qlang-field">{column}</span>{" "}
-          <span className="text-muted-foreground">{t(`operator.${filter.operator}`, { defaultValue: filter.operator })}</span>
+          <span className="text-muted-foreground">
+            {t(`operator.${filter.operator}`, {
+              defaultValue: filter.operator,
+            })}
+          </span>
           {value !== "" ? (
             <>
               {" "}

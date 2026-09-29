@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 /* eslint-disable @repo/no-style-props, @repo/no-margin-on-root-elements */
-"use client";
+("use client");
 
 import * as React from "react";
 import { DialogTitle, type DialogProps } from "@radix-ui/react-dialog";
@@ -43,7 +43,7 @@ const CommandDialog = ({
 }: DialogProps & {
   filter?: React.ComponentProps<typeof CommandPrimitive>["filter"];
 }) => {
-const { t: tUi } = useTranslation("uiMore");
+  const { t: tUi } = useTranslation("uiMore");
 
   return (
     <Dialog {...props}>

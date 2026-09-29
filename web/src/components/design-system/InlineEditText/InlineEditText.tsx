@@ -28,7 +28,7 @@ export const InlineEditText = ({
   placeholder,
   "aria-label": ariaLabel,
 }: InlineEditTextProps) => {
-const { t: tUi } = useTranslation("uiMore");
+  const { t: tUi } = useTranslation("uiMore");
 
   const [editing, setEditing] = React.useState(false);
   const [draft, setDraft] = React.useState(value);

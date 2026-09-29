@@ -11,7 +11,7 @@ import {
   writeFileSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
-import { dirname, join } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { test } from "node:test";
 
 const createFixture = (t) => {
@@ -53,13 +53,20 @@ test("sync keeps root and nested instructions in AGENTS.md without translation",
   assertSuccess(run());
   assertSuccess(run("--check", "--check-paths"));
 
-  assert.equal(readlinkSync(join(root, "AGENTS.md")), ".agents/AGENTS.md");
+  assert.ok(
+    readFileSync(join(root, "AGENTS.md"), "utf8").includes(
+      "Repository instructions",
+    ),
+  );
   for (const directory of ["", "web", "web/src/feature"]) {
     assert.ok(!readdirSync(join(root, directory)).includes("CLAUDE.md"));
   }
   assert.equal(
-    readlinkSync(join(root, ".claude/skills/example")),
-    "../../.agents/skills/example",
+    resolve(
+      dirname(join(root, ".claude/skills/example")),
+      readlinkSync(join(root, ".claude/skills/example")),
+    ),
+    resolve(root, ".agents/skills/example"),
   );
   const mcp = JSON.parse(readFileSync(join(root, ".mcp.json"), "utf8"));
   assert.ok(mcp.mcpServers["langfuse-docs"]);

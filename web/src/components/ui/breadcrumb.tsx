@@ -11,9 +11,9 @@ const Breadcrumb = React.forwardRef<
   React.ComponentPropsWithoutRef<"nav"> & {
     separator?: React.ReactNode;
   }
->(({ ...props }, ref) =>{
-const { t: tUi } = useTranslation("uiMore");
-return (<nav ref={ref} aria-label={tUi("breadcrumb")} {...props} />);
+>(({ ...props }, ref) => {
+  const { t: tUi } = useTranslation("uiMore");
+  return <nav ref={ref} aria-label={tUi("breadcrumb")} {...props} />;
 });
 Breadcrumb.displayName = "Breadcrumb";
 
@@ -96,17 +96,19 @@ BreadcrumbSeparator.displayName = "BreadcrumbSeparator";
 const BreadcrumbEllipsis = ({
   className,
   ...props
-}: React.ComponentProps<"span">) =>{
-const { t: tUi } = useTranslation("uiMore");
-return (<span
-    role="presentation"
-    aria-hidden="true"
-    className={cn("flex h-9 w-9 items-center justify-center", className)}
-    {...props}
-  >
-    <MoreHorizontal className="h-4 w-4" />
-    <span className="sr-only">{tUi("more")}</span>
-  </span>);
+}: React.ComponentProps<"span">) => {
+  const { t: tUi } = useTranslation("uiMore");
+  return (
+    <span
+      role="presentation"
+      aria-hidden="true"
+      className={cn("flex h-9 w-9 items-center justify-center", className)}
+      {...props}
+    >
+      <MoreHorizontal className="h-4 w-4" />
+      <span className="sr-only">{tUi("more")}</span>
+    </span>
+  );
 };
 BreadcrumbEllipsis.displayName = "BreadcrumbElipssis";
 

@@ -77,7 +77,10 @@ import { createNumberTableColumn } from "@/src/components/design-system/table/co
 import { useOrderByState } from "@/src/features/orderBy";
 import { createUserTableColumn } from "@/src/components/design-system/table/columns/createUserTableColumn";
 import { EvaluatorAlertButton } from "@/src/features/evals/v2/components/Evaluators/EvaluatorAlertButton/EvaluatorAlertButton";
-import { useTranslation, useTranslation as useNavigationTranslation } from "react-i18next";
+import {
+  useTranslation,
+  useTranslation as useNavigationTranslation,
+} from "react-i18next";
 
 type EvaluatorRow = RouterOutputs["evalsV2"]["list"]["evaluators"][number];
 

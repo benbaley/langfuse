@@ -53,7 +53,12 @@ it("changes native editor phrases without resetting content, selection, or undo 
   act(() => {
     closeSearchPanel(view);
     view.contentDOM.dispatchEvent(
-      new KeyboardEvent("keydown", { key: "z", code: "KeyZ", ctrlKey: true, bubbles: true }),
+      new KeyboardEvent("keydown", {
+        key: "z",
+        code: "KeyZ",
+        ctrlKey: true,
+        bubbles: true,
+      }),
     );
   });
   expect(view.state.doc.toString()).toBe("customer payload");

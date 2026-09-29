@@ -807,7 +807,7 @@ export function DatasetRunsTable(props: DatasetRunsTableProps) {
       text={tFeatures(
         "ui.thisActionCannotBeUndoneTracesLinkedToThisRunMustBeDeletedManually",
       )}
-      confirmLabel="Delete Dataset Run"
+      confirmLabel={tFeatures("ui.deleteDatasetRun")}
       variant="destructive"
       loading={deleteDatasetRun.isPending}
       onConfirm={async () => {

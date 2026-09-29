@@ -6,6 +6,7 @@ import {
 } from "@/src/features/datasets/components/UpdateDatasetDialogContent";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics";
 import { type ReactNode, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export type UpdateDatasetDialogSource = "dataset" | "table-single-row";
 
@@ -20,6 +21,7 @@ export function UpdateDatasetDialogController({
     openDialog: () => void;
   }) => ReactNode;
 }) {
+  const { t: tMore } = useTranslation("coreMore");
   const capture = usePostHogClientCapture();
   const [open, setOpen] = useState(false);
   const hasAccess = useHasProjectAccess({
@@ -29,7 +31,7 @@ export function UpdateDatasetDialogController({
 
   const disabled = hasAccess
     ? undefined
-    : { reason: "You don't have permission to edit this dataset." };
+    : { reason: tMore("datasets.permissionEdit") };
 
   const openDialog = () => {
     if (!hasAccess) return;

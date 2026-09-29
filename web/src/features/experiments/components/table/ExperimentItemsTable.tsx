@@ -392,15 +392,18 @@ const matchesExpectedOutput = (
   return mayBeTruncated ? null : true;
 };
 
-const ExpectedMatchChip = ({ matches }: { matches: boolean }) => (
-  <Badge
-    size="sm"
-    variant={matches ? "success" : "error"}
-    className="mt-0.5 ml-1 shrink-0 font-bold"
-  >
-    {matches ? "match" : "differs"}
-  </Badge>
-);
+const ExpectedMatchChip = ({ matches }: { matches: boolean }) => {
+  const { t: tMore } = useTranslation("coreMore");
+  return (
+    <Badge
+      size="sm"
+      variant={matches ? "success" : "error"}
+      className="mt-0.5 ml-1 shrink-0 font-bold"
+    >
+      {matches ? tMore("experiments.match") : tMore("experiments.differs")}
+    </Badge>
+  );
+};
 
 /**
  * Cell component that renders stacked output values for each experiment.
@@ -435,6 +438,7 @@ const StackedOutputCell = ({
     [outputs],
   );
 
+  const { t: tMore } = useTranslation("coreMore");
   const showExpectedLine = Boolean(expectedOutput);
 
   return (
@@ -448,7 +452,7 @@ const StackedOutputCell = ({
         <div className="flex min-h-0 items-start overflow-hidden py-0.5 pr-1 pl-1.5">
           <div className="flex h-full min-h-0 min-w-0 items-start">
             <span className="text-muted-foreground mt-0.5 mr-1 shrink-0 text-[10px] font-bold uppercase">
-              Exp
+              {tMore("experiments.expectedShort")}
             </span>
             <ConnectedIOTableCell
               isLoading={false}
@@ -1508,8 +1512,9 @@ export default function ExperimentItemsTable({
     {
       accessorKey: "observationId",
       id: "observationId",
-      headerLabel: "Observation ID",
-      header: () => renderExperimentSpecificHeader("Observation ID"),
+      headerLabel: tFeatures("ui.observationId"),
+      header: () =>
+        renderExperimentSpecificHeader(tFeatures("ui.observationId")),
       size: 180,
       enableHiding: true,
       cell: ({ row }) => {
@@ -1586,8 +1591,8 @@ export default function ExperimentItemsTable({
     {
       accessorKey: "experimentId",
       id: "experimentId",
-      headerLabel: "Experiment",
-      header: () => renderExperimentSpecificHeader("Experiment"),
+      headerLabel: tFeatures("ui.experiment"),
+      header: () => renderExperimentSpecificHeader(tFeatures("ui.experiment")),
       size: 150,
       defaultHidden: true,
       enableHiding: true,
@@ -1921,15 +1926,16 @@ export default function ExperimentItemsTable({
     if (rows.length > 0 || (items.rows ?? []).length === 0) return undefined;
     if (scoreComparisonPills.length !== 1)
       return scoreComparisonPills.length > 1
-        ? "No item on this page matches every score comparison."
+        ? tMore("experiments.emptyAllComparisons")
         : undefined;
     const [pill] = scoreComparisonPills;
     return describeEmptyScoreComparison({
       operator: pill.filter.operator,
       scoreName: pill.scoreName,
       comparisonName: pill.comparisonName,
+      t: tMore,
     });
-  }, [rows.length, items.rows, scoreComparisonPills]);
+  }, [rows.length, items.rows, scoreComparisonPills, tMore]);
 
   const pagination = useMemo(
     () => ({

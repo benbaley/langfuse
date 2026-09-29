@@ -19,7 +19,10 @@ import {
 import { BarChart3 } from "lucide-react";
 import { api } from "@/src/utils/api";
 import { Spinner } from "@/src/components/design-system/Spinner/Spinner";
-import { useTranslation, useTranslation as useNavigationTranslation } from "react-i18next";
+import {
+  useTranslation,
+  useTranslation as useNavigationTranslation,
+} from "react-i18next";
 
 /**
  * Score Analytics V2 - Refactored Architecture

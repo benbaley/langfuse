@@ -18,6 +18,7 @@ export function DuplicateDatasetDialogController({
   datasetId: string;
   projectId: string;
 }) {
+  const { t: tMore } = useTranslation("coreMore");
   const { t: tFeatures } = useTranslation("features");
   const router = useRouter();
   const hasAccess = useHasProjectAccess({
@@ -28,13 +29,13 @@ export function DuplicateDatasetDialogController({
 
   const disabled = hasAccess
     ? undefined
-    : { reason: "You don't have permission to duplicate this dataset." };
+    : { reason: tMore("datasets.permissionDuplicate") };
 
   return (
     <ConfirmationDialogController
       title={tFeatures("ui.duplicateDataset")}
       text={tFeatures("ui.thisCreatesACopyOfTheDatasetAndAllOfItsItems")}
-      confirmLabel="Duplicate dataset"
+      confirmLabel={tFeatures("ui.duplicateDatasetConfirm")}
       variant="default"
       disabled={!hasAccess}
       loading={duplicateDataset.isPending}

@@ -5,7 +5,10 @@ import { ActionButton } from "@/src/components/ActionButton";
 import { PlusIcon } from "lucide-react";
 import { useHasProjectAccess } from "@/src/features/rbac";
 import { getDashboardTabs, DASHBOARD_TABS } from "@/src/features/navigation";
-import { useTranslation, useTranslation as useNavigationTranslation } from "react-i18next";
+import {
+  useTranslation,
+  useTranslation as useNavigationTranslation,
+} from "react-i18next";
 
 export default function DashboardsPage() {
   const { t: tNavigation } = useNavigationTranslation("navigation");

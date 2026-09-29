@@ -13,7 +13,7 @@ import { V4MigrationPanel } from "@/src/features/v4-migration/V4MigrationPanel";
 import { useV4MigrationTitle } from "@/src/features/v4-migration/V4MigrationContent";
 
 export function MobileRightDrawer() {
-const { t: tUi } = useTranslation("uiMore");
+  const { t: tUi } = useTranslation("uiMore");
 
   const { open: supportOpen, setOpen: setSupportOpen } = useSupportDrawer();
   const { open: migrationOpen, setOpen: setMigrationOpen } =
@@ -38,7 +38,9 @@ const { t: tUi } = useTranslation("uiMore");
             </div>
             {/* sr-only for screen readers and accessibility */}
             <DrawerTitle className="sr-only">{tUi("support")}</DrawerTitle>
-            <DrawerDescription className="sr-only">{tUi("supportDescription")}</DrawerDescription>
+            <DrawerDescription className="sr-only">
+              {tUi("supportDescription")}
+            </DrawerDescription>
           </DrawerHeader>
           <SupportDrawer
             showCloseButton={false}
@@ -63,7 +65,9 @@ const { t: tUi } = useTranslation("uiMore");
             </div>
             {/* sr-only for screen readers and accessibility */}
             <DrawerTitle className="sr-only">{migrationTitle}</DrawerTitle>
-            <DrawerDescription className="sr-only">{tUi("compatibilityActions")}</DrawerDescription>
+            <DrawerDescription className="sr-only">
+              {tUi("compatibilityActions")}
+            </DrawerDescription>
           </DrawerHeader>
           <V4MigrationPanel
             showCloseButton={false}

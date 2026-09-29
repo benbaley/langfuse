@@ -33,8 +33,7 @@ export function SetupPage() {
       headerProps={{
         title: tApp("ui.Setup"),
         help: {
-          description:
-            tApp("setup.help"),
+          description: tApp("setup.help"),
         },
         ...(stepInt === 1 && {
           breadcrumb: [

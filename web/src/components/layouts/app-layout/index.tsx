@@ -40,7 +40,7 @@ import { useLayoutMetadata } from "./hooks/useLayoutMetadata";
  * - User permissions
  */
 export function AppLayout(props: PropsWithChildren) {
-const { t: tUi } = useTranslation("uiMore");
+  const { t: tUi } = useTranslation("uiMore");
 
   const router = useRouter();
   const session = useSession();

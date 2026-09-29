@@ -39,7 +39,7 @@ function PageNumberInput({
   pageCount: number;
   onNavigate: (pageIndex: number) => void;
 }) {
-const { t: tUi } = useTranslation("uiMore");
+  const { t: tUi } = useTranslation("uiMore");
 
   const [value, setValue] = useState<number | string>(currentPage);
 
@@ -82,7 +82,7 @@ export function PaginationBar({
   onChange,
   pageSizeOptions = [10, 20, 30, 40, 50],
 }: PaginationBarProps) {
-const { t: tUi } = useTranslation("uiMore");
+  const { t: tUi } = useTranslation("uiMore");
 
   const pageCount = Math.max(1, Math.ceil((totalCount ?? 0) / state.pageSize));
   const currentPage = state.pageIndex + 1;
@@ -93,8 +93,12 @@ const { t: tUi } = useTranslation("uiMore");
     <div className="bg-background @container/pagination sticky bottom-0 z-10 flex w-full min-w-0 justify-end border-t py-2 pr-2 font-bold">
       <div className="flex min-w-0 flex-wrap items-center justify-end gap-x-4 gap-y-2 @min-[520px]/pagination:gap-x-6 @min-[720px]/pagination:gap-x-8">
         <div className="flex shrink-0 items-center gap-2">
-          <span className="text-sm whitespace-nowrap @min-[440px]/pagination:hidden">{tUi("rows")}</span>
-          <span className="hidden text-sm whitespace-nowrap @min-[440px]/pagination:block">{tUi("rowsPerPage")}</span>
+          <span className="text-sm whitespace-nowrap @min-[440px]/pagination:hidden">
+            {tUi("rows")}
+          </span>
+          <span className="hidden text-sm whitespace-nowrap @min-[440px]/pagination:block">
+            {tUi("rowsPerPage")}
+          </span>
           <Select
             value={`${state.pageSize}`}
             onValueChange={(value) => {

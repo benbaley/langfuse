@@ -4,7 +4,10 @@ export const DASHBOARD_TABS = {
   WIDGETS: "widgets",
 } as const;
 
-export const getDashboardTabs = (projectId: string, t: TFunction<"navigation">) => [
+export const getDashboardTabs = (
+  projectId: string,
+  t: TFunction<"navigation">,
+) => [
   {
     value: DASHBOARD_TABS.DASHBOARDS,
     label: t("dashboard.dashboards"),

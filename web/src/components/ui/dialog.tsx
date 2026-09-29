@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 /* eslint-disable @repo/no-style-props, @repo/no-margin-on-root-elements */
-"use client";
+("use client");
 
 import * as React from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
@@ -108,7 +108,7 @@ const DialogContent = React.forwardRef<
     },
     ref,
   ) => {
-const { t: tUi } = useTranslation("uiMore");
+    const { t: tUi } = useTranslation("uiMore");
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
       // Prevent Enter/Space key events from propagating to parent elements
@@ -244,29 +244,31 @@ const DialogHeader = ({
   variant,
   ...props
 }: React.HTMLAttributes<HTMLDivElement> &
-  VariantProps<typeof dialogHeaderVariants>) =>{
-const { t: tUi } = useTranslation("uiMore");
-return (<div
-    className={cn(
-      "dialog-header",
-      dialogHeaderVariants({ variant, className }),
-    )}
-    {...props}
-  >
-    <div className="flex w-full items-center justify-between gap-4 text-center sm:text-left">
-      <div className="min-w-0 flex-1">{children}</div>
-      {/* Untabbable on purpose: as the first tabbable descendant of the
+  VariantProps<typeof dialogHeaderVariants>) => {
+  const { t: tUi } = useTranslation("uiMore");
+  return (
+    <div
+      className={cn(
+        "dialog-header",
+        dialogHeaderVariants({ variant, className }),
+      )}
+      {...props}
+    >
+      <div className="flex w-full items-center justify-between gap-4 text-center sm:text-left">
+        <div className="min-w-0 flex-1">{children}</div>
+        {/* Untabbable on purpose: as the first tabbable descendant of the
           content it would take Radix's initial focus away from the dialog's
           first field or primary action. Escape and the mouse still close. */}
-      <DialogPrimitive.Close
-        className="ring-offset-background focus:ring-ring data-[state=open]:bg-accent data-[state=open]:text-muted-foreground hover:bg-accent z-20 -my-2 -mr-2 ml-2 inline-flex size-9 shrink-0 items-center justify-center rounded-md opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none"
-        tabIndex={-1}
-      >
-        <X className="h-4 w-4" />
-        <span className="sr-only">{tUi("close")}</span>
-      </DialogPrimitive.Close>
+        <DialogPrimitive.Close
+          className="ring-offset-background focus:ring-ring data-[state=open]:bg-accent data-[state=open]:text-muted-foreground hover:bg-accent z-20 -my-2 -mr-2 ml-2 inline-flex size-9 shrink-0 items-center justify-center rounded-md opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none"
+          tabIndex={-1}
+        >
+          <X className="h-4 w-4" />
+          <span className="sr-only">{tUi("close")}</span>
+        </DialogPrimitive.Close>
+      </div>
     </div>
-  </div>);
+  );
 };
 DialogHeader.displayName = "DialogHeader";
 
