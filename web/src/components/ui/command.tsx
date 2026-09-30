@@ -1,6 +1,7 @@
+"use client";
+
 import { useTranslation } from "react-i18next";
 /* eslint-disable @repo/no-style-props, @repo/no-margin-on-root-elements */
-("use client");
 
 import * as React from "react";
 import { DialogTitle, type DialogProps } from "@radix-ui/react-dialog";

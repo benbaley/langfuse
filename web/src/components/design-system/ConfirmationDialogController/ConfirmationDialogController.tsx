@@ -1,6 +1,7 @@
+"use client";
+
 import { useTranslation } from "react-i18next";
 /* eslint-disable boundaries/dependencies */
-("use client");
 
 import * as React from "react";
 

@@ -1,6 +1,7 @@
+"use client";
+
 import { useTranslation } from "react-i18next";
 /* eslint-disable @repo/no-style-props, @repo/no-margin-on-root-elements */
-("use client");
 
 import * as React from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
