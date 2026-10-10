@@ -10,6 +10,7 @@ const namespaces = readdirSync(join(root, "en")).filter((file) =>
   file.endsWith(".json"),
 );
 const problems = [];
+/** @type {import("./source-check.mjs").Dictionaries} */
 const dictionaries = { en: {}, "zh-CN": {} };
 let messages = 0;
 /** @param {string} value */

@@ -2,6 +2,13 @@ import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { parsers } from "prettier/plugins/babel";
 
+/** @typedef {ReturnType<typeof parsers["babel-ts"]["parse"]>} AstNode */
+/** @typedef {Record<string, Record<string, Record<string, unknown>>>} Dictionaries */
+/** @typedef {{ ns: string, prefix?: string }} Binding */
+/** @typedef {{ parent: Scope | null, bindings: Map<string, Binding | null> }} Scope */
+/** @typedef {{ file: string, line: number, kind: string, namespace: string, key: string, missing: string[] }} Finding */
+
+/** @param {string} directory @returns {string[]} */
 function sourceFiles(directory) {
   return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
     const path = join(directory, entry.name);
@@ -15,46 +22,64 @@ function sourceFiles(directory) {
 
 // Resolve each translator in its lexical scope. Calls through helpers or with
 // dynamic keys are reported as unverified, rather than assigned a guessed namespace.
+/** @param {string} sourceRoot @param {Dictionaries} dictionaries */
 export function checkSourceReferences(sourceRoot, dictionaries) {
   const parse = parsers["babel-ts"].parse;
-  const findings = [],
-    parseErrors = [];
+  /** @type {Finding[]} */
+  const findings = [];
+  /** @type {{ file: string, error: string }[]} */
+  const parseErrors = [];
   let boundCalls = 0,
     boundTrans = 0,
     hookBindings = 0,
     skippedDynamicKeys = 0,
     scanned = 0;
+  /** @param {AstNode} n @returns {AstNode[]} */
   function childNodes(n) {
     return Object.entries(n)
       .filter(
         ([k]) => !["loc", "comments", "tokens", "errors", "extra"].includes(k),
       )
       .flatMap(([, value]) => {
-        if (Array.isArray(value)) return value.filter((item) => item && typeof item === "object" && item.type);
-        return value && typeof value === "object" && value.type ? [value] : [];
+        if (Array.isArray(value))
+          return value.filter(
+            (item) => item && typeof item === "object" && item.type,
+          );
+        return value &&
+          typeof value === "object" &&
+          "type" in value &&
+          value.type
+          ? [value]
+          : [];
       });
   }
+  /** @param {AstNode} pattern @returns {string[]} */
   function names(pattern) {
     if (!pattern) return [];
     if (pattern.type === "Identifier") return [pattern.name];
     if (pattern.type === "ObjectPattern")
-      return pattern.properties.flatMap((p) => names(p.value ?? p.argument));
+      return pattern.properties.flatMap(
+        /** @param {AstNode} p */ (p) => names(p.value ?? p.argument),
+      );
     if (pattern.type === "ArrayPattern") return pattern.elements.flatMap(names);
     if (pattern.type === "AssignmentPattern") return names(pattern.left);
     if (pattern.type === "RestElement") return names(pattern.argument);
     return [];
   }
+  /** @param {AstNode} n @param {string} k @returns {AstNode} */
   function property(n, k) {
     return n?.type === "ObjectExpression"
       ? n.properties.find(
-          (p) =>
+          /** @param {AstNode} p */ (p) =>
             p.type === "ObjectProperty" && (p.key.name ?? p.key.value) === k,
         )?.value
       : undefined;
   }
+  /** @param {AstNode} n @returns {string | undefined} */
   function literal(n) {
     if (n?.type === "StringLiteral") return n.value;
-    if (n?.type === "TemplateLiteral" && n.expressions.length === 0) return n.quasis[0].value.cooked;
+    if (n?.type === "TemplateLiteral" && n.expressions.length === 0)
+      return n.quasis[0].value.cooked;
     return undefined;
   }
   for (const file of sourceFiles(sourceRoot)) {
@@ -66,9 +91,17 @@ export function checkSourceReferences(sourceRoot, dictionaries) {
       continue;
     let ast;
     try {
-      ast = parse(source);
+      ast = parse(
+        source,
+        /** @type {import("prettier").ParserOptions} */ ({
+          parser: "babel-ts",
+        }),
+      );
     } catch (e) {
-      parseErrors.push({ file, error: e.message });
+      parseErrors.push({
+        file,
+        error: e instanceof Error ? e.message : String(e),
+      });
       continue;
     }
     scanned++;
@@ -81,6 +114,7 @@ export function checkSourceReferences(sourceRoot, dictionaries) {
           if (s.imported?.name === "Trans") transNames.add(s.local.name);
         }
     }
+    /** @param {Scope | null} scope @param {string} name */
     function lookup(scope, name) {
       while (scope) {
         if (scope.bindings.has(name)) return scope.bindings.get(name);
@@ -88,6 +122,7 @@ export function checkSourceReferences(sourceRoot, dictionaries) {
       }
       return undefined;
     }
+    /** @param {AstNode} d @param {Scope} scope */
     function bindDecl(d, scope) {
       if (d.type === "VariableDeclaration")
         for (const v of d.declarations) {
@@ -116,6 +151,13 @@ export function checkSourceReferences(sourceRoot, dictionaries) {
       else if (d.type === "FunctionDeclaration" && d.id)
         scope.bindings.set(d.id.name, null);
     }
+    /**
+     * @param {string | undefined} key
+     * @param {Binding} binding
+     * @param {AstNode} options
+     * @param {AstNode} node
+     * @param {string} kind
+     */
     function verify(key, binding, options, node, kind) {
       if (!binding) return;
       if (key === undefined) {
@@ -150,7 +192,15 @@ export function checkSourceReferences(sourceRoot, dictionaries) {
           missing.push(lang + ":namespace");
           continue;
         }
-        const nested = key.split(".").reduce((o, k) => o?.[k], dict);
+        const nested = key
+          .split(".")
+          .reduce(
+            /** @param {unknown} o @returns {unknown} */ (o, k) =>
+              /** @type {Record<string, unknown> | null | undefined} */ (o)?.[
+                k
+              ],
+            dict,
+          );
         if (
           dict[key] !== undefined ||
           nested !== undefined ||
@@ -169,6 +219,7 @@ export function checkSourceReferences(sourceRoot, dictionaries) {
           missing,
         });
     }
+    /** @param {AstNode} n @param {Scope | null} scope */
     function visit(n, scope) {
       if (!n || typeof n !== "object") return;
       const isFunction = [
@@ -209,9 +260,11 @@ export function checkSourceReferences(sourceRoot, dictionaries) {
         }
       }
       if (n.type === "JSXOpeningElement" && transNames.has(n.name.name)) {
+        /** @param {string} k @returns {AstNode} */
         const attr = (k) =>
           n.attributes.find(
-            (a) => a.type === "JSXAttribute" && a.name.name === k,
+            /** @param {AstNode} a */ (a) =>
+              a.type === "JSXAttribute" && a.name.name === k,
           )?.value;
         const tv = attr("t");
         const keyNode = attr("i18nKey");

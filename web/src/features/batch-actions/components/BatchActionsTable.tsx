@@ -61,7 +61,7 @@ export function BatchActionsTable(props: { projectId: string }) {
                 .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
                 .join(" "),
             })
-          : value,
+          : (value ?? undefined),
     }),
     {
       accessorKey: "tableName",

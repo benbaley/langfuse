@@ -5,6 +5,7 @@ import { join } from "node:path";
 import test from "node:test";
 import { checkSourceReferences } from "./source-check.mjs";
 
+/** @param {import("node:test").TestContext} t @param {string} source */
 function audit(t, source, messages = { "form.save": "Save", welcome: "Welcome" }) {
   const root = mkdtempSync(join(tmpdir(), "i18n-source-check-"));
   t.after(() => rmSync(root, { recursive: true, force: true }));
